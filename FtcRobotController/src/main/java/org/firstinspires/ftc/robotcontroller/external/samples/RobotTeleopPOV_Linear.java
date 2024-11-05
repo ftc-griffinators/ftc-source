@@ -26,7 +26,6 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -48,26 +47,26 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Robot: Teleop POV", group="Robot")
+@TeleOp(name = "Robot: Teleop POV", group = "Robot")
 @Disabled
-public class RobotTeleopPOV_Linear extends LinearOpMode {
+public class RobotTeleopPOV_Linear extends LinearOpMode
+{
 
+    public static final double MID_SERVO = 0.5;
+    public static final double CLAW_SPEED = 0.02;                 // sets rate to move servo
+    public static final double ARM_UP_POWER = 0.45;
+    public static final double ARM_DOWN_POWER = -0.45;
     /* Declare OpMode members. */
-    public DcMotor  leftDrive   = null;
-    public DcMotor  rightDrive  = null;
-    public DcMotor  leftArm     = null;
-    public Servo    leftClaw    = null;
-    public Servo    rightClaw   = null;
-
+    public DcMotor leftDrive = null;
+    public DcMotor rightDrive = null;
+    public DcMotor leftArm = null;
+    public Servo leftClaw = null;
+    public Servo rightClaw = null;
     double clawOffset = 0;
 
-    public static final double MID_SERVO   =  0.5 ;
-    public static final double CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
-    public static final double ARM_UP_POWER    =  0.45 ;
-    public static final double ARM_DOWN_POWER  = -0.45 ;
-
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
         double left;
         double right;
         double drive;
@@ -75,9 +74,9 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
         double max;
 
         // Define and Initialize Motors
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        leftArm    = hardwareMap.get(DcMotor.class, "left_arm");
+        leftArm = hardwareMap.get(DcMotor.class, "left_arm");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -90,7 +89,7 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
         // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Define and initialize ALL installed servos.
-        leftClaw  = hardwareMap.get(Servo.class, "left_hand");
+        leftClaw = hardwareMap.get(Servo.class, "left_hand");
         rightClaw = hardwareMap.get(Servo.class, "right_hand");
         leftClaw.setPosition(MID_SERVO);
         rightClaw.setPosition(MID_SERVO);
@@ -103,16 +102,17 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
             drive = -gamepad1.left_stick_y;
-            turn  =  gamepad1.right_stick_x;
+            turn = gamepad1.right_stick_x;
 
             // Combine drive and turn for blended motion.
-            left  = drive + turn;
+            left = drive + turn;
             right = drive - turn;
 
             // Normalize the values so neither exceed +/- 1.0
@@ -147,8 +147,8 @@ public class RobotTeleopPOV_Linear extends LinearOpMode {
                 leftArm.setPower(0.0);
 
             // Send telemetry message to signify robot running;
-            telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-            telemetry.addData("left",  "%.2f", left);
+            telemetry.addData("claw", "Offset = %.2f", clawOffset);
+            telemetry.addData("left", "%.2f", left);
             telemetry.addData("right", "%.2f", right);
             telemetry.update();
 

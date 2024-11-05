@@ -20,7 +20,7 @@ import java.util.List;
  Affected code includes `hardwareMap.*.get` statements and which DcMotors are reversed
 */
 
-@Autonomous(name = "Autonomous Close Right", group = "Main")
+@Autonomous(name = "autonomous Close Right", group = "Main")
 public class AutonomousMainCloseRight extends LinearOpMode {
 	private TfodProcessor tfod;
 	private VisionPortal visionPortal;

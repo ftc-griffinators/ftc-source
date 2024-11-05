@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  Affected code includes `hardwareMap.*.get` statements and which DcMotors are reversed
 */
 
-@Autonomous(name = "Autonomous Far Left", group = "Main")
+@Autonomous(name = "autonomous Far Left", group = "Main")
 public class AutonomousMainFarLeft extends LinearOpMode {
 	private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Griffinators.tflite";
 	// Define the labels recognized in the model for TFOD (must be in training order!)

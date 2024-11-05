@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  Affected code includes `hardwareMap.*.get` statements and which DcMotors are reversed
 */
 
-@Autonomous(name = "Autonomous Close Left", group = "Main")
+@Autonomous(name = "autonomous Close Left", group = "Main")
 public class AutonomousMainCloseLeft extends LinearOpMode {
 	private TfodProcessor tfod;
 	private VisionPortal visionPortal;

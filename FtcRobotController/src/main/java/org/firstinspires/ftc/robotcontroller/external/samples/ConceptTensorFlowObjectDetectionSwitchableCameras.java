@@ -26,12 +26,12 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -51,7 +51,8 @@ import java.util.List;
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Switchable Cameras", group = "Concept")
 @Disabled
-public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpMode {
+public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpMode
+{
 
     /**
      * Variables used for switching cameras.
@@ -71,7 +72,8 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     private VisionPortal visionPortal;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         initTfod();
 
@@ -81,8 +83,10 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
         telemetry.update();
         waitForStart();
 
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
+        if (opModeIsActive())
+        {
+            while (opModeIsActive())
+            {
 
                 telemetryCameraSwitching();
                 telemetryTfod();
@@ -91,9 +95,12 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
                 telemetry.update();
 
                 // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down) {
+                if (gamepad1.dpad_down)
+                {
                     visionPortal.stopStreaming();
-                } else if (gamepad1.dpad_up) {
+                }
+                else if (gamepad1.dpad_up)
+                {
                     visionPortal.resumeStreaming();
                 }
 
@@ -112,7 +119,8 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     /**
      * Initialize the TensorFlow Object Detection processor.
      */
-    private void initTfod() {
+    private void initTfod()
+    {
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder().build();
@@ -120,24 +128,28 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
         CameraName switchableCamera = ClassFactory.getInstance()
-            .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
+                .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 
         // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
-            .setCamera(switchableCamera)
-            .addProcessor(tfod)
-            .build();
+                .setCamera(switchableCamera)
+                .addProcessor(tfod)
+                .build();
 
     }   // end method initTfod()
 
     /**
      * Add telemetry about camera switching.
      */
-    private void telemetryCameraSwitching() {
-        if (visionPortal.getActiveCamera().equals(webcam1)) {
+    private void telemetryCameraSwitching()
+    {
+        if (visionPortal.getActiveCamera().equals(webcam1))
+        {
             telemetry.addData("activeCamera", "Webcam 1");
             telemetry.addData("Press RightBumper", "to switch to Webcam 2");
-        } else {
+        }
+        else
+        {
             telemetry.addData("activeCamera", "Webcam 2");
             telemetry.addData("Press LeftBumper", "to switch to Webcam 1");
         }
@@ -146,18 +158,21 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
-    private void telemetryTfod() {
+    private void telemetryTfod()
+    {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+        for (Recognition recognition : currentRecognitions)
+        {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("", " ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(),
+                    recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
@@ -167,15 +182,20 @@ public class ConceptTensorFlowObjectDetectionSwitchableCameras extends LinearOpM
     /**
      * Set the active camera according to input from the gamepad.
      */
-    private void doCameraSwitching() {
-        if (visionPortal.getCameraState() == CameraState.STREAMING) {
+    private void doCameraSwitching()
+    {
+        if (visionPortal.getCameraState() == CameraState.STREAMING)
+        {
             // If the left bumper is pressed, use Webcam 1.
             // If the right bumper is pressed, use Webcam 2.
             boolean newLeftBumper = gamepad1.left_bumper;
             boolean newRightBumper = gamepad1.right_bumper;
-            if (newLeftBumper && !oldLeftBumper) {
+            if (newLeftBumper && !oldLeftBumper)
+            {
                 visionPortal.setActiveCamera(webcam1);
-            } else if (newRightBumper && !oldRightBumper) {
+            }
+            else if (newRightBumper && !oldRightBumper)
+            {
                 visionPortal.setActiveCamera(webcam2);
             }
             oldLeftBumper = newLeftBumper;

@@ -26,7 +26,6 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -34,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
+
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -99,7 +99,7 @@ import java.util.Locale;
 @TeleOp(name = "Sensor: BNO055 IMU Calibration", group = "Sensor")
 @Disabled                            // Uncomment this to add to the OpMode list
 public class SensorBNO055IMUCalibration extends LinearOpMode
-    {
+{
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -114,7 +114,9 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override public void runOpMode() {
+    @Override
+    public void runOpMode()
+    {
 
         telemetry.log().setCapacity(12);
         telemetry.log().add("");
@@ -130,7 +132,7 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
+        parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
@@ -138,16 +140,19 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         telemetry.log().add("Waiting for start...");
 
         // Wait until we're told to go
-        while (!isStarted()) {
+        while (!isStarted())
+        {
             telemetry.update();
             idle();
         }
 
         telemetry.log().add("...started...");
 
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
-            if (gamepad1.a) {
+            if (gamepad1.a)
+            {
 
                 // Get the calibration data
                 BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
@@ -163,7 +168,8 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
                 telemetry.log().add("saved to '%s'", filename);
 
                 // Wait for the button to be released
-                while (gamepad1.a) {
+                while (gamepad1.a)
+                {
                     telemetry.update();
                     idle();
                 }
@@ -173,45 +179,64 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         }
     }
 
-    void composeTelemetry() {
+    void composeTelemetry()
+    {
 
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
-        telemetry.addAction(new Runnable() { @Override public void run()
-                {
+        telemetry.addAction(new Runnable()
+        {
+            @Override
+            public void run()
+            {
                 // Acquiring the angles is relatively expensive; we don't want
                 // to do that in each of the three items that need that info, as that's
                 // three times the necessary expense.
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                }
-            });
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            }
+        });
 
         telemetry.addLine()
-            .addData("status", new Func<String>() {
-                @Override public String value() {
-                    return imu.getSystemStatus().toShortString();
+                .addData("status", new Func<String>()
+                {
+                    @Override
+                    public String value()
+                    {
+                        return imu.getSystemStatus().toShortString();
                     }
                 })
-            .addData("calib", new Func<String>() {
-                @Override public String value() {
-                    return imu.getCalibrationStatus().toString();
+                .addData("calib", new Func<String>()
+                {
+                    @Override
+                    public String value()
+                    {
+                        return imu.getCalibrationStatus().toString();
                     }
                 });
 
         telemetry.addLine()
-            .addData("heading", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.firstAngle);
+                .addData("heading", new Func<String>()
+                {
+                    @Override
+                    public String value()
+                    {
+                        return formatAngle(angles.angleUnit, angles.firstAngle);
                     }
                 })
-            .addData("roll", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.secondAngle);
+                .addData("roll", new Func<String>()
+                {
+                    @Override
+                    public String value()
+                    {
+                        return formatAngle(angles.angleUnit, angles.secondAngle);
                     }
                 })
-            .addData("pitch", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.thirdAngle);
+                .addData("pitch", new Func<String>()
+                {
+                    @Override
+                    public String value()
+                    {
+                        return formatAngle(angles.angleUnit, angles.thirdAngle);
                     }
                 });
     }
@@ -220,11 +245,13 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
+    String formatAngle(AngleUnit angleUnit, double angle)
+    {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+    String formatDegrees(double degrees)
+    {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }

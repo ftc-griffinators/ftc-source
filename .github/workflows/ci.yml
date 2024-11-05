@@ -1,0 +1,43 @@
+name: Code Style Check
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+
+      - name: Setup Android Studio Code Style
+        run: |
+          mkdir -p ~/.android/studio
+          cp .github/config/codestyle.xml ~/.android/studio/
+
+      - name: Check Code Style
+        run: ./gradlew spotlessCheck
+
+      - name: Format Code
+        if: failure()
+        run: ./gradlew spotlessApply
+
+      - name: Create Pull Request
+        if: failure()
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'style: format code according to team style guide'
+          title: 'Automatic code formatting'
+          body: 'Applied code formatting according to team style guide'
+          branch: auto-format-${{ github.sha }}
+          base: ${{ github.head_ref }}

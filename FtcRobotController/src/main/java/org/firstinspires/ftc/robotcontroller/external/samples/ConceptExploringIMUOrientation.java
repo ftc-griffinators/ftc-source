@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -69,9 +70,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * The rotational velocities should follow the change in corresponding axes.
  */
 
-@TeleOp(name="Concept: IMU Orientation", group="Concept")
+@TeleOp(name = "Concept: IMU Orientation", group = "Concept")
 @Disabled
-public class ConceptExploringIMUOrientation extends LinearOpMode {
+public class ConceptExploringIMUOrientation extends LinearOpMode
+{
     static RevHubOrientationOnRobot.LogoFacingDirection[] logoFacingDirections
             = RevHubOrientationOnRobot.LogoFacingDirection.values();
     static RevHubOrientationOnRobot.UsbFacingDirection[] usbFacingDirections
@@ -84,7 +86,9 @@ public class ConceptExploringIMUOrientation extends LinearOpMode {
     int usbFacingDirectionPosition;
     boolean orientationIsValid = true;
 
-    @Override public void runOpMode() throws InterruptedException {
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
         imu = hardwareMap.get(IMU.class, "imu");
         logoFacingDirectionPosition = 0; // Up
         usbFacingDirectionPosition = 2; // Forward
@@ -95,63 +99,88 @@ public class ConceptExploringIMUOrientation extends LinearOpMode {
         boolean justChangedUsbDirection = false;
 
         // Loop until stop requested
-        while (!isStopRequested()) {
+        while (!isStopRequested())
+        {
 
             // Check to see if Yaw reset is requested (Y button)
-            if (gamepad1.y) {
+            if (gamepad1.y)
+            {
                 telemetry.addData("Yaw", "Resetting\n");
                 imu.resetYaw();
-            } else {
+            }
+            else
+            {
                 telemetry.addData("Yaw", "Press Y (triangle) on Gamepad to reset.\n");
             }
 
             // Check to see if new Logo Direction is requested
-            if (gamepad1.left_bumper || gamepad1.right_bumper) {
-                if (!justChangedLogoDirection) {
+            if (gamepad1.left_bumper || gamepad1.right_bumper)
+            {
+                if (!justChangedLogoDirection)
+                {
                     justChangedLogoDirection = true;
-                    if (gamepad1.left_bumper) {
+                    if (gamepad1.left_bumper)
+                    {
                         logoFacingDirectionPosition--;
-                        if (logoFacingDirectionPosition < 0) {
+                        if (logoFacingDirectionPosition < 0)
+                        {
                             logoFacingDirectionPosition = LAST_DIRECTION;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         logoFacingDirectionPosition++;
-                        if (logoFacingDirectionPosition > LAST_DIRECTION) {
+                        if (logoFacingDirectionPosition > LAST_DIRECTION)
+                        {
                             logoFacingDirectionPosition = 0;
                         }
                     }
                     updateOrientation();
                 }
-            } else {
+            }
+            else
+            {
                 justChangedLogoDirection = false;
             }
 
             // Check to see if new USB Direction is requested
-            if (gamepad1.left_trigger > TRIGGER_THRESHOLD || gamepad1.right_trigger > TRIGGER_THRESHOLD) {
-                if (!justChangedUsbDirection) {
+            if (gamepad1.left_trigger > TRIGGER_THRESHOLD
+                || gamepad1.right_trigger > TRIGGER_THRESHOLD)
+            {
+                if (!justChangedUsbDirection)
+                {
                     justChangedUsbDirection = true;
-                    if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
+                    if (gamepad1.left_trigger > TRIGGER_THRESHOLD)
+                    {
                         usbFacingDirectionPosition--;
-                        if (usbFacingDirectionPosition < 0) {
+                        if (usbFacingDirectionPosition < 0)
+                        {
                             usbFacingDirectionPosition = LAST_DIRECTION;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         usbFacingDirectionPosition++;
-                        if (usbFacingDirectionPosition > LAST_DIRECTION) {
+                        if (usbFacingDirectionPosition > LAST_DIRECTION)
+                        {
                             usbFacingDirectionPosition = 0;
                         }
                     }
                     updateOrientation();
                 }
-            } else {
+            }
+            else
+            {
                 justChangedUsbDirection = false;
             }
 
             // Display User instructions and IMU data
             telemetry.addData("logo Direction (set with bumpers)", logoFacingDirections[logoFacingDirectionPosition]);
-            telemetry.addData("usb Direction (set with triggers)", usbFacingDirections[usbFacingDirectionPosition] + "\n");
+            telemetry.addData("usb Direction (set with triggers)",
+                    usbFacingDirections[usbFacingDirectionPosition] + "\n");
 
-            if (orientationIsValid) {
+            if (orientationIsValid)
+            {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
                 AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
 
@@ -161,7 +190,9 @@ public class ConceptExploringIMUOrientation extends LinearOpMode {
                 telemetry.addData("Yaw (Z) velocity", "%.2f Deg/Sec", angularVelocity.zRotationRate);
                 telemetry.addData("Pitch (X) velocity", "%.2f Deg/Sec", angularVelocity.xRotationRate);
                 telemetry.addData("Roll (Y) velocity", "%.2f Deg/Sec", angularVelocity.yRotationRate);
-            } else {
+            }
+            else
+            {
                 telemetry.addData("Error", "Selected orientation on robot is invalid");
             }
 
@@ -170,14 +201,18 @@ public class ConceptExploringIMUOrientation extends LinearOpMode {
     }
 
     // apply any requested orientation changes.
-    void updateOrientation() {
+    void updateOrientation()
+    {
         RevHubOrientationOnRobot.LogoFacingDirection logo = logoFacingDirections[logoFacingDirectionPosition];
         RevHubOrientationOnRobot.UsbFacingDirection usb = usbFacingDirections[usbFacingDirectionPosition];
-        try {
+        try
+        {
             RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
             imu.initialize(new IMU.Parameters(orientationOnRobot));
             orientationIsValid = true;
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e)
+        {
             orientationIsValid = false;
         }
     }

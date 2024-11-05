@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.griffinators.Autonomous;
+package org.firstinspires.ftc.teamcode.components.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -9,62 +9,28 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.ARM_POSITIONS;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.Arm;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.CLAW_ROTATION;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.Claw;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.Detection;
+import org.firstinspires.ftc.teamcode.components.parts.Arm;
+import org.firstinspires.ftc.teamcode.components.parts.Claw;
+import org.firstinspires.ftc.teamcode.components.parts.Detection;
+import org.firstinspires.ftc.teamcode.enums.ARM_POSITIONS;
+import org.firstinspires.ftc.teamcode.enums.CLAW_ROTATION;
+import org.firstinspires.ftc.teamcode.systems.MecanumDrive;
 
 import java.util.ArrayList;
 
 @Config
-@Autonomous(name = "Far Right", group = "Auto")
-public class FarRightAuto extends LinearOpMode {
-    public static class Params{
-        public double _0initX = -24;
-        public double _0initY = -60;
-        public double _0initRot = Math.PI / 2;
-
-        public double _1DetectionStrafeX = -5.2;
-
-        public double _2strafeFrontY = 24.1;
-        public double _2strafeFrontX = -5;
-
-        public double _2strafeRightY = 13;
-        public double _2strafeRightX = -11.8;
-
-        public double _2splineLeftY = 30;
-        public double _2splineLeftX = -0.5;
-        public double _2splineLeftRot = -0.14;
-
-        public double _3splineMiddleY = 56;
-        public double _3splineMiddleX = 5;
-        public double _3splineMiddleRot = 0;
-
-        public double _3splineBoardY = 25;
-        public double _3splineBoardX = 72;
-        public double _3splineBoardRot = -0.05;
-
-        public double _4strafeBoardFrontY = -2;
-        public double _4strafeBoardFrontX = 14;
-
-        public double _4strafeBoardRightY = 2.8;
-        public double _4strafeBoardRightX = 13.5;
-
-        public double _4strafeBoardLeftY = -10.8;
-        public double _4strafeBoardLeftX = 14;
-
-    }
+@Autonomous(name = "Far Left", group = "Auto")
+public class FarLeftAuto extends LinearOpMode
+{
     public static Params params = new Params();
-    private MecanumDrive drive;
-    private Detection detection;
     private Claw claw;
     private Arm arm;
+
     @Override
-    public void runOpMode() throws InterruptedException {
-        drive = new MecanumDrive(hardwareMap, new Pose2d(params._0initX, params._0initY, params._0initRot));
-        detection = new Detection(hardwareMap, "R");
+    public void runOpMode() throws InterruptedException
+    {
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(params._0initX, params._0initY, params._0initRot));
+        Detection detection = new Detection(hardwareMap, "B");
         claw = new Claw(hardwareMap);
         arm = new Arm(hardwareMap);
 
@@ -82,13 +48,13 @@ public class FarRightAuto extends LinearOpMode {
                 .strafeTo(drive.pose.position.plus(new Vector2d(params._2strafeRightX, params._2strafeRightY)))
                 .build();
 
-
         Pose2d nearBoardPos = new Pose2d(drive.pose.position.plus(new Vector2d(params._3splineBoardX, params._3splineBoardY)), params._3splineBoardRot);
 
-        Action moveToBoard = drive.actionBuilder(new Pose2d(drive.pose.position.plus(new Vector2d(0, 10)), drive.pose.heading))
-                .strafeTo(drive.pose.position.plus(new Vector2d(-13.5, 10)))
+        Action moveToBoard = drive.actionBuilder(new Pose2d(drive.pose.position.plus(new Vector2d(0, -7)), drive.pose.heading))
+                .strafeTo(drive.pose.position.plus(new Vector2d(-11, -7)))
                 .splineToConstantHeading(drive.pose.position.plus(new Vector2d(params._3splineMiddleX, params._3splineMiddleY)), params._3splineMiddleRot)
-                .strafeTo(drive.pose.position.plus(new Vector2d(params._3splineMiddleX + 56, params._3splineMiddleY)))
+                .strafeTo(drive.pose.position.plus(new Vector2d(
+                        params._3splineMiddleX + 56, params._3splineMiddleY)))
                 .splineToLinearHeading(new Pose2d(nearBoardPos.position, 0), params._3splineBoardRot, drive.defaultVelConstraint, drive.defaultAccelConstraint)
                 .build();
 
@@ -103,9 +69,9 @@ public class FarRightAuto extends LinearOpMode {
                 .build();
 
         Action park = drive.actionBuilder(nearBoardPos)
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(0, 25)))
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, 25)))
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, 17)))
+                .strafeTo(nearBoardPos.position.plus(new Vector2d(0, -25)))
+                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -25)))
+                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -17)))
                 .build();
 
         claw.closeLeft();
@@ -127,7 +93,8 @@ public class FarRightAuto extends LinearOpMode {
         claw.controlRotation(CLAW_ROTATION.GROUND);
         sleep(700);
         arm.setPosition(ARM_POSITIONS.GROUND, true);
-        switch (pixelPos){
+        switch (pixelPos)
+        {
             case 0:
                 Actions.runBlocking(moveToLeftPixelPos);
                 break;
@@ -138,13 +105,14 @@ public class FarRightAuto extends LinearOpMode {
                 Actions.runBlocking(moveToRightPixelPos);
                 break;
         }
-        claw.openRight();
+        claw.openLeft();
         sleep(300);
         claw.controlRotation(CLAW_ROTATION.BOARD);
         sleep(300);
-        claw.closeRight();
+        claw.closeLeft();
         Actions.runBlocking(moveToBoard);
-        switch (pixelPos){
+        switch (pixelPos)
+        {
             case 0:
                 Actions.runBlocking(moveToLeftBoard);
                 break;
@@ -156,9 +124,10 @@ public class FarRightAuto extends LinearOpMode {
                 break;
         }
 
+
         arm.setPosition(ARM_POSITIONS.BOARD, true);
         sleep(300);
-        claw.openLeft();
+        claw.openRight();
 
         Action returnToBoard = drive.actionBuilder(drive.pose)
                 .strafeTo(nearBoardPos.position)
@@ -170,28 +139,75 @@ public class FarRightAuto extends LinearOpMode {
         arm.setRotation(0, false);
         arm.setExtension(0, false);
         Actions.runBlocking(park);
+        //go for white
     }
 
-    private int parsePixelPos(ArrayList<Recognition> recognitions) {
-        if (recognitions.size() == 0) {
+    private int parsePixelPos(ArrayList<Recognition> recognitions)
+    {
+        if (recognitions.isEmpty())
+        {
             return 0;
-        } else {
-            if ((recognitions.get(0).getRight() + recognitions.get(0).getLeft()) / 2 < 320) {
+        }
+        else
+        {
+            if ((recognitions.get(0).getRight() + recognitions.get(0).getLeft()) / 2 > 320)
+            {
                 return 2;
-            } else {
+            }
+            else
+            {
                 return 1;
             }
         }
     }
 
-    private void recognitionPos(){
+    private void recognitionPos()
+    {
         claw.controlRotation(CLAW_ROTATION.DETECTION);
         arm.setPosition(ARM_POSITIONS.DETECTION, true);
         sleep(300);
     }
 
-    public void wait(int time){
+    public void wait(int time)
+    {
         sleep(time);
     }
-}
 
+    //todo: make sure that left and right are correct teams and change object to recognise.
+    public static class Params
+    {
+        public double _0initX = -24;
+        public double _0initY = 60;
+        public double _0initRot = -Math.PI / 2;
+
+        public double _1DetectionStrafeX = -4;
+
+        public double _2strafeFrontY = -24.1;
+        public double _2strafeFrontX = -3;
+
+        public double _2strafeRightY = -13;
+        public double _2strafeRightX = -9.5;
+
+        public double _2splineLeftY = -30;
+        public double _2splineLeftX = -0.5;
+        public double _2splineLeftRot = 0.14;
+
+        public double _3splineMiddleY = -56;
+        public double _3splineMiddleX = 5;
+        public double _3splineMiddleRot = 0;
+
+        public double _3splineBoardY = -26;
+        public double _3splineBoardX = 72;
+        public double _3splineBoardRot = 0.13;
+
+        public double _4strafeBoardFrontY = 3;
+        public double _4strafeBoardFrontX = 15;
+
+        public double _4strafeBoardRightY = -3.8;
+        public double _4strafeBoardRightX = 15;
+
+        public double _4strafeBoardLeftY = 11.5;
+        public double _4strafeBoardLeftX = 15;
+
+    }
+}
