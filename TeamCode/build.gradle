@@ -8,6 +8,13 @@ apply from: '../build.dependencies.gradle'
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
+    compileSdkVersion 29
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
@@ -29,62 +36,16 @@ dependencies {
     implementation "com.acmerobotics.dashboard:dashboard:0.4.14"
 }
 
-// Code style configuration
 spotless {
     java {
         target 'src/main/java/**/*.java'
 
-        // Google Java Style Guide for Android
-        googleJavaFormat('1.17.0').aosp()
+        // Use Android Studio formatter
+        eclipse().configFile('.github/config/codestyle.xml')
 
-        // Remove unused imports
+        importOrder('android', 'com', 'org', 'java', 'javax')
         removeUnusedImports()
-
-        // Import ordering
-        importOrder(
-                'android',
-                'com.acmerobotics',
-                'com.qualcomm',
-                'org.firstinspires',
-                'java',
-                'javax',
-                'org',
-                'com',
-                ''
-        )
-
-        // Custom rules for FTC
-        custom 'no trailing whitespace', { it.replaceAll('[\\s]+$', '') }
-
-        // Don't format generated files
-        targetExclude 'src/main/java/org/firstinspires/ftc/teamcode/generated/**'
-
-        // Format comments
-        formatAnnotations()
-    }
-
-    kotlin {
-        // In case you add Kotlin files later
-        target 'src/main/java/**/*.kt'
-        ktfmt().googleStyle()
-    }
-
-    format 'misc', {
-        target '*.gradle', '*.md', '.gitignore'
         trimTrailingWhitespace()
-        indentWithSpaces(4)
         endWithNewline()
     }
-}
-
-// Add task to verify style during build
-tasks.named('check').configure {
-    dependsOn 'spotlessCheck'
-}
-
-// Add task to apply style fixes
-tasks.register('formatCode') {
-    dependsOn 'spotlessApply'
-    group = 'formatting'
-    description = 'Format source code to comply with team style guide'
 }
