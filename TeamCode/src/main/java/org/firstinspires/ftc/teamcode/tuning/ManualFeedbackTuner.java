@@ -65,7 +65,8 @@ public final class ManualFeedbackTuner extends LinearOpMode
             if (TwoDeadWheelLocalizer.PARAMS.perpXTicks == 0
                 && TwoDeadWheelLocalizer.PARAMS.parYTicks == 0)
             {
-                throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogger to tune them.");
+                throw new RuntimeException(
+                        "Odometry wheel locations not set! Run AngularRampLogger to tune them.");
             }
         }
         else if (drive.localizer instanceof ThreeDeadWheelLocalizer)
@@ -74,7 +75,8 @@ public final class ManualFeedbackTuner extends LinearOpMode
                 && ThreeDeadWheelLocalizer.PARAMS.par0YTicks == 0
                 && ThreeDeadWheelLocalizer.PARAMS.par1YTicks == 1)
             {
-                throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogger to tune them.");
+                throw new RuntimeException(
+                        "Odometry wheel locations not set! Run AngularRampLogger to tune them.");
             }
         }
         return drive;
@@ -89,7 +91,8 @@ public final class ManualFeedbackTuner extends LinearOpMode
             if (TwoDeadWheelLocalizer.PARAMS.perpXTicks == 0
                 && TwoDeadWheelLocalizer.PARAMS.parYTicks == 0)
             {
-                throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogger to tune them.");
+                throw new RuntimeException(
+                        "Odometry wheel locations not set! Run AngularRampLogger to tune them.");
             }
         }
         else if (drive.localizer instanceof ThreeDeadWheelLocalizer)
@@ -98,7 +101,8 @@ public final class ManualFeedbackTuner extends LinearOpMode
                 && ThreeDeadWheelLocalizer.PARAMS.par0YTicks == 0
                 && ThreeDeadWheelLocalizer.PARAMS.par1YTicks == 1)
             {
-                throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogger to tune them.");
+                throw new RuntimeException(
+                        "Odometry wheel locations not set! Run AngularRampLogger to tune them.");
             }
         }
         return drive;

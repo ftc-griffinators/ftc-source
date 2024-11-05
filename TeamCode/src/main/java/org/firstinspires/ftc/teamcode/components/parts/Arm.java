@@ -82,8 +82,8 @@ public final class Arm
 
     private void waitForArmsToFinish()
     {
-        while ((armControlLeft.isBusy() || armControlRight.isBusy()) && (armExtendLeft.isBusy()
-                                                                         || armExtendRight.isBusy()))
+        while ((armControlLeft.isBusy() || armControlRight.isBusy())
+               && (armExtendLeft.isBusy() || armExtendRight.isBusy()))
             ;
     }
 

@@ -10,7 +10,8 @@ public final class TankLocalizerInputsMessage
     public PositionVelocityPair[] left;
     public PositionVelocityPair[] right;
 
-    public TankLocalizerInputsMessage(List<PositionVelocityPair> left, List<PositionVelocityPair> right)
+    public TankLocalizerInputsMessage(
+            List<PositionVelocityPair> left, List<PositionVelocityPair> right)
     {
         this.timestamp = System.nanoTime();
         this.left = left.toArray(new PositionVelocityPair[0]);

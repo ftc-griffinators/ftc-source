@@ -16,13 +16,19 @@ public class PositionTest extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
+        Localizer localizer =
+                new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         waitForStart();
         while (opModeIsActive())
         {
             pose = pose.plus(localizer.update().value());
-            telemetry.addData("Position",
-                    "x: " + pose.position.x + ";  y: " + pose.position.y + "  rot: "
+            telemetry.addData(
+                    "Position",
+                    "x: "
+                    + pose.position.x
+                    + ";  y: "
+                    + pose.position.y
+                    + "  rot: "
                     + pose.heading.log());
             telemetry.update();
             // to get rotation u need to use pose.heading.log()

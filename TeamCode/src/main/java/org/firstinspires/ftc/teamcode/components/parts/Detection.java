@@ -16,12 +16,10 @@ import java.util.ArrayList;
 
 public final class Detection
 {
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Griffinators_v2.tflite";
+    private static final String TFOD_MODEL_FILE =
+            "/sdcard/FIRST/tflitemodels/Griffinators_v2.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
-    private static final String[] LABELS = {
-            "B",
-            "R"
-    };
+    private static final String[] LABELS = { "B", "R" };
 
     private final String correctLabel;
     private TfodProcessor tfod;
@@ -31,21 +29,22 @@ public final class Detection
     {
         this.correctLabel = correctLabel;
         initRecognition(hardwareMap);
-
     }
 
     private void initRecognition(HardwareMap hardwareMap)
     {
-        tfod = new TfodProcessor.Builder()
-                .setModelFileName(TFOD_MODEL_FILE)
-                .setModelLabels(LABELS)
-                .build();
+        tfod =
+                new TfodProcessor.Builder()
+                        .setModelFileName(TFOD_MODEL_FILE)
+                        .setModelLabels(LABELS)
+                        .build();
 
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "main camera"))
-                .enableLiveView(true)
-                .addProcessor(tfod)
-                .build();
+        visionPortal =
+                new VisionPortal.Builder()
+                        .setCamera(hardwareMap.get(WebcamName.class, "main camera"))
+                        .enableLiveView(true)
+                        .addProcessor(tfod)
+                        .build();
 
         tfod.setMinResultConfidence(0.7f);
     }
@@ -80,7 +79,8 @@ public final class Detection
                 startTime = Actions.now();
             }
             double t = Actions.now() - startTime;
-            ArrayList<Recognition> currentRecognitions = (ArrayList<Recognition>) tfod.getRecognitions();
+            ArrayList<Recognition> currentRecognitions =
+                    (ArrayList<Recognition>) tfod.getRecognitions();
 
             if (!currentRecognitions.isEmpty())
             {
@@ -105,7 +105,6 @@ public final class Detection
             currentRecognitions.size();
             telemetryPacket.put("Detection Status", "Cannot find any object");
             return true;
-
         }
     }
 }

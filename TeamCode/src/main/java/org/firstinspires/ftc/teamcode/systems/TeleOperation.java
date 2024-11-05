@@ -28,7 +28,14 @@ public class TeleOperation extends LinearOpMode
     private static final double DEBOUNCE_THRESHOLD = 0.2;
     final ElapsedTime debounceTimer = new ElapsedTime();
     private final ElapsedTime launchTimer = new ElapsedTime();
-    DcMotor frontLeft, frontRight, backLeft, backRight, armExtendLeft, armExtendRight, armControlLeft, armControlRight;
+    DcMotor frontLeft,
+            frontRight,
+            backLeft,
+            backRight,
+            armExtendLeft,
+            armExtendRight,
+            armControlLeft,
+            armControlRight;
     Servo clawLeft, clawRight, launch, launchAngle;
     Localizer localizer;
     private ROBOT_STATE currentState = ROBOT_STATE.IDLE;
@@ -101,7 +108,9 @@ public class TeleOperation extends LinearOpMode
         {
             currentState = ROBOT_STATE.CLAW_CONTROL;
         }
-        else if (gamepad2.dpad_up || gamepad2.dpad_down || gamepad2.dpad_left
+        else if (gamepad2.dpad_up
+                 || gamepad2.dpad_down
+                 || gamepad2.dpad_left
                  || gamepad2.dpad_right)
         {
             currentState = ROBOT_STATE.ARM_CONTROL;
@@ -188,11 +197,13 @@ public class TeleOperation extends LinearOpMode
         double currentExtensionPosition = armExtendLeft.getCurrentPosition();
         double currentRotationPosition = armControlLeft.getCurrentPosition();
 
-        double adjustedExtensionPower = armPID.calculate(targetExtensionPosition, currentExtensionPosition);
+        double adjustedExtensionPower =
+                armPID.calculate(targetExtensionPosition, currentExtensionPosition);
         armExtendLeft.setPower(adjustedExtensionPower);
         armExtendRight.setPower(adjustedExtensionPower);
 
-        double adjustedRotationPower = armPID.calculate(targetRotationPosition, currentRotationPosition);
+        double adjustedRotationPower =
+                armPID.calculate(targetRotationPosition, currentRotationPosition);
         armControlLeft.setPower(adjustedRotationPower);
         armControlRight.setPower(adjustedRotationPower);
     }

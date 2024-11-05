@@ -11,29 +11,25 @@ import com.qualcomm.robotcore.hardware.Servo;
 */
 
 @TeleOp
-
 public class ServoTest extends LinearOpMode {
-	
-	Servo servo;
-	
 
-	@Override
-	public void runOpMode() {
+    Servo servo;
 
-		telemetry.addData("Status", "Initialized");
-		telemetry.update();
-		
-		waitForStart();
-		
-		servo = hardwareMap.servo.get("servo");
+    @Override
+    public void runOpMode() {
 
-		while (opModeIsActive()) {
-			telemetry.addData("Status", "Running");
-			telemetry.update();
-			
-			servo.setPosition(1);
-			
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-		}
-	}
+        waitForStart();
+
+        servo = hardwareMap.servo.get("servo");
+
+        while (opModeIsActive()) {
+            telemetry.addData("Status", "Running");
+            telemetry.update();
+
+            servo.setPosition(1);
+        }
+    }
 }

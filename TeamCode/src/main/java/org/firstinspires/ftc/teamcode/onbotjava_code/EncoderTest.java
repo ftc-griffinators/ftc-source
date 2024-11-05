@@ -28,10 +28,11 @@
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -55,191 +56,194 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Encoder TEST", group = "Test")
-
 public class EncoderTest extends LinearOpMode {
-	private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Griffinators.tflite";
-	// Define the labels recognized in the model for TFOD (must be in training order!)
-	private static final String[] LABELS = {
-	   "B",
-	   "R"
-	};
-	
-	DcMotor armControlLeft;
-	DcMotor armControlRight;
-	DcMotor armExtendLeft;
-	DcMotor armExtendRight;
-	
-	Servo clawControl;
-	Servo clawLeft;
-	Servo clawRight;
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Griffinators.tflite";
+    // Define the labels recognized in the model for TFOD (must be in training order!)
+    private static final String[] LABELS = {"B", "R"};
 
-	private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    DcMotor armControlLeft;
+    DcMotor armControlRight;
+    DcMotor armExtendLeft;
+    DcMotor armExtendRight;
 
-	/**
-	 * The variable to store our instance of the TensorFlow Object Detection processor.
-	 */
-	private TfodProcessor tfod;
+    Servo clawControl;
+    Servo clawLeft;
+    Servo clawRight;
 
-	/**
-	 * The variable to store our instance of the vision portal.
-	 */
-	private VisionPortal visionPortal;
+    private static final boolean USE_WEBCAM = true; // true for webcam, false for phone camera
 
-	@Override
-	public void runOpMode() {
-		armExtendLeft = hardwareMap.dcMotor.get("acr");
-		armExtendRight = hardwareMap.dcMotor.get("acl");
-		armControlLeft = hardwareMap.dcMotor.get("aer");
-		armControlRight = hardwareMap.dcMotor.get("ael");
-		clawControl = hardwareMap.servo.get("c");
-		
-		clawLeft = hardwareMap.servo.get("cr");
-		clawRight = hardwareMap.servo.get("cl");
-		
-		armControlLeft.setDirection(DcMotor.Direction.REVERSE);
-		armExtendLeft.setDirection(DcMotor.Direction.REVERSE);
-		
-		armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armControlLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armControlRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		
-		armControlLeft.setTargetPosition(0);
-		armControlRight.setTargetPosition(0);
-		armExtendLeft.setTargetPosition(0);
-		armExtendRight.setTargetPosition(0);
-		
-		armControlLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armControlRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armExtendLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armExtendRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		
-		armExtendLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armExtendRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armControlLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armControlRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		
-		initTfod();
+    /** The variable to store our instance of the TensorFlow Object Detection processor. */
+    private TfodProcessor tfod;
 
-		// Wait for the DS start button to be touched.
-		telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-		telemetry.addData(">", "Touch Play to start OpMode");
-		telemetry.update();
-		waitForStart();
+    /** The variable to store our instance of the vision portal. */
+    private VisionPortal visionPortal;
 
-		if (opModeIsActive()) {
-			while (opModeIsActive()) {
-				telemetry.addData("ARMS: ", armControlLeft.getCurrentPosition() + " " +
-				armControlRight.getCurrentPosition() + " " + clawControl.getPosition() + " " +
-				armExtendLeft.getCurrentPosition() + " " + armExtendRight.getCurrentPosition());
-				
-				clawControl.setPosition(0.535);
-				
-				telemetryTfod();
+    @Override
+    public void runOpMode() {
+        armExtendLeft = hardwareMap.dcMotor.get("acr");
+        armExtendRight = hardwareMap.dcMotor.get("acl");
+        armControlLeft = hardwareMap.dcMotor.get("aer");
+        armControlRight = hardwareMap.dcMotor.get("ael");
+        clawControl = hardwareMap.servo.get("c");
 
-				// Push telemetry to the Driver Station.
-				telemetry.update();
+        clawLeft = hardwareMap.servo.get("cr");
+        clawRight = hardwareMap.servo.get("cl");
 
-				// Save CPU resources; can resume streaming when needed.
-				if (gamepad1.dpad_down) {
-					visionPortal.stopStreaming();
-				} else if (gamepad1.dpad_up) {
-					visionPortal.resumeStreaming();
-				}
+        armControlLeft.setDirection(DcMotor.Direction.REVERSE);
+        armExtendLeft.setDirection(DcMotor.Direction.REVERSE);
 
-				// Share the CPU.
-				sleep(20);
-			}
-		}
+        armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armControlLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armControlRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-		// Save more CPU resources when camera is no longer needed.
-		visionPortal.close();
+        armControlLeft.setTargetPosition(0);
+        armControlRight.setTargetPosition(0);
+        armExtendLeft.setTargetPosition(0);
+        armExtendRight.setTargetPosition(0);
 
-	}   // end runOpMode()
+        armControlLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armControlRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtendLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armExtendRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-	/**
-	 * Initialize the TensorFlow Object Detection processor.
-	 */
-	private void initTfod() {
+        armExtendLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armExtendRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armControlLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armControlRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-		// Create the TensorFlow processor by using a builder.
-		tfod = new TfodProcessor.Builder()
+        initTfod();
 
-			// With the following lines commented out, the default TfodProcessor Builder
-			// will load the default model for the season. To define a custom model to load, 
-			// choose one of the following:
-			//   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-			//   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-			//.setModelAssetName(TFOD_MODEL_ASSET)
-			.setModelFileName(TFOD_MODEL_FILE)
+        // Wait for the DS start button to be touched.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.update();
+        waitForStart();
 
-			// The following default settings are available to un-comment and edit as needed to 
-			// set parameters for custom models.
-			.setModelLabels(LABELS)
-			//.setIsModelTensorFlow2(true)
-			//.setIsModelQuantized(true)
-			//.setModelInputSize(300)
-			//.setModelAspectRatio(16.0 / 9.0)
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                telemetry.addData(
+                        "ARMS: ",
+                        armControlLeft.getCurrentPosition()
+                                + " "
+                                + armControlRight.getCurrentPosition()
+                                + " "
+                                + clawControl.getPosition()
+                                + " "
+                                + armExtendLeft.getCurrentPosition()
+                                + " "
+                                + armExtendRight.getCurrentPosition());
 
-			.build();
+                clawControl.setPosition(0.535);
 
-		// Create the vision portal by using a builder.
-		VisionPortal.Builder builder = new VisionPortal.Builder();
+                telemetryTfod();
 
-		// Set the camera (webcam vs. built-in RC phone camera).
-		if (USE_WEBCAM) {
-			builder.setCamera(hardwareMap.get(WebcamName.class, "main camera"));
-		} else {
-			builder.setCamera(BuiltinCameraDirection.BACK);
-		}
+                // Push telemetry to the Driver Station.
+                telemetry.update();
 
-		// Choose a camera resolution. Not all cameras support all resolutions.
-		//builder.setCameraResolution(new Size(640, 480));
+                // Save CPU resources; can resume streaming when needed.
+                if (gamepad1.dpad_down) {
+                    visionPortal.stopStreaming();
+                } else if (gamepad1.dpad_up) {
+                    visionPortal.resumeStreaming();
+                }
 
-		// Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-		//builder.enableLiveView(true);
+                // Share the CPU.
+                sleep(20);
+            }
+        }
 
-		// Set the stream format; MJPEG uses less bandwidth than default YUY2.
-		//builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        // Save more CPU resources when camera is no longer needed.
+        visionPortal.close();
+    } // end runOpMode()
 
-		// Choose whether or not LiveView stops if no processors are enabled.
-		// If set "true", monitor shows solid orange screen if no processors enabled.
-		// If set "false", monitor shows camera view without annotations.
-		//builder.setAutoStopLiveView(false);
+    /** Initialize the TensorFlow Object Detection processor. */
+    private void initTfod() {
 
-		// Set and enable the processor.
-		builder.addProcessor(tfod);
+        // Create the TensorFlow processor by using a builder.
+        tfod =
+                new TfodProcessor.Builder()
 
-		// Build the Vision Portal, using the above settings.
-		visionPortal = builder.build();
+                        // With the following lines commented out, the default TfodProcessor Builder
+                        // will load the default model for the season. To define a custom model to
+                        // load,
+                        // choose one of the following:
+                        //   Use setModelAssetName() if the custom TF Model is built in as an asset
+                        // (AS only).
+                        //   Use setModelFileName() if you have downloaded a custom team model to
+                        // the Robot Controller.
+                        // .setModelAssetName(TFOD_MODEL_ASSET)
+                        .setModelFileName(TFOD_MODEL_FILE)
 
-		// Set confidence threshold for TFOD recognitions, at any time.
-		//tfod.setMinResultConfidence(0.75f);
+                        // The following default settings are available to un-comment and edit as
+                        // needed to
+                        // set parameters for custom models.
+                        .setModelLabels(LABELS)
+                        // .setIsModelTensorFlow2(true)
+                        // .setIsModelQuantized(true)
+                        // .setModelInputSize(300)
+                        // .setModelAspectRatio(16.0 / 9.0)
 
-		// Disable or re-enable the TFOD processor at any time.
-		//visionPortal.setProcessorEnabled(tfod, true);
+                        .build();
 
-	}   // end method initTfod()
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
 
-	/**
-	 * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-	 */
-	private void telemetryTfod() {
+        // Set the camera (webcam vs. built-in RC phone camera).
+        if (USE_WEBCAM) {
+            builder.setCamera(hardwareMap.get(WebcamName.class, "main camera"));
+        } else {
+            builder.setCamera(BuiltinCameraDirection.BACK);
+        }
 
-		List<Recognition> currentRecognitions = tfod.getRecognitions();
-		telemetry.addData("# Objects Detected", currentRecognitions.size());
+        // Choose a camera resolution. Not all cameras support all resolutions.
+        // builder.setCameraResolution(new Size(640, 480));
 
-		// Step through the list of recognitions and display info for each one.
-		for (Recognition recognition : currentRecognitions) {
-			double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-			double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
+        // builder.enableLiveView(true);
 
-			telemetry.addData(""," ");
-			telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-			telemetry.addData("- Position", "%.0f / %.0f", x, y);
-			telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-		}   // end for() loop
+        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
+        // builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-	}   // end method telemetryTfod()
+        // Choose whether or not LiveView stops if no processors are enabled.
+        // If set "true", monitor shows solid orange screen if no processors enabled.
+        // If set "false", monitor shows camera view without annotations.
+        // builder.setAutoStopLiveView(false);
 
-}   // end class
+        // Set and enable the processor.
+        builder.addProcessor(tfod);
+
+        // Build the Vision Portal, using the above settings.
+        visionPortal = builder.build();
+
+        // Set confidence threshold for TFOD recognitions, at any time.
+        // tfod.setMinResultConfidence(0.75f);
+
+        // Disable or re-enable the TFOD processor at any time.
+        // visionPortal.setProcessorEnabled(tfod, true);
+
+    } // end method initTfod()
+
+    /** Add telemetry about TensorFlow Object Detection (TFOD) recognitions. */
+    private void telemetryTfod() {
+
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
+
+            telemetry.addData("", " ");
+            telemetry.addData(
+                    "Image",
+                    "%s (%.0f %% Conf.)",
+                    recognition.getLabel(),
+                    recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData(
+                    "- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+        } // end for() loop
+    } // end method telemetryTfod()
+} // end class

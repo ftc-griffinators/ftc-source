@@ -29,50 +29,100 @@ public class FarLeftAuto extends LinearOpMode
     @Override
     public void runOpMode() throws InterruptedException
     {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(params._0initX, params._0initY, params._0initRot));
+        MecanumDrive drive =
+                new MecanumDrive(
+                        hardwareMap, new Pose2d(params._0initX, params._0initY, params._0initRot));
         Detection detection = new Detection(hardwareMap, "B");
         claw = new Claw(hardwareMap);
         arm = new Arm(hardwareMap);
 
-        Action moveToRecognitionPosition = drive.actionBuilder(drive.pose)
-                .strafeTo(drive.pose.position.plus(new Vector2d(params._1DetectionStrafeX, 0)))
-                .build();
+        Action moveToRecognitionPosition =
+                drive.actionBuilder(drive.pose)
+                        .strafeTo(
+                                drive.pose.position.plus(
+                                        new Vector2d(params._1DetectionStrafeX, 0)))
+                        .build();
 
-        Action moveToLeftPixelPos = drive.actionBuilder(drive.pose)
-                .splineTo(drive.pose.position.plus(new Vector2d(params._2splineLeftX, params._2splineLeftY)), params._2splineLeftRot)
-                .build();
-        Action moveToCenterPixelPos = drive.actionBuilder(drive.pose)
-                .strafeTo(drive.pose.position.plus(new Vector2d(params._2strafeFrontX, params._2strafeFrontY)))
-                .build();
-        Action moveToRightPixelPos = drive.actionBuilder(drive.pose)
-                .strafeTo(drive.pose.position.plus(new Vector2d(params._2strafeRightX, params._2strafeRightY)))
-                .build();
+        Action moveToLeftPixelPos =
+                drive.actionBuilder(drive.pose)
+                        .splineTo(
+                                drive.pose.position.plus(
+                                        new Vector2d(params._2splineLeftX, params._2splineLeftY)),
+                                params._2splineLeftRot)
+                        .build();
+        Action moveToCenterPixelPos =
+                drive.actionBuilder(drive.pose)
+                        .strafeTo(
+                                drive.pose.position.plus(
+                                        new Vector2d(params._2strafeFrontX, params._2strafeFrontY)))
+                        .build();
+        Action moveToRightPixelPos =
+                drive.actionBuilder(drive.pose)
+                        .strafeTo(
+                                drive.pose.position.plus(
+                                        new Vector2d(params._2strafeRightX, params._2strafeRightY)))
+                        .build();
 
-        Pose2d nearBoardPos = new Pose2d(drive.pose.position.plus(new Vector2d(params._3splineBoardX, params._3splineBoardY)), params._3splineBoardRot);
+        Pose2d nearBoardPos =
+                new Pose2d(
+                        drive.pose.position.plus(
+                                new Vector2d(params._3splineBoardX, params._3splineBoardY)),
+                        params._3splineBoardRot);
 
-        Action moveToBoard = drive.actionBuilder(new Pose2d(drive.pose.position.plus(new Vector2d(0, -7)), drive.pose.heading))
-                .strafeTo(drive.pose.position.plus(new Vector2d(-11, -7)))
-                .splineToConstantHeading(drive.pose.position.plus(new Vector2d(params._3splineMiddleX, params._3splineMiddleY)), params._3splineMiddleRot)
-                .strafeTo(drive.pose.position.plus(new Vector2d(
-                        params._3splineMiddleX + 56, params._3splineMiddleY)))
-                .splineToLinearHeading(new Pose2d(nearBoardPos.position, 0), params._3splineBoardRot, drive.defaultVelConstraint, drive.defaultAccelConstraint)
-                .build();
+        Action moveToBoard =
+                drive.actionBuilder(
+                                new Pose2d(
+                                        drive.pose.position.plus(new Vector2d(0, -7)),
+                                        drive.pose.heading))
+                        .strafeTo(drive.pose.position.plus(new Vector2d(-11, -7)))
+                        .splineToConstantHeading(
+                                drive.pose.position.plus(
+                                        new Vector2d(
+                                                params._3splineMiddleX, params._3splineMiddleY)),
+                                params._3splineMiddleRot)
+                        .strafeTo(
+                                drive.pose.position.plus(
+                                        new Vector2d(
+                                                params._3splineMiddleX + 56,
+                                                params._3splineMiddleY)))
+                        .splineToLinearHeading(
+                                new Pose2d(nearBoardPos.position, 0),
+                                params._3splineBoardRot,
+                                drive.defaultVelConstraint,
+                                drive.defaultAccelConstraint)
+                        .build();
 
-        Action moveToLeftBoard = drive.actionBuilder(nearBoardPos)
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(params._4strafeBoardLeftX, params._4strafeBoardLeftY)))
-                .build();
-        Action moveToCenterBoard = drive.actionBuilder(nearBoardPos)
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(params._4strafeBoardFrontX, params._4strafeBoardFrontY)))
-                .build();
-        Action moveToRightBoard = drive.actionBuilder(nearBoardPos)
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(params._4strafeBoardRightX, params._4strafeBoardRightY)))
-                .build();
+        Action moveToLeftBoard =
+                drive.actionBuilder(nearBoardPos)
+                        .strafeTo(
+                                nearBoardPos.position.plus(
+                                        new Vector2d(
+                                                params._4strafeBoardLeftX,
+                                                params._4strafeBoardLeftY)))
+                        .build();
+        Action moveToCenterBoard =
+                drive.actionBuilder(nearBoardPos)
+                        .strafeTo(
+                                nearBoardPos.position.plus(
+                                        new Vector2d(
+                                                params._4strafeBoardFrontX,
+                                                params._4strafeBoardFrontY)))
+                        .build();
+        Action moveToRightBoard =
+                drive.actionBuilder(nearBoardPos)
+                        .strafeTo(
+                                nearBoardPos.position.plus(
+                                        new Vector2d(
+                                                params._4strafeBoardRightX,
+                                                params._4strafeBoardRightY)))
+                        .build();
 
-        Action park = drive.actionBuilder(nearBoardPos)
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(0, -25)))
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -25)))
-                .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -17)))
-                .build();
+        Action park =
+                drive.actionBuilder(nearBoardPos)
+                        .strafeTo(nearBoardPos.position.plus(new Vector2d(0, -25)))
+                        .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -25)))
+                        .strafeTo(nearBoardPos.position.plus(new Vector2d(28, -17)))
+                        .build();
 
         claw.closeLeft();
         claw.closeRight();
@@ -124,14 +174,12 @@ public class FarLeftAuto extends LinearOpMode
                 break;
         }
 
-
         arm.setPosition(ARM_POSITIONS.BOARD, true);
         sleep(300);
         claw.openRight();
 
-        Action returnToBoard = drive.actionBuilder(drive.pose)
-                .strafeTo(nearBoardPos.position)
-                .build();
+        Action returnToBoard =
+                drive.actionBuilder(drive.pose).strafeTo(nearBoardPos.position).build();
 
         Actions.runBlocking(returnToBoard);
         claw.closeRight();
@@ -139,7 +187,7 @@ public class FarLeftAuto extends LinearOpMode
         arm.setRotation(0, false);
         arm.setExtension(0, false);
         Actions.runBlocking(park);
-        //go for white
+        // go for white
     }
 
     private int parsePixelPos(ArrayList<Recognition> recognitions)
@@ -173,7 +221,7 @@ public class FarLeftAuto extends LinearOpMode
         sleep(time);
     }
 
-    //todo: make sure that left and right are correct teams and change object to recognise.
+    // todo: make sure that left and right are correct teams and change object to recognise.
     public static class Params
     {
         public double _0initX = -24;
@@ -208,6 +256,5 @@ public class FarLeftAuto extends LinearOpMode
 
         public double _4strafeBoardLeftY = 11.5;
         public double _4strafeBoardLeftX = 15;
-
     }
 }

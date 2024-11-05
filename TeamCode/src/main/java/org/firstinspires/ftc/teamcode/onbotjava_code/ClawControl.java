@@ -11,24 +11,22 @@ import com.qualcomm.robotcore.hardware.Servo;
 */
 
 @TeleOp(name = "Servo Test GRiFFTY", group = "Robot")
-
 public class ClawControl extends LinearOpMode {
 
-	// Define class members
-	Servo servo;
+    // Define class members
+    Servo servo;
 
+    @Override
+    public void runOpMode() {
 
-	@Override
-	public void runOpMode() {
+        servo = hardwareMap.get(Servo.class, "c");
 
-		servo = hardwareMap.get(Servo.class, "c");
-
-		// Wait for the start button
-		telemetry.addData(">", "Press Start to start." );
-		telemetry.update();
-		waitForStart();
-		while(opModeIsActive()) {
-			servo.setPosition(-0.3);
-		}
-	}
+        // Wait for the start button
+        telemetry.addData(">", "Press Start to start.");
+        telemetry.update();
+        waitForStart();
+        while (opModeIsActive()) {
+            servo.setPosition(-0.3);
+        }
+    }
 }
