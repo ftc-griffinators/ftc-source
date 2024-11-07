@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
@@ -42,6 +43,7 @@ public class TeleOperationA extends LinearOpMode {
     private double maxTurnSpeed=0.0;
 
 
+    HardwareMap hardwareMap;
 
 
     private Pose2d pose = new Pose2d(0, 0, 0);
@@ -94,6 +96,7 @@ public class TeleOperationA extends LinearOpMode {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -103,9 +106,7 @@ public class TeleOperationA extends LinearOpMode {
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        while (opModeIsActive()){
 
-        }
 
 
 
