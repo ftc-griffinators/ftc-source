@@ -26,6 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.ftccommon.SoundPlayer;
@@ -59,32 +60,32 @@ import java.io.File;
  *      https://github.com/ftctechnh/ftc_app/tree/master/FtcRobotController/src/main/res/raw/silver.wav
  */
 
-@TeleOp(name = "Concept: Sound Files", group = "Concept")
+@TeleOp(name="Concept: Sound Files", group="Concept")
 @Disabled
-public class ConceptSoundsOnBotJava extends LinearOpMode
-{
+public class ConceptSoundsOnBotJava extends LinearOpMode {
 
     // Point to sound files on the phone's drive
-    private final String soundPath = "/FIRST/blocks/sounds";
-    private final File goldFile = new File("/sdcard" + soundPath + "/gold.wav");
-    private final File silverFile = new File("/sdcard" + soundPath + "/silver.wav");
+    private String soundPath = "/FIRST/blocks/sounds";
+    private File goldFile   = new File("/sdcard" + soundPath + "/gold.wav");
+    private File silverFile = new File("/sdcard" + soundPath + "/silver.wav");
+
+    // Declare OpMode members.
+    private boolean isX = false;    // Gamepad button state variables
+    private boolean isB = false;
 
     private boolean wasX = false;   // Gamepad button history variables
     private boolean WasB = false;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
 
         // Make sure that the sound files exist on the phone
-        boolean goldFound = goldFile.exists();
+        boolean goldFound   = goldFile.exists();
         boolean silverFound = silverFile.exists();
 
         // Display sound status
-        telemetry.addData("gold sound",
-                goldFound ? "Found" : "NOT Found \nCopy gold.wav to " + soundPath);
-        telemetry.addData("silver sound",
-                silverFound ? "Found" : "NOT Found \nCopy silver.wav to " + soundPath);
+        telemetry.addData("gold sound",   goldFound ?   "Found" : "NOT Found \nCopy gold.wav to " + soundPath  );
+        telemetry.addData("silver sound", silverFound ? "Found" : "NOT Found \nCopy silver.wav to " + soundPath );
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData(">", "Press Start to continue");
@@ -95,24 +96,17 @@ public class ConceptSoundsOnBotJava extends LinearOpMode
         telemetry.update();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
 
             // say Silver each time gamepad X is pressed (This sound is a resource)
-            // Declare OpMode members.
-            // Gamepad button state variables
-            boolean isX = false;
-            if (silverFound && (isX = gamepad1.x) && !wasX)
-            {
+            if (silverFound && (isX = gamepad1.x) && !wasX) {
                 SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, silverFile);
                 telemetry.addData("Playing", "Silver File");
                 telemetry.update();
             }
 
             // say Gold each time gamepad B is pressed  (This sound is a resource)
-            boolean isB = false;
-            if (goldFound && (isB = gamepad1.b) && !WasB)
-            {
+            if (goldFound && (isB = gamepad1.b) && !WasB) {
                 SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, goldFile);
                 telemetry.addData("Playing", "Gold File");
                 telemetry.update();

@@ -26,12 +26,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -66,8 +67,7 @@ import java.util.List;
  */
 @TeleOp(name = "Concept: AprilTag", group = "Concept")
 @Disabled
-public class ConceptAprilTag extends LinearOpMode
-{
+public class ConceptAprilTag extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -82,21 +82,18 @@ public class ConceptAprilTag extends LinearOpMode
     private VisionPortal visionPortal;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
 
         initAprilTag();
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
         waitForStart();
 
-        if (opModeIsActive())
-        {
-            while (opModeIsActive())
-            {
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
 
                 telemetryAprilTag();
 
@@ -104,12 +101,9 @@ public class ConceptAprilTag extends LinearOpMode
                 telemetry.update();
 
                 // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down)
-                {
+                if (gamepad1.dpad_down) {
                     visionPortal.stopStreaming();
-                }
-                else if (gamepad1.dpad_up)
-                {
+                } else if (gamepad1.dpad_up) {
                     visionPortal.resumeStreaming();
                 }
 
@@ -126,27 +120,26 @@ public class ConceptAprilTag extends LinearOpMode
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag()
-    {
+    private void initAprilTag() {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
 
-                // The following default settings are available to un-comment and edit as needed.
-                //.setDrawAxes(false)
-                //.setDrawCubeProjection(false)
-                //.setDrawTagOutline(true)
-                //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+            // The following default settings are available to un-comment and edit as needed.
+            //.setDrawAxes(false)
+            //.setDrawCubeProjection(false)
+            //.setDrawTagOutline(true)
+            //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+            //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+            //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
 
-                // == CAMERA CALIBRATION ==
-                // If you do not manually specify calibration parameters, the SDK will attempt
-                // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-                // ... these parameters are fx, fy, cx, cy.
+            // == CAMERA CALIBRATION ==
+            // If you do not manually specify calibration parameters, the SDK will attempt
+            // to load a predefined calibration for your camera.
+            //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+            // ... these parameters are fx, fy, cx, cy.
 
-                .build();
+            .build();
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -161,12 +154,9 @@ public class ConceptAprilTag extends LinearOpMode
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
         // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM)
-        {
+        if (USE_WEBCAM) {
             builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        }
-        else
-        {
+        } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
@@ -199,24 +189,19 @@ public class ConceptAprilTag extends LinearOpMode
     /**
      * Add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag()
-    {
+    private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections)
-        {
-            if (detection.metadata != null)
-            {
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            }
-            else
-            {
+            } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }

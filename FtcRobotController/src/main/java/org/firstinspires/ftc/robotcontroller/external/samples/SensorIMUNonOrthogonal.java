@@ -26,20 +26,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.robotcontroller.external.samples;
 
-import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
+package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
 
 /*
  * This OpMode shows how to use the new universal IMU interface. This
@@ -58,7 +58,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * planes (X/Y, X/Z or Y/Z) OR that the Hub has only been rotated in a range of 90 degree increments.
  *
  * Note: if your Hub is mounted Orthogonally (on a orthogonal surface, angled at some multiple of
- * 90 Degrees) then you should use the simpler SensorImuOrthogonal sample in this folder.
+ * 90 Degrees) then you should use the simpler SensorIMUOrthogonal sample in this folder.
  *
  * But... If your Hub is mounted Non-Orthogonally, you must specify one or more rotational angles
  * that transform a "Default" Hub orientation into your desired orientation.  That is what is
@@ -80,9 +80,7 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void runOpMode() throws InterruptedException
-    {
+    @Override public void runOpMode() throws InterruptedException {
 
         // Retrieve and initialize the IMU.
         // This sample expects the IMU to be in a REV Hub and named "imu".
@@ -95,6 +93,9 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
          * The starting point for these rotations is the "Default" Hub orientation, which is:
          * 1) Hub laying flat on a horizontal surface, with the Printed Logo facing UP
          * 2) Rotated such that the USB ports are facing forward on the robot.
+         *
+         * If you are using a REV External IMU, the "Default" orientation is the same as for a REV Hub, but instead of
+         * the USB ports facing forward, the I2C port faces forward.
          *
          * The order that the rotations are performed matters, so this sample shows doing them in the order X, Y, then Z.
          * For specifying non-orthogonal hub mounting orientations, we must temporarily use axes
@@ -126,7 +127,7 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
          *
          *  To get the "Default" hub into this configuration you would just need a single rotation, but around a different axis.
          *  1) No rotation around the X or Y axes.
-         *  1) Rotate the Hub -30 degrees (Clockwise) around the Z axis, since a positive angle would be Counter Clockwise.
+         *  2) Rotate the Hub -30 degrees (Clockwise) around the Z axis, since a positive angle would be Counter Clockwise.
          *
          *  So the X,Y,Z rotations would be 0,0,-30
          *
@@ -156,18 +157,14 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Loop and update the dashboard
-        while (!isStopRequested())
-        {
+        while (!isStopRequested()) {
             telemetry.addData("Hub orientation", "X=%.1f,  Y=%.1f,  Z=%.1f \n", xRotation, yRotation, zRotation);
 
             // Check to see if heading reset is requested
-            if (gamepad1.y)
-            {
+            if (gamepad1.y) {
                 telemetry.addData("Yaw", "Resetting\n");
                 imu.resetYaw();
-            }
-            else
-            {
+            } else {
                 telemetry.addData("Yaw", "Press Y (triangle) on Gamepad to reset\n");
             }
 

@@ -33,7 +33,6 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
@@ -49,10 +48,9 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name = "BlinkinExample")
+@TeleOp(name="BlinkinExample")
 @Disabled
-public class SampleRevBlinkinLedDriver extends OpMode
-{
+public class SampleRevBlinkinLedDriver extends OpMode {
 
     /*
      * Change the pattern every 10 seconds in AUTO mode.
@@ -72,6 +70,11 @@ public class SampleRevBlinkinLedDriver extends OpMode
     DisplayKind displayKind;
     Deadline ledCycleDeadline;
     Deadline gamepadRateLimit;
+
+    protected enum DisplayKind {
+        MANUAL,
+        AUTO
+    }
 
     @Override
     public void init()
@@ -94,12 +97,9 @@ public class SampleRevBlinkinLedDriver extends OpMode
     {
         handleGamepad();
 
-        if (displayKind == DisplayKind.AUTO)
-        {
+        if (displayKind == DisplayKind.AUTO) {
             doAutoDisplay();
-        }
-        else
-        {
+        } else {
             /*
              * MANUAL mode: Nothing to do, setting the pattern as a result of a gamepad event.
              */
@@ -119,29 +119,21 @@ public class SampleRevBlinkinLedDriver extends OpMode
      */
     protected void handleGamepad()
     {
-        if (!gamepadRateLimit.hasExpired())
-        {
+        if (!gamepadRateLimit.hasExpired()) {
             return;
         }
 
-        if (gamepad1.a)
-        {
+        if (gamepad1.a) {
             setDisplayKind(DisplayKind.MANUAL);
             gamepadRateLimit.reset();
-        }
-        else if (gamepad1.b)
-        {
+        } else if (gamepad1.b) {
             setDisplayKind(DisplayKind.AUTO);
             gamepadRateLimit.reset();
-        }
-        else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.left_bumper))
-        {
+        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.left_bumper)) {
             pattern = pattern.previous();
             displayPattern();
             gamepadRateLimit.reset();
-        }
-        else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.right_bumper))
-        {
+        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.right_bumper)) {
             pattern = pattern.next();
             displayPattern();
             gamepadRateLimit.reset();
@@ -154,25 +146,18 @@ public class SampleRevBlinkinLedDriver extends OpMode
         display.setValue(displayKind.toString());
     }
 
-    protected void displayPattern()
-    {
-        blinkinLedDriver.setPattern(pattern);
-        patternName.setValue(pattern.toString());
-    }
-
     protected void doAutoDisplay()
     {
-        if (ledCycleDeadline.hasExpired())
-        {
+        if (ledCycleDeadline.hasExpired()) {
             pattern = pattern.next();
             displayPattern();
             ledCycleDeadline.reset();
         }
     }
 
-    protected enum DisplayKind
+    protected void displayPattern()
     {
-        MANUAL,
-        AUTO
+        blinkinLedDriver.setPattern(pattern);
+        patternName.setValue(pattern.toString());
     }
 }

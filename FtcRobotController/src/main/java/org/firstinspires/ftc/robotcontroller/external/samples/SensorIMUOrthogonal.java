@@ -26,6 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -33,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -55,7 +55,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * (X/Y, X/Z or Y/Z) and that the Hub has only been rotated in a range of 90 degree increments.
  *
  * Note: if your Hub is mounted on a surface angled at some non-90 Degree multiple (like 30) look at
- *       the alternative SensorImuNonOrthogonal sample in this folder.
+ *       the alternative SensorIMUNonOrthogonal sample in this folder.
  *
  * This "Orthogonal" requirement means that:
  *
@@ -86,9 +86,7 @@ public class SensorIMUOrthogonal extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void runOpMode() throws InterruptedException
-    {
+    @Override public void runOpMode() throws InterruptedException {
 
         // Retrieve and initialize the IMU.
         // This sample expects the IMU to be in a REV Hub and named "imu".
@@ -100,6 +98,9 @@ public class SensorIMUOrthogonal extends LinearOpMode
          * The first parameter specifies the direction the printed logo on the Hub is pointing.
          * The second parameter specifies the direction the USB connector on the Hub is pointing.
          * All directions are relative to the robot, and left/right is as-viewed from behind the robot.
+         *
+         * If you are using a REV 9-Axis IMU, you can use the Rev9AxisImuOrientationOnRobot class instead of the
+         * RevHubOrientationOnRobot class, which has an I2cPortFacingDirection instead of a UsbFacingDirection.
          */
 
         /* The next two lines define Hub orientation.
@@ -108,7 +109,7 @@ public class SensorIMUOrthogonal extends LinearOpMode
          * To Do:  EDIT these two lines to match YOUR mounting configuration.
          */
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -117,19 +118,15 @@ public class SensorIMUOrthogonal extends LinearOpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Loop and update the dashboard
-        while (!isStopRequested())
-        {
+        while (!isStopRequested()) {
 
             telemetry.addData("Hub orientation", "Logo=%s   USB=%s\n ", logoDirection, usbDirection);
 
             // Check to see if heading reset is requested
-            if (gamepad1.y)
-            {
+            if (gamepad1.y) {
                 telemetry.addData("Yaw", "Resetting\n");
                 imu.resetYaw();
-            }
-            else
-            {
+            } else {
                 telemetry.addData("Yaw", "Press Y (triangle) on Gamepad to reset\n");
             }
 

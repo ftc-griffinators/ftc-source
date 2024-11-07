@@ -23,8 +23,4 @@ android {
     namespace = 'com.qualcomm.ftcrobotcontroller'
 }
 
-dependencies {
-    implementation 'com.acmerobotics.roadrunner:ftc:0.1.13'
-}
-
 apply from: '../build.dependencies.gradle'
