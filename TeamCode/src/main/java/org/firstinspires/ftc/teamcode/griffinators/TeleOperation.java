@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -27,79 +29,41 @@ public class TeleOperation extends LinearOpMode {
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
-		frontLeft = hardwareMap.dcMotor.get("leftFront");
-		frontRight = hardwareMap.dcMotor.get("rightFront");
-		backLeft = hardwareMap.dcMotor.get("leftBack");
-		backRight = hardwareMap.dcMotor.get("rightBack");
-		//armExtendLeft = hardwareMap.dcMotor.get("acl");
-		//armExtendRight = hardwareMap.dcMotor.get("acr");
-	//	armControlLeft = hardwareMap.dcMotor.get("ael");
-		//armControlRight = hardwareMap.dcMotor.get("aer");
-		//clawControl = hardwareMap.servo.get("c");
-	//	clawLeft = hardwareMap.servo.get("cl");
-		//clawRight = hardwareMap.servo.get("cr");
-	//	launch = hardwareMap.servo.get("l");
-		//launchAngle = hardwareMap.servo.get("lc");
+		// Control Hub Port 1
+		frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
 
-		//"ce" is port 5 on control hub
-		clawExtension = hardwareMap.servo.get("ce");
-		//"c" is port 4
-		clawGrab = hardwareMap.servo.get("c");
-		//"cr" ia port 2
-		clawRightRot = hardwareMap.servo.get("cr");
-		// "cl" is port 3
-		clawLeftRot = hardwareMap.servo.get("cl");
+		//Expantion Hub 0
+		frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
 
-/*
-		armControlLeft.setDirection(DcMotor.Direction.REVERSE);
-		armExtendLeft.setDirection(DcMotor.Direction.REVERSE);
-		frontLeft.setDirection(DcMotor.Direction.REVERSE);
+		//Control Hub 0
+		backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
+
+		//Expantion Hub 1
+		backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+
+
+
+//		//"ce" is port 5 on control hub
+//		clawExtension = hardwareMap.servo.get("ce");
+//		//"c" is port 4
+//		clawGrab = hardwareMap.servo.get("c");
+//		//"cr" ia port 2
+//		clawRightRot = hardwareMap.servo.get("cr");
+//		// "cl" is port 3
+//		clawLeftRot = hardwareMap.servo.get("cl");
+//
+
 		backLeft.setDirection(DcMotor.Direction.REVERSE);
-		*/
+		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 		waitForStart();
 		runtime.reset();
 		runtime.startTime();
-		float basicPower = 0.4f;
-		ElapsedTime time1 = new ElapsedTime();
-		ElapsedTime time2 = new ElapsedTime();
+
 		Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
 
-/*
-		armExtendLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armExtendRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armControlLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		armControlRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-		armControlLeft.setTargetPosition(0);
-		armControlRight.setTargetPosition(0);
-		armExtendLeft.setTargetPosition(0);
-		armExtendRight.setTargetPosition(0);
-		armControlLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armControlRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armExtendLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		armExtendRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-		armExtendLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armExtendRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armControlLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		armControlRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-*/
-
-
-		boolean Lopen = false;
-		boolean LclawChangeable = true;
-		boolean Ropen = false;
-		boolean RclawChangeable = true;
-		boolean Cground = false;
-		boolean CgroundChangeable = true;
-		boolean Aground = true;
 
 		while (opModeIsActive()) {
-
-
-
 
 
 		////////	MOVEMENT	///////		
@@ -168,7 +132,7 @@ public class TeleOperation extends LinearOpMode {
 
 		///////		CLAW	///////
 
-			telemetry.addData("extension position",clawExtension.getPosition());
+			//telemetry.addData("extension position",clawExtension.getPosition());
 			telemetry.addData("None usb test","works");
 			telemetry.update();
 
@@ -176,16 +140,16 @@ public class TeleOperation extends LinearOpMode {
 			//Around 0.27 is the fully extended state
 
 			if (gamepad1.a){
-				telemetry.addData("Servo added, current position",clawExtension.getPosition());
+				//telemetry.addData("Servo added, current position",clawExtension.getPosition());
 				i=i+0.01;
 				telemetry.update();
 			}
 			if (gamepad1.b){
-				telemetry.addData("Servo subtracted, current position",clawExtension.getPosition());
+				//telemetry.addData("Servo subtracted, current position",clawExtension.getPosition());
 				i=i-0.01;
 				telemetry.update();
 			}
-			clawExtension.setPosition(i);
+
 
 
 

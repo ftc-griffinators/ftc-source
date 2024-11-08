@@ -51,7 +51,7 @@ public class TeleOperationA extends LinearOpMode {
     DcMotorEx frontLeft, frontRight, backLeft, backRight;
     Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
 
-       double i=0.4;
+
 
 
 
@@ -66,11 +66,19 @@ public class TeleOperationA extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
+// Control Hub Port 1
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
+
+        //Expantion Hub 0
         frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
-        backLeft = hardwareMap.get(DcMotorEx.class,"leftBack");
-        backRight = hardwareMap.get(DcMotorEx.class,"rightBack");
+
+        //Control Hub 0
+        backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
+
+        //Expantion Hub 1
+        backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+
+
 
 
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -82,10 +90,10 @@ public class TeleOperationA extends LinearOpMode {
         clawExtension = hardwareMap.get(Servo.class,"ce");
         //"c" is port 4
         clawGrab = hardwareMap.get(Servo.class,"c");
-        //"cr" ia port 2
-        clawRightRot = hardwareMap.get(Servo.class,"cr");
-        // "cl" is port 3
-        clawLeftRot = hardwareMap.get(Servo.class,"cl");
+        //"r" is port 2
+        clawRightRot = hardwareMap.get(Servo.class,"r");
+        // "l" is port 3
+        clawLeftRot = hardwareMap.get(Servo.class,"l");
 
         backLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -144,15 +152,18 @@ public class TeleOperationA extends LinearOpMode {
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(limitedTurn), 1);
 
-            double frontLeftPower = PidFLpower / denominator;
-            double backLeftPower = PidFRpower / denominator;
-            double frontRightPower = PidBLpower / denominator;
-            double backRightPower = PidBRpower / denominator;
+            double frontLeftPower = rotY + rotX + limitedTurn / denominator;
+            double backLeftPower = rotY - rotX + limitedTurn / denominator;
+            double frontRightPower = rotY - rotX - limitedTurn / denominator;
+            double backRightPower = rotY + rotX - limitedTurn / denominator;
 
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
+
+
+
 
             //Discrete testing
             //Will go forwards at 50% power when (a) is pressed
@@ -178,11 +189,6 @@ public class TeleOperationA extends LinearOpMode {
             dashboard.sendTelemetryPacket(packet);
 
 
-            telemetry.addData("FL",frontLeft.getPower());
-            telemetry.addData("FR",frontRight.getPower());
-            telemetry.addData("BL",backLeft.getPower());
-            telemetry.addData("BR",backRight.getPower());
-            telemetry.update();
 
 
 
@@ -190,14 +196,6 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
-    //Claw
-            clawExtension.setDirection(Servo.Direction.REVERSE);
-            clawGrab.setDirection(Servo.Direction.FORWARD);
-//Start the initial claw extension servo at 0.4
-
-            //Around 0.71 is the fully retracted state
-            //Around 0.2 is the fully extended state
-           
 
 
 
