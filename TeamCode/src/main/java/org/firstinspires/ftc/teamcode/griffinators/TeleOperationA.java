@@ -48,7 +48,7 @@ public class TeleOperationA extends LinearOpMode {
 
     private Pose2d pose = new Pose2d(0, 0, 0);
 
-    DcMotorEx frontLeft, frontRight, backLeft, backRight;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;
     Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
 
 
@@ -66,17 +66,32 @@ public class TeleOperationA extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-// Control Hub Port 1
+
+        //Expansion Hub 0
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
 
-        //Expantion Hub 0
+        //Control Hub 0
         frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
 
-        //Control Hub 0
+
+
+        //Expansion Hub 1
         backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
 
-        //Expantion Hub 1
+        // Control Hub Port 1
         backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+
+
+
+
+
+
+        // Expansion Hub 2
+        sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
+
+
+        //Control Hub port 2
+        sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
 
 
 

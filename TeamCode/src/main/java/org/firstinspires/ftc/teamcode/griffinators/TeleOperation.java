@@ -29,17 +29,25 @@ public class TeleOperation extends LinearOpMode {
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
-		// Control Hub Port 1
+
+		//Expansion Hub 0
 		frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
 
-		//Expantion Hub 0
+		//Control Hub 0
 		frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
 
-		//Control Hub 0
+
+
+		//Expansion Hub 1
 		backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
 
-		//Expantion Hub 1
+		// Control Hub Port 1
 		backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+
+
+
+
+
 
 
 
@@ -130,184 +138,9 @@ public class TeleOperation extends LinearOpMode {
 
 
 
-		///////		CLAW	///////
-
-			//telemetry.addData("extension position",clawExtension.getPosition());
-			telemetry.addData("None usb test","works");
-			telemetry.update();
-
-			//Around 0.71 is the fully retracted state
-			//Around 0.27 is the fully extended state
-
-			if (gamepad1.a){
-				//telemetry.addData("Servo added, current position",clawExtension.getPosition());
-				i=i+0.01;
-				telemetry.update();
-			}
-			if (gamepad1.b){
-				//telemetry.addData("Servo subtracted, current position",clawExtension.getPosition());
-				i=i-0.01;
-				telemetry.update();
-			}
 
 
 
-
-
-
-
-
-/*		double openPos = 0.12;
-		double closedPos = 0.32;
-		// double closedPos = 0.36; // too tight
-		double leftMax = 0.89;
-		
-		if (gamepad2.left_bumper) {
-			if (LclawChangeable) {
-				LclawChangeable = false;
-				Lopen = !Lopen;
-			}
-		} else {
-			LclawChangeable = true;
-		}
-		if (gamepad2.right_bumper) {
-			if (RclawChangeable) {
-				RclawChangeable = false;
-				Ropen = !Ropen;
-			}
-		} else {
-			RclawChangeable = true;
-		}
-		
-		if (Ropen) {
-			clawRight.setPosition(closedPos);
-		} else {
-			clawRight.setPosition(openPos);
-		}
-		if (Lopen) {
-			clawLeft.setPosition(leftMax - closedPos);
-		} else {
-			clawLeft.setPosition(leftMax - openPos);
-		}
-		
-		if (Aground) {	
-			if (gamepad2.a){
-				if(CgroundChangeable){
-					Cground = !Cground;
-					CgroundChangeable = false;
-				}
-			} else {
-				CgroundChangeable = true;
-			}
-	   
-			if (Cground) {
-				clawControl.setPosition(0.472);
-			} else {
-				clawControl.setPosition(0.472 + 0.04);
-			}	
-		} else if (gamepad2.a) {
-			clawControl.setPosition(0.465);
-		}
-
-
-
-
-
-		///////		ARM		///////
-		
-		armControlLeft.setPower(basicPower);
-		armControlRight.setPower(basicPower);
-		armExtendLeft.setPower(basicPower);
-		armExtendRight.setPower(basicPower);
-		
-		if (gamepad2.dpad_left) {
-			time2.reset();
-			setExtension(0);
-			sleep(200);
-			setRotation(50);
-			sleep(200);
-			setRotation(0);
-			Aground = true;
-			Cground = false;
-		} else if (gamepad2.dpad_up) {
-			setRotation(170);
-			setExtension(200);
-			clawControl.setPosition(0.54);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad2.dpad_right) {
-			setRotation(230);
-			setExtension(400);
-			clawControl.setPosition(0.53);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad2.dpad_down) {
-			setRotation(280);
-			setExtension(500);
-			clawControl.setPosition(0.52);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad2.x) {
-		 	setRotation(320);
-		 	setExtension(600);
-		 	clawControl.setPosition(0.52);
-		 	Aground = false;
-		 	Cground = false;
-		} else if (gamepad2.y) {
-			setRotation(360);
-			setExtension(700);
-			clawControl.setPosition(0.52);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad2.b) {
-			setRotation(390);
-			setExtension(800);
-			clawControl.setPosition(0.52);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad1.b) {
-			setRotation(800);
-			setExtension(400);
-			Aground = false;
-			Cground = false;
-		} else if (gamepad1.y) {
-			setExtension(0);
-			setRotation(400);
-			Aground = false;
-			Cground = false;
-		}
-
-
-
-		
-		
-		///////		LAUNCH		///////
-
-		if (gamepad1.x) {
-		launchAngle.setPosition(40/180f);
-		sleep(1000);
-		launch.setPosition(0.5f);
-		sleep(1000);
-		launch.setPosition(-0.5f);
-		sleep(500);
-		launchAngle.setPosition(60/180f);
-		}
-
-*/
-
-
-
-		///////		DATA		///////
-/*
-		telemetry.addData("RunTime", "time:" + runtime);
-		//telemetry.addData("Booleans", "ground: " + ground);	 
-		telemetry.addData("Position", "Extension: " + armExtendLeft.getCurrentPosition() + " " + armExtendRight.getCurrentPosition()
-		+ "; Rotation: " + armControlLeft.getCurrentPosition() + " " + armControlRight.getCurrentPosition() + "; rot: " + " " + pose.heading.log());
-		telemetry.addData("Gamepad 1", "gamepad1_l_x: " + gamepad1.left_stick_x + "; gamepad1_l_y: " + gamepad1.left_stick_y + "gamepad1_r_x" + gamepad1.right_stick_x + "gamepad1_Y: " + gamepad1.y);
-		telemetry.addData("Gamepad 2", "gamepad2_l_x: " + gamepad2.left_stick_x + "; gamepad2_l_y: " + gamepad2.left_stick_y + "gamepad2_r_x" + gamepad2.right_stick_x + "gamepad2_Y: " + gamepad2.y);
-		telemetry.update();
-
-		*/
 		}
 	}
 	
