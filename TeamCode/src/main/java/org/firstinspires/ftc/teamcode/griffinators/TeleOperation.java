@@ -33,6 +33,8 @@ public class TeleOperation extends LinearOpMode {
 		//Expansion Hub 0
 		frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
 
+
+
 		//Control Hub 0
 		frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
 
