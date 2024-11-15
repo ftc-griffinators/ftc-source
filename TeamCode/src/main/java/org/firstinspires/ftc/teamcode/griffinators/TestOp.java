@@ -4,12 +4,15 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.DeadWheelDirectionDebugger;
 import com.acmerobotics.roadrunner.ftc.DriveViewFactory;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
+import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Localizer;
@@ -21,6 +24,7 @@ import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 public class TestOp extends LinearOpMode {
 
     DcMotor frontLeft, frontRight, backLeft, backRight, sliderLeft, sliderRight;
+    Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
 
 
     @Override
@@ -46,17 +50,33 @@ public class TestOp extends LinearOpMode {
         // Control Hub Port 1
         backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
 
-
-
-
-
-
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
 
 
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
+
+
+        Encoder leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider"))) ;
+        Encoder rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
+        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+
+
+
+
+        //"ce" is port 5 on control hub
+        clawExtension = hardwareMap.get(Servo.class,"ce");
+        //"c" is port 4
+        clawGrab = hardwareMap.get(Servo.class,"c");
+        //"r" is port 2
+        clawRightRot = hardwareMap.get(Servo.class,"r");
+        // "l" is port 3
+        clawLeftRot = hardwareMap.get(Servo.class,"l");
+
 
         ThreeDeadWheelLocalizer deadWheel = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
 
@@ -67,32 +87,42 @@ public class TestOp extends LinearOpMode {
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        int i=0;
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
 
-            if (gamepad1.dpad_up){
-                sliderRight.setPower(0.4);
-                sliderLeft.setPower(0.4);
-            }
-            if (gamepad1.dpad_down){
-                sliderRight.setPower(-0.4);
-                sliderLeft.setPower(-0.4);
+            if (gamepad1.b){
+                i++;
+                sliderRight.setTargetPosition(4132);
+                sliderLeft.setTargetPosition(4105);
+                sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+
+                while (sliderLeft.isBusy() && sliderRight.isBusy()){
+                    sliderRight.setPower(0.5);
+                    sliderLeft.setPower(0.5);
+                }
+                telemetry.addData("Busy status after",sliderRight.isBusy());
+
 
             }
-            if (!(gamepad1.dpad_up) || !(gamepad1.dpad_down)){
-                sliderRight.setPower(0);
-                sliderLeft.setPower(0);
-            }
+
 
             PositionVelocityPair par0PoseAndVel =deadWheel.par0.getPositionAndVelocity();
             PositionVelocityPair par1PoseAndVel =deadWheel.par1.getPositionAndVelocity();
             PositionVelocityPair perpPoseAndVel =deadWheel.perp.getPositionAndVelocity();
+
+            PositionVelocityPair rightSliderEncoderPoseAndVel=rightSliderEncoder.getPositionAndVelocity();
+            PositionVelocityPair leftSliderEncoderPoseAndVel=leftSliderEncoder.getPositionAndVelocity();
 
 
             telemetry.addData("Position of encoder 1",par0PoseAndVel.position);
@@ -102,9 +132,23 @@ public class TestOp extends LinearOpMode {
             telemetry.addData("Position of perp encoder",perpPoseAndVel.position);
             telemetry.addLine();
             telemetry.addData("Total position",pose.position);
+            telemetry.addLine();
+            telemetry.addData("Right slider encoder pose",rightSliderEncoderPoseAndVel.position);
+            telemetry.addData("Left slider encoder pose",leftSliderEncoderPoseAndVel.position);
+            telemetry.addData("Power right",sliderRight.getPower());
+            telemetry.addData("Power left",sliderLeft.getPower());
+            telemetry.addData("Num",i);
+            telemetry.addData("Busy status before",sliderRight.isBusy());
             telemetry.update();
 
+            /*
+            clawRightRot.setDirection(Servo.Direction.REVERSE);
+            clawRightRot.setPosition(0.5);
+            clawLeftRot.setPosition(0.5);
+
+             */
         }
+
 
 
 
