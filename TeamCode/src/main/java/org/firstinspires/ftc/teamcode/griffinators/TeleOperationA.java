@@ -38,6 +38,8 @@ import org.firstinspires.ftc.teamcode.griffinators.Parts.PIDController;
 
 public class TeleOperationA extends LinearOpMode {
 
+    Hardware hardwareClass =new Hardware(this);
+
 
 
     private PIDController movementPID;
@@ -57,41 +59,20 @@ public class TeleOperationA extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
 
-
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
-
         //Expansion Hub 0
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
-
         //Control Hub 0
         frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
-
-
-
         //Expansion Hub 1
         backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
-
         // Control Hub Port 1
         backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
-
-
-
-
-
-
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
-
-
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
-
-
-
-
 /*
         //"ce" is port 5 on control hub
         clawExtension = hardwareMap.get(Servo.class,"ce");
@@ -102,7 +83,6 @@ public class TeleOperationA extends LinearOpMode {
         // "l" is port 3
         clawLeftRot = hardwareMap.get(Servo.class,"l");
 */
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -114,6 +94,8 @@ public class TeleOperationA extends LinearOpMode {
 
         Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         Pose2d pose = new Pose2d(0, 0, 0);
@@ -131,18 +113,14 @@ public class TeleOperationA extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double turn= gamepad1.right_stick_x;
-            double heading;
+
 
 
             if (gamepad1.dpad_down) { pose=new  Pose2d(0,0,0);}
-            heading = pose.heading.toDouble();
+            double heading = pose.heading.toDouble();
             double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
             double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
-            double PidFLpower =movementPID.testCorrection(rotY + rotX + turn,frontLeft.getPower());
-            double PidFRpower =movementPID.testCorrection(rotY - rotX + turn,frontRight.getPower());
-            double PidBLpower =movementPID.testCorrection(rotY - rotX - turn,backLeft.getPower());
-            double PidBRpower =movementPID.testCorrection(rotY + rotX - turn, backRight.getPower());
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
@@ -155,17 +133,6 @@ public class TeleOperationA extends LinearOpMode {
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
-
-
-
-
-
-
-
-
-
-
-
 
         }
     }
