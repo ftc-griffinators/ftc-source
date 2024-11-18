@@ -18,13 +18,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.hardware.ServoControllerEx;
-import com.qualcomm.robotcore.hardware.ServoImpl;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
-import com.qualcomm.robotcore.hardware.configuration.ServoFlavor;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -39,6 +34,7 @@ import org.firstinspires.ftc.teamcode.griffinators.Parts.PIDController;
 public class TeleOperationA extends LinearOpMode {
 
     Hardware hardwareClass =new Hardware(this);
+
 
 
 
@@ -83,6 +79,7 @@ public class TeleOperationA extends LinearOpMode {
         // "l" is port 3
         clawLeftRot = hardwareMap.get(Servo.class,"l");
 */
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -129,6 +126,13 @@ public class TeleOperationA extends LinearOpMode {
             double frontRightPower = rotY - rotX - turn / denominator;
             double backRightPower = rotY + rotX - turn / denominator;
 
+            if ( gamepad1.dpad_left){
+                frontLeft.setPower(-0.5);
+                frontRight.setPower(0.5);
+                backLeft.setPower(0.5);
+                backRight.setPower(-0.5);
+
+            }
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);

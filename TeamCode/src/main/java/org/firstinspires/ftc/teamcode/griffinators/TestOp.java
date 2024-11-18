@@ -81,7 +81,7 @@ public class TestOp extends LinearOpMode {
         ThreeDeadWheelLocalizer deadWheel = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
 
 
-               Localizer localizer= new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
+        Localizer localizer= new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
         Pose2d pose=new Pose2d(0,0,0);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -91,30 +91,31 @@ public class TestOp extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        int i=0;
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
 
+
             if (gamepad1.b){
-                i++;
-                sliderRight.setTargetPosition(4132);
-                sliderLeft.setTargetPosition(4105);
+
+                sliderRight.setTargetPosition(4000);
+                sliderLeft.setTargetPosition(4000);
                 sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
 
                 while (sliderLeft.isBusy() && sliderRight.isBusy()){
                     sliderRight.setPower(0.5);
                     sliderLeft.setPower(0.5);
                 }
-                telemetry.addData("Busy status after",sliderRight.isBusy());
+
 
 
             }
+
+
 
 
             PositionVelocityPair par0PoseAndVel =deadWheel.par0.getPositionAndVelocity();
@@ -135,10 +136,7 @@ public class TestOp extends LinearOpMode {
             telemetry.addLine();
             telemetry.addData("Right slider encoder pose",rightSliderEncoderPoseAndVel.position);
             telemetry.addData("Left slider encoder pose",leftSliderEncoderPoseAndVel.position);
-            telemetry.addData("Power right",sliderRight.getPower());
-            telemetry.addData("Power left",sliderLeft.getPower());
-            telemetry.addData("Num",i);
-            telemetry.addData("Busy status before",sliderRight.isBusy());
+
             telemetry.update();
 
             /*

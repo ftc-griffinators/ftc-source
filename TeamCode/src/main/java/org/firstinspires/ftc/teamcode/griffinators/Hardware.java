@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
+import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.exponentialCurve;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -22,6 +24,8 @@ public class Hardware {
     DcMotorEx frontLeft,frontRight,backLeft,backRight,sliderLeft,sliderRight;
     Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
     Encoder leftSliderEncoder,rightSliderEncoder;
+
+    public boolean sliderState=false;
 
     Pose2d pose = new Pose2d(0, 0, 0);
     Localizer localizer = new ThreeDeadWheelLocalizer(myOpMode.hardwareMap, MecanumDrive.PARAMS.inPerTick);
@@ -75,6 +79,29 @@ public class Hardware {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
+    }
+    public void SliderExtension(){
+        sliderRight.setTargetPosition(4132);
+        sliderLeft.setTargetPosition(4105);
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(0.5);
+            sliderLeft.setPower(0.5);
+        }
+    }
+    public void SliderRetraction(){
+        sliderRight.setTargetPosition(0);
+        sliderLeft.setTargetPosition(0);
+
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(exponentialCurve(sliderRight.getCurrentPosition(),2));
+            sliderLeft.setPower(exponentialCurve(sliderLeft.getCurrentPosition(),2));
+        }
     }
 
 }
