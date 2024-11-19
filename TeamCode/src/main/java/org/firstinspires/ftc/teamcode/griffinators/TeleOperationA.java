@@ -51,7 +51,7 @@ public class TeleOperationA extends LinearOpMode {
 
 
     DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;
-    Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
+    Servo clawGrab2, clawGrab, clawRightRot, clawLeftRot, clawExtend;
 
 
 
@@ -73,6 +73,9 @@ public class TeleOperationA extends LinearOpMode {
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
+        clawRightRot= hardwareMap.get(Servo.class, "clawRightRot");
+        clawLeftRot = hardwareMap.get(Servo.class, "clawLeftRot");
+        clawExtend = hardwareMap.get(Servo.class, "clawExtend");
 /*
         //"ce" is port 5 on control hub
         clawExtension = hardwareMap.get(Servo.class,"ce");
@@ -106,8 +109,22 @@ public class TeleOperationA extends LinearOpMode {
         //Field centric mecanum drive with a PID controller
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
-
-
+            if (gamepad1.a) {
+                clawLeftRot.setPosition(clawLeftRot.getPosition()+ 0.1);
+                clawRightRot.setPosition(clawRightRot.getPosition()+0.1);
+            }
+            if (gamepad1.b) {
+                clawLeftRot.setPosition(clawLeftRot.getPosition()- 0.1);
+                clawRightRot.setPosition(clawRightRot.getPosition()- 0.1);
+            }
+//            if (gamepad1.right_bumper){
+//                clawGrab.setPosition(clawGrab.getPosition()+0.25);
+//                clawGrab2.setPosition(clawGrab2.getPosition()+0.25);
+//            }
+//            if (gamepad1.left_bumper){
+//                clawGrab.setPosition(clawGrab.getPosition()-0.25);
+//                clawGrab2.setPosition(clawGrab2.getPosition()-0.25);
+//            }
 
 
             double x = gamepad1.left_stick_x;

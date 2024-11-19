@@ -79,6 +79,7 @@ public class TeleOperation extends LinearOpMode {
 		////////	MOVEMENT	///////		
 
 		pose = pose.plus(localizer.update().value());
+
 		if (gamepad1.right_bumper) {
 			pose = new Pose2d(0,0,-Math.PI/2);
 		}
@@ -135,8 +136,6 @@ public class TeleOperation extends LinearOpMode {
 		frontRight.setPower(FRpower);
 		backLeft.setPower(BLpower);
 		backRight.setPower(BRpower);
-
-
 
 
 
