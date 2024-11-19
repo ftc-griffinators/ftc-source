@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.griffinators;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -30,18 +31,7 @@ import org.firstinspires.ftc.teamcode.griffinators.Parts.PIDController;
 
 
 @TeleOp(name ="TeleOperationA",group = "Robot")
-
 public class TeleOperationA extends LinearOpMode {
-
-    Hardware hardwareClass =new Hardware(this);
-
-
-
-
-    private PIDController movementPID;
-
-
-
 
 
 
@@ -50,6 +40,30 @@ public class TeleOperationA extends LinearOpMode {
     Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
 
 
+    public void sliderExtension(){
+        sliderRight.setTargetPosition(4000);
+        sliderLeft.setTargetPosition(4000);
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(0.5);
+            sliderLeft.setPower(0.5);
+        }
+
+    }
+    public void sliderRetraction(){
+        sliderRight.setTargetPosition(0);
+        sliderLeft.setTargetPosition(0);
+
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(0.5);
+            sliderLeft.setPower(0.5);
+        }
+    }
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -80,25 +94,34 @@ public class TeleOperationA extends LinearOpMode {
         clawLeftRot = hardwareMap.get(Servo.class,"l");
 */
 
+        int sliderState=0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
 
         Pose2d pose = new Pose2d(0, 0, 0);
 
-        //Limit kd to 0.2 or below
-        movementPID = new PIDController(1,0.2,0.05,0.1);
+
+
 
         //Field centric mecanum drive with a PID controller
         while (opModeIsActive()){
@@ -112,8 +135,6 @@ public class TeleOperationA extends LinearOpMode {
             double turn= gamepad1.right_stick_x;
 
 
-
-            if (gamepad1.dpad_down) { pose=new  Pose2d(0,0,0);}
             double heading = pose.heading.toDouble();
             double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
             double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
@@ -126,18 +147,29 @@ public class TeleOperationA extends LinearOpMode {
             double frontRightPower = rotY - rotX - turn / denominator;
             double backRightPower = rotY + rotX - turn / denominator;
 
-            if ( gamepad1.dpad_left){
-                frontLeft.setPower(-0.5);
-                frontRight.setPower(0.5);
-                backLeft.setPower(0.5);
-                backRight.setPower(-0.5);
 
-            }
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
+
+
+            if (gamepad1.b){
+                switch (sliderState){
+                    case 0: sliderExtension();
+                        sliderState=1;
+                        break;
+                    case  1: sliderRetraction();
+                        sliderState=0;
+                        break;
+                }
+            }
+
+
+
+
         }
+
     }
 }

@@ -25,10 +25,8 @@ public class TeleOperation extends LinearOpMode {
 	private Pose2d pose = new Pose2d(0,0,0);
 	@Override
 	public void runOpMode() throws InterruptedException{
-		
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
-
 
 		//Expansion Hub 0
 		frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
@@ -88,14 +86,7 @@ public class TeleOperation extends LinearOpMode {
 
 		double x = responseCurve(gamepad1.left_stick_x,	3,0.9);
 		double y = responseCurve(-gamepad1.left_stick_y, 3, 0.9);
-//		double turn = responseCurve(gamepad1.right_stick_x, 5, 0.95);
-//		if (Math.hypot(-gamepad1.left_stick_y,-gamepad1.left_stick_x) >= 0.95) {
-//			x = -gamepad1.left_stick_y - gamepad2.left_stick_y / 5;
-//			y = -gamepad1.left_stick_x - gamepad2.left_stick_x / 5;
-//		} else {
-//			x = -gamepad1.left_stick_y/2 - gamepad2.left_stick_y / 5;
-//			y = -gamepad1.left_stick_x/2 - gamepad2.left_stick_x / 5;
-//		}
+//
 		double theta = Math.atan2(y, x);
 		double power = Math.hypot(x, y);
 		double turn;
@@ -108,17 +99,7 @@ public class TeleOperation extends LinearOpMode {
 		double cos = Math.cos(theta - Math.PI/4 - pose.heading.log());
 		double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-		/*
-		if (gamepad1.dpad_left) {
-			time1.reset();
-		} else if (gamepad1.dpad_right) {
-			time1.reset();
-		}
 
-		if (time1.seconds() < 0.6 && runtime.seconds() > 2) {
-			turn = 1;
-		}
-*/
 		double FLpower = power * cos/max + turn;
 		double FRpower = power * sin/max - turn;
 		double BLpower = power * sin/max + turn;
@@ -139,28 +120,11 @@ public class TeleOperation extends LinearOpMode {
 
 
 
-
-
-
-
 		}
 	}
 	
 	
-	
-	
-/*
-	
-	private void setExtension(int amount){
-		armExtendLeft.setTargetPosition(amount);
-		armExtendRight.setTargetPosition(amount);
-	}
-	
-	private void setRotation(int amount){
-		armControlLeft.setTargetPosition(amount);
-		armControlRight.setTargetPosition(amount);
-	}
-*/
+
 	private double responseCurve (double raw, int curvePower, double maxThreshold) {
 		return Math.copySign(Math.min(Math.pow(Math.abs(raw)/maxThreshold, curvePower), 1), raw);
 	}
