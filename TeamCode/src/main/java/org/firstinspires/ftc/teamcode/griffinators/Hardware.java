@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
+
+import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
+
+import org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.*;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -19,9 +23,12 @@ import java.util.Base64;
 public class Hardware {
     private LinearOpMode myOpMode = null;
     public Hardware (LinearOpMode opmode) {myOpMode = opmode;}
+
     DcMotorEx frontLeft,frontRight,backLeft,backRight,sliderLeft,sliderRight;
     Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
     Encoder leftSliderEncoder,rightSliderEncoder;
+
+
 
     Pose2d pose = new Pose2d(0, 0, 0);
     Localizer localizer = new ThreeDeadWheelLocalizer(myOpMode.hardwareMap, MecanumDrive.PARAMS.inPerTick);
@@ -52,8 +59,20 @@ public class Hardware {
 
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
         sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 
@@ -75,6 +94,29 @@ public class Hardware {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
+    }
+    public void sliderExtension(){
+        sliderRight.setTargetPosition(4000);
+        sliderLeft.setTargetPosition(4000);
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(sliderSmoothMovement(0,4000,sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0,4000,sliderLeft.getCurrentPosition()));
+        }
+    }
+    public void sliderRetraction(){
+        sliderRight.setTargetPosition(0);
+        sliderLeft.setTargetPosition(0);
+
+        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (sliderLeft.isBusy() && sliderRight.isBusy()){
+            sliderRight.setPower(sliderSmoothMovement(0,4000,4000-sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0,4000,4000-sliderLeft.getCurrentPosition()));
+        }
     }
 
 }

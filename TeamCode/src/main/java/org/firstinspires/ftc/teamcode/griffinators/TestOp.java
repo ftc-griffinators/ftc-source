@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
+import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.DeadWheelDirectionDebugger;
 import com.acmerobotics.roadrunner.ftc.DriveViewFactory;
@@ -58,16 +60,7 @@ public class TestOp extends LinearOpMode {
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
 
 
-        Encoder leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider"))) ;
-        Encoder rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
-        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-
-
-
-
-
+/*
         //"ce" is port 5 on control hub
         clawExtension = hardwareMap.get(Servo.class,"ce");
         //"c" is port 4
@@ -76,12 +69,11 @@ public class TestOp extends LinearOpMode {
         clawRightRot = hardwareMap.get(Servo.class,"r");
         // "l" is port 3
         clawLeftRot = hardwareMap.get(Servo.class,"l");
+*/
 
 
-        ThreeDeadWheelLocalizer deadWheel = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
 
-
-               Localizer localizer= new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
+        Localizer localizer= new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
         Pose2d pose=new Pose2d(0,0,0);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -91,7 +83,7 @@ public class TestOp extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        int i=0;
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
@@ -99,54 +91,51 @@ public class TestOp extends LinearOpMode {
             pose = pose.plus(localizer.update().value());
 
             if (gamepad1.b){
-                i++;
-                sliderRight.setTargetPosition(4132);
-                sliderLeft.setTargetPosition(4105);
+                sliderRight.setTargetPosition(0);
+                sliderLeft.setTargetPosition(0);
+
                 sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
 
                 while (sliderLeft.isBusy() && sliderRight.isBusy()){
                     sliderRight.setPower(0.5);
                     sliderLeft.setPower(0.5);
                 }
-                telemetry.addData("Busy status after",sliderRight.isBusy());
+            }
+            if (gamepad1.dpad_up){
+                sliderRight.setTargetPosition(4000);
+                sliderLeft.setTargetPosition(4000);
 
+                sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                while (sliderLeft.isBusy() && sliderRight.isBusy()){
+                    sliderRight.setPower(0.5);
+                    sliderLeft.setPower(0.5);
+                }
+            }
+
+
+
+
+
+
+            if ( gamepad1.dpad_up){
+                frontLeft.setPower(-0.5);
+                frontRight.setPower(0.5);
+                backLeft.setPower(0.5);
+                backRight.setPower(-0.5);
 
             }
 
 
-            PositionVelocityPair par0PoseAndVel =deadWheel.par0.getPositionAndVelocity();
-            PositionVelocityPair par1PoseAndVel =deadWheel.par1.getPositionAndVelocity();
-            PositionVelocityPair perpPoseAndVel =deadWheel.perp.getPositionAndVelocity();
-
-            PositionVelocityPair rightSliderEncoderPoseAndVel=rightSliderEncoder.getPositionAndVelocity();
-            PositionVelocityPair leftSliderEncoderPoseAndVel=leftSliderEncoder.getPositionAndVelocity();
 
 
-            telemetry.addData("Position of encoder 1",par0PoseAndVel.position);
-            telemetry.addLine();
-            telemetry.addData("Position of encoder 2",par1PoseAndVel.position);
-            telemetry.addLine();
-            telemetry.addData("Position of perp encoder",perpPoseAndVel.position);
-            telemetry.addLine();
-            telemetry.addData("Total position",pose.position);
-            telemetry.addLine();
-            telemetry.addData("Right slider encoder pose",rightSliderEncoderPoseAndVel.position);
-            telemetry.addData("Left slider encoder pose",leftSliderEncoderPoseAndVel.position);
-            telemetry.addData("Power right",sliderRight.getPower());
-            telemetry.addData("Power left",sliderLeft.getPower());
-            telemetry.addData("Num",i);
-            telemetry.addData("Busy status before",sliderRight.isBusy());
-            telemetry.update();
 
-            /*
-            clawRightRot.setDirection(Servo.Direction.REVERSE);
-            clawRightRot.setPosition(0.5);
-            clawLeftRot.setPosition(0.5);
 
-             */
+
+
+
         }
 
 
