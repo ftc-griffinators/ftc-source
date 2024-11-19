@@ -102,19 +102,21 @@ public class TestOp extends LinearOpMode {
                     sliderLeft.setPower(0.5);
                 }
             }
-
-            if (gamepad1.a){
-                sliderRight.setTargetPosition(0);
-                sliderLeft.setTargetPosition(0);
+            if (gamepad1.dpad_up){
+                sliderRight.setTargetPosition(4000);
+                sliderLeft.setTargetPosition(4000);
 
                 sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 while (sliderLeft.isBusy() && sliderRight.isBusy()){
-                    sliderRight.setPower(-0.5);
-                    sliderLeft.setPower(-0.5);
+                    sliderRight.setPower(0.5);
+                    sliderLeft.setPower(0.5);
                 }
             }
+
+
+
 
 
 

@@ -47,8 +47,9 @@ public class TeleOperationA extends LinearOpMode {
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         while (sliderLeft.isBusy() && sliderRight.isBusy()){
-            sliderRight.setPower(0.5);
-            sliderLeft.setPower(0.5);
+            sliderRight.setPower(sliderSmoothMovement(0,4000,sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0,4000,sliderLeft.getCurrentPosition()));
+
         }
 
     }
@@ -60,8 +61,8 @@ public class TeleOperationA extends LinearOpMode {
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         while (sliderLeft.isBusy() && sliderRight.isBusy()){
-            sliderRight.setPower(0.5);
-            sliderLeft.setPower(0.5);
+            sliderRight.setPower(sliderSmoothMovement(0,4000,4000-sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0,4000,4000-sliderLeft.getCurrentPosition()));
         }
     }
 
