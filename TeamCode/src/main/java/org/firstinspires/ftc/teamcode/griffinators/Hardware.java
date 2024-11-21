@@ -25,7 +25,7 @@ public class Hardware {
     public Hardware (LinearOpMode opmode) {myOpMode = opmode;}
 
     DcMotorEx frontLeft,frontRight,backLeft,backRight,sliderLeft,sliderRight;
-    Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
+    Servo clawExtend, clawGrab, clawRightRot, clawLeftRot;
     Encoder leftSliderEncoder,rightSliderEncoder;
 
 
@@ -48,14 +48,15 @@ public class Hardware {
 
          leftSliderEncoder=new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class,"leftSlider"))) ;
          rightSliderEncoder=new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class,"rightSlider")));
-        //"ce" is port 5 on control hub
-        clawExtension = myOpMode.hardwareMap.get(Servo.class,"ce");
-        //"c" is port 4
-        clawGrab = myOpMode.hardwareMap.get(Servo.class,"c");
-        //"r" is port 2
-        clawRightRot = myOpMode.hardwareMap.get(Servo.class,"r");
-        // "l" is port 3
-        clawLeftRot = myOpMode.hardwareMap.get(Servo.class,"l");
+
+        //"clawExtend" is port 2 on control hub
+        clawExtend = myOpMode.hardwareMap.get(Servo.class,"clawExtend");
+        //"clawGrab" is port 3 on control hub
+        clawGrab = myOpMode.hardwareMap.get(Servo.class,"clawGrab");
+        //"clawRightRot" is port 0 on control hub
+        clawRightRot = myOpMode.hardwareMap.get(Servo.class,"clawRightRot");
+        // "clawLeftRot" is port 1 on control hub
+        clawLeftRot = myOpMode.hardwareMap.get(Servo.class,"clawLeftRot");
 
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);

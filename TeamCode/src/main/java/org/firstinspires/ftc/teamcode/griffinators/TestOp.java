@@ -14,7 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Localizer;
@@ -26,7 +28,13 @@ import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 public class TestOp extends LinearOpMode {
 
     DcMotor frontLeft, frontRight, backLeft, backRight, sliderLeft, sliderRight;
-    Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
+    ServoImplEx clawExtend, clawGrab, clawRightRot, clawLeftRot;
+
+    Encoder leftSliderEncoder,rightSliderEncoder;
+
+    double leftRot, rightRot, extend=0;
+
+
 
 
     @Override
@@ -36,105 +44,103 @@ public class TestOp extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
-
         //Expansion Hub 0
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
-
         //Control Hub 0
-        frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
-
-
-
+        frontRight =hardwareMap.get(DcMotorEx.class,"rightRear");
         //Expansion Hub 1
         backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
-
         // Control Hub Port 1
-        backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+        backRight = hardwareMap.get(DcMotorEx.class,"rightFront");
+
+
+     /*   rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
+        leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
+*/
 
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
 
 
+
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
 
-
-/*
-        //"ce" is port 5 on control hub
-        clawExtension = hardwareMap.get(Servo.class,"ce");
-        //"c" is port 4
-        clawGrab = hardwareMap.get(Servo.class,"c");
-        //"r" is port 2
-        clawRightRot = hardwareMap.get(Servo.class,"r");
-        // "l" is port 3
-        clawLeftRot = hardwareMap.get(Servo.class,"l");
-*/
-
-
-
-        Localizer localizer= new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
-        Pose2d pose=new Pose2d(0,0,0);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+      //  rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
+
+
+//"clawExtend" is port 2 on control hub
+        clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
+        //"clawGrab" is port 3 on control hub
+        //clawGrab = hardwareMap.get(Servo.class,"clawGrab");
+        //"clawRightRot" is port 0 on control hub
+        clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
+
+        // "clawLeftRot" is port 1 on control hub
+        clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
+
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
-            pose = pose.plus(localizer.update().value());
 
+            if (gamepad2.dpad_up){
+                leftRot+=0.0001;
+            }
+            if (gamepad2.dpad_down){
+                leftRot-=0.0001;
+            }
+            if (gamepad2.y){
+                rightRot+=0.0001;
+            }
+            if (gamepad2.a){
+                rightRot-=0.0001;
+            }
+
+            if (gamepad2.b){
+                extend+=0.0001;
+            }
+            if (gamepad2.x){
+                extend-=0.0001;
+            }
+            if (gamepad1.y){
+                clawExtend.setPosition(extend);
+                telemetry.addData("extended","ex");
+            }
+            if (gamepad1.x){
+                clawLeftRot.setPosition(leftRot);
+            }
             if (gamepad1.b){
-                sliderRight.setTargetPosition(0);
-                sliderLeft.setTargetPosition(0);
-
-                sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                while (sliderLeft.isBusy() && sliderRight.isBusy()){
-                    sliderRight.setPower(0.5);
-                    sliderLeft.setPower(0.5);
-                }
+                clawRightRot.setPosition(rightRot);
             }
-            if (gamepad1.dpad_up){
-                sliderRight.setTargetPosition(4000);
-                sliderLeft.setTargetPosition(4000);
+            telemetry.addData("press b to move | rightRot",rightRot);
+            telemetry.addData("press x to move | leftRot",leftRot);
+            telemetry.addData("press y to move | extend",extend);
 
-                sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            telemetry.update();
 
-                while (sliderLeft.isBusy() && sliderRight.isBusy()){
-                    sliderRight.setPower(0.5);
-                    sliderLeft.setPower(0.5);
-                }
-            }
+            //claw extension 0= full extension | 0.26=full retraction
+            //
 
 
 
 
+/*
+            PositionVelocityPair rightSliderPoseAndVel=rightSliderEncoder.getPositionAndVelocity();
+            PositionVelocityPair leftSliderPoseAndVel=leftSliderEncoder.getPositionAndVelocity();
 
 
-            if ( gamepad1.dpad_up){
-                frontLeft.setPower(-0.5);
-                frontRight.setPower(0.5);
-                backLeft.setPower(0.5);
-                backRight.setPower(-0.5);
+            telemetry.addData("rightSliderEncoder",rightSliderPoseAndVel.position);
+            telemetry.addData("leftSliderEncoder",leftSliderPoseAndVel.position);
 
-            }
+            telemetry.update();
 
-
-
-
-
-
-
-
+*/
 
         }
 
