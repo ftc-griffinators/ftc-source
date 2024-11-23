@@ -45,11 +45,12 @@ public class TeleOperationA extends LinearOpMode {
     private final double CLAW_EXTENDED=0;
     private final double CLAW_RETRACTED=0.26;
     private final double CLAW_ROT_MID=0.54;
-    private final double CLAW_ROT_GROUND=0.19;
-    private final double CLAW_ROT_FRONT=0.25;
+    private final double CLAW_ROT_GROUND=0.20;
+    private final double CLAW_ROT_FRONT=0.28;
     private final double CLAW_GRAB=0.83;
     private final double CLAW_RELEASE=0.71;
-    private final double CLAW_ROT_BACK=0.80;
+    private final double CLAW_ROT_BACK=0.76;
+    private final double CLAW_SPECIMENT=0.50;
 
 
     static int sliderStateTopBox=0;
@@ -180,11 +181,6 @@ public class TeleOperationA extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        sliderLeft.setTargetPosition(50);
-        sliderRight.setTargetPosition(50);
-
-        sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         sliderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -204,9 +200,17 @@ public class TeleOperationA extends LinearOpMode {
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
             if (init==0){
-                clawGrab.setPosition(CLAW_RELEASE);
+                sliderLeft.setTargetPosition(50);
+                sliderRight.setTargetPosition(50);
+
+                sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                clawGrab.setPosition(CLAW_GRAB);
                 rotateClaw(CLAW_ROT_GROUND);
                 clawExtend.setPosition(CLAW_RETRACTED);
+
+
                 init=1;
             }
 
@@ -275,6 +279,11 @@ public class TeleOperationA extends LinearOpMode {
                         break;
                 }
             }
+            if (gamepad1.dpad_down){
+                clawRightRot.setPosition(CLAW_SPECIMENT);
+                clawLeftRot.setPosition(CLAW_SPECIMENT);
+
+            }
 
             //Grounded rotation
             if (gamepad1.a){
@@ -327,6 +336,7 @@ public class TeleOperationA extends LinearOpMode {
                 if (gamepad1.start) {
                     rotationStateTop=0;
                     rotationStateBot=0;
+                    clawExtend.setPosition(CLAW_RETRACTED);
                         sliderRetractionTopBox();
                     clawRightRot.setPosition(CLAW_ROT_GROUND);
                     clawLeftRot.setPosition(CLAW_ROT_GROUND);
@@ -342,8 +352,8 @@ public class TeleOperationA extends LinearOpMode {
 
                         clawRightRot.setPosition(CLAW_ROT_FRONT);
                         clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
+                        Thread.sleep(300);
                         rotationStateTop++;
                         break;
                     case 1:
