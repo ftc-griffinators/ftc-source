@@ -35,6 +35,15 @@ public class TestOp extends LinearOpMode {
     double leftRot, rightRot, extend=0;
 
 
+    private final double CLAW_EXTENDED=0;
+    private final double CLAW_RETRACTED=0.26;
+    private final double CLAW_ROT_MID=0.54;
+    private final double CLAW_ROT_GROUND=0.19;
+    private final double CLAW_ROT_FRONT=0.25;
+    private final double CLAW_GRAB=0.83;
+    private final double CLAW_RELEASE=0.71;
+    private final double CLAW_ROT_BACK=0.80;
+
 
 
     @Override
@@ -75,72 +84,34 @@ public class TestOp extends LinearOpMode {
 //"clawExtend" is port 2 on control hub
         clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
         //"clawGrab" is port 3 on control hub
-        //clawGrab = hardwareMap.get(Servo.class,"clawGrab");
+        clawGrab = hardwareMap.get(ServoImplEx.class,"clawGrab");
         //"clawRightRot" is port 0 on control hub
         clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
 
         // "clawLeftRot" is port 1 on control hub
         clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
 
+        clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
 
+        clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
-
-            if (gamepad2.dpad_up){
-                leftRot+=0.0001;
-            }
-            if (gamepad2.dpad_down){
-                leftRot-=0.0001;
-            }
-            if (gamepad2.y){
-                rightRot+=0.0001;
-            }
-            if (gamepad2.a){
-                rightRot-=0.0001;
+            if (gamepad1.a){
+                clawExtend.setPosition(CLAW_EXTENDED);
             }
 
-            if (gamepad2.b){
-                extend+=0.0001;
-            }
-            if (gamepad2.x){
-                extend-=0.0001;
-            }
-            if (gamepad1.y){
-                clawExtend.setPosition(extend);
-                telemetry.addData("extended","ex");
-            }
-            if (gamepad1.x){
-                clawLeftRot.setPosition(leftRot);
-            }
-            if (gamepad1.b){
-                clawRightRot.setPosition(rightRot);
-            }
-            telemetry.addData("press b to move | rightRot",rightRot);
-            telemetry.addData("press x to move | leftRot",leftRot);
-            telemetry.addData("press y to move | extend",extend);
-
-            telemetry.update();
-
-            //claw extension 0= full extension | 0.26=full retraction
-            //
 
 
 
-
-/*
-            PositionVelocityPair rightSliderPoseAndVel=rightSliderEncoder.getPositionAndVelocity();
-            PositionVelocityPair leftSliderPoseAndVel=leftSliderEncoder.getPositionAndVelocity();
-
-
-            telemetry.addData("rightSliderEncoder",rightSliderPoseAndVel.position);
-            telemetry.addData("leftSliderEncoder",leftSliderPoseAndVel.position);
-
-            telemetry.update();
-
-*/
 
         }
 

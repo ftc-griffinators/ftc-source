@@ -17,7 +17,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,15 +34,45 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
+    double test=0;
 
 
+    double leftRot, rightRot, extend=0;
     DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;
-    Servo clawGrab2, clawGrab, clawRightRot, clawLeftRot, clawExtend;
+    ServoImplEx  clawGrab, clawRightRot, clawLeftRot, clawExtend;
+
+
+    private final double CLAW_EXTENDED=0;
+    private final double CLAW_RETRACTED=0.26;
+    private final double CLAW_ROT_MID=0.54;
+    private final double CLAW_ROT_GROUND=0.19;
+    private final double CLAW_ROT_FRONT=0.25;
+    private final double CLAW_GRAB=0.83;
+    private final double CLAW_RELEASE=0.71;
+    private final double CLAW_ROT_BACK=0.80;
+
+
+    static int sliderStateTopBox=0;
+    static int sliderStateMidBox=0;
+    int clawExtendState=0;
+    int rotationStateTop=0;
+    int rotationStateBot=0;
+    int clawGrabState=0;
+
+    int init=0;
+
+
+    public void rotateClaw(double position){
+        clawRightRot.setPosition(position);
+        clawLeftRot.setPosition(position);
+    }
+
+
 
 
     public void sliderExtensionTopBox(){
-        sliderRight.setTargetPosition(4100);
-        sliderLeft.setTargetPosition(4100);
+        sliderRight.setTargetPosition(4200);
+        sliderLeft.setTargetPosition(4200);
         smoothing(sliderLeft.getCurrentPosition());
 
         // smoothing(sliderLeft.getCurrentPosition());
@@ -100,16 +132,26 @@ public class TeleOperationA extends LinearOpMode {
 
 
         //"clawExtend" is port 2 on control hub
-        clawExtend = hardwareMap.get(Servo.class,"clawExtend");
+        clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
 
         //"clawRightRot" is port 0 on control hub
-        clawRightRot = hardwareMap.get(Servo.class,"clawRightRot");
+        clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
 
         // "clawLeftRot" is port 1 on control hub
-        clawLeftRot = hardwareMap.get(Servo.class,"clawLeftRot");
+        clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
+        //"clawGrab" is port 3
+        clawGrab=hardwareMap.get(ServoImplEx.class,"clawGrab");
 
-        int sliderStateTopBox=0;
-        int sliderStateMidBox=0;
+
+
+        clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+        clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
+        clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+
 
 
 
@@ -149,8 +191,11 @@ public class TeleOperationA extends LinearOpMode {
 
         Pose2d pose = new Pose2d(0, 0, 0);
 
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        clawLeftRot.setDirection(Servo.Direction.REVERSE);
         waitForStart();
 
 
@@ -158,32 +203,13 @@ public class TeleOperationA extends LinearOpMode {
         //Field centric mecanum drive
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
+            if (init==0){
+                clawGrab.setPosition(CLAW_RELEASE);
+                rotateClaw(CLAW_ROT_GROUND);
+                clawExtend.setPosition(CLAW_RETRACTED);
+                init=1;
+            }
 
-
-           /* if (gamepad1.a) {
-                clawLeftRot.setPosition(clawLeftRot.getPosition()+ 0.1);
-                clawRightRot.setPosition(clawRightRot.getPosition()+0.1);
-            }
-            if (gamepad1.b) {
-                clawLeftRot.setPosition(clawLeftRot.getPosition()- 0.1);
-                clawRightRot.setPosition(clawRightRot.getPosition()- 0.1);
-            }
-*/
-
-            if (gamepad1.a){
-                clawLeftRot.setPosition(0.5);
-            }
-            if (gamepad1.b){
-                clawLeftRot.setPosition(1);
-            }
-//            if (gamepad1.right_bumper){
-//                clawGrab.setPosition(clawGrab.getPosition()+0.25);
-//                clawGrab2.setPosition(clawGrab2.getPosition()+0.25);
-//            }
-//            if (gamepad1.left_bumper){
-//                clawGrab.setPosition(clawGrab.getPosition()-0.25);
-//                clawGrab2.setPosition(clawGrab2.getPosition()-0.25);
-//            }
 
 
 
@@ -205,7 +231,7 @@ public class TeleOperationA extends LinearOpMode {
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
 
-            telemetry.addData("denominator", denominator);
+
 
             double frontLeftPower = (rotY + rotX + turn) / denominator;
             double frontRightPower = (rotY - rotX - turn )/ denominator;
@@ -213,21 +239,65 @@ public class TeleOperationA extends LinearOpMode {
             double backRightPower = (rotY + rotX - turn) / denominator;
 
 
-            telemetry.addData("frontLeftPower", frontLeftPower);
-            telemetry.addData("backLeftPower", backLeftPower);
-            telemetry.addData("frontRightPower", frontRightPower);
-            telemetry.addData("backRightPower", backRightPower);
 
 
 
-            telemetry.update();
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
-//Slider move to the top basket
+
+
+            //GRABBING TOGGLE
+            if (gamepad1.right_bumper){
+                switch (clawGrabState){
+                    case 0: clawGrab.setPosition(CLAW_GRAB);
+                        Thread.sleep(300);
+                        clawGrabState=1;
+                        break;
+                    case 1: clawGrab.setPosition(CLAW_RELEASE);
+                        Thread.sleep(300);
+                        clawGrabState=0;
+                        break;
+                }
+            }
+            //EXTENSION
+            if (gamepad1.left_bumper){
+                switch (clawExtendState){
+                    case 0: clawExtend.setPosition(CLAW_EXTENDED);
+                        Thread.sleep(300);
+                        clawExtendState=1;
+                        break;
+                    case 1: clawExtend.setPosition(CLAW_RETRACTED);
+                        Thread.sleep(300);
+                        clawExtendState=0;
+                        break;
+                }
+            }
+
+            //Grounded rotation
+            if (gamepad1.a){
+                clawRightRot.setPosition(CLAW_ROT_GROUND);
+                clawLeftRot.setPosition(CLAW_ROT_GROUND);
+            }
+            //Forward Rotation
             if (gamepad1.x){
+                clawRightRot.setPosition(CLAW_ROT_FRONT);
+                clawLeftRot.setPosition(CLAW_ROT_FRONT);
+            }
+
+            //point up rotation
+            if (gamepad1.dpad_left){
+                clawRightRot.setPosition(CLAW_ROT_MID);
+                clawLeftRot.setPosition(CLAW_ROT_MID);
+            }
+
+
+            //Slider move to the top basket
+
+            /*
+            if (gamepad1.dpad_up){
                 switch (sliderStateTopBox){
                     case 0: sliderExtensionTopBox();
                         sliderStateTopBox=1;
@@ -238,20 +308,193 @@ public class TeleOperationA extends LinearOpMode {
                         break;
                 }
             }
+            */
+
             //Slider move to the middle basket
-            if (gamepad1.y){
+            if (gamepad1.dpad_up){
                 switch (sliderStateMidBox){
                     case 0:sliderExtensionMidBox();
-                    sliderStateMidBox=1;
-                    sliderStateTopBox=0;
-                    break;
+                        sliderStateMidBox=1;
+                        sliderStateTopBox=0;
+                        break;
                     case 1: sliderRetractionMidBox();
-                    sliderStateMidBox=0;
-                    break;
+                        sliderStateMidBox=0;
+                        break;
+                }
+            }
+
+            //Reset Basket scoring
+                if (gamepad1.start) {
+                    rotationStateTop=0;
+                    rotationStateBot=0;
+                        sliderRetractionTopBox();
+                    clawRightRot.setPosition(CLAW_ROT_GROUND);
+                    clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                }
+
+
+
+            //Grab success Basket scoring phase
+
+            if (gamepad1.y){
+                switch (rotationStateTop){
+                    case 0:
+
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        rotationStateTop++;
+                        break;
+                    case 1:
+                        sliderExtensionTopBox();
+                        clawRightRot.setPosition(CLAW_ROT_BACK);
+                        clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        clawExtend.setPosition(CLAW_EXTENDED);
+                        Thread.sleep(300);
+                        rotationStateTop++;
+                        break;
+                    case 2:
+                        clawGrab.setPosition(CLAW_RELEASE);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        sliderRetractionTopBox();
+                        rotationStateTop++;
+                        break;
+                    case 3:
+                        clawRightRot.setPosition(CLAW_ROT_GROUND);
+                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        Thread.sleep(300);
+                        rotationStateTop=0;
+                        break;
                 }
             }
 
 
+            if (gamepad1.b){
+                switch (rotationStateBot){
+                    case 0:
+
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        rotationStateBot++;
+                        break;
+                    case 1:
+                        sliderExtensionMidBox();
+                        clawRightRot.setPosition(CLAW_ROT_BACK);
+                        clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        clawExtend.setPosition(CLAW_EXTENDED);
+                        Thread.sleep(300);
+                        rotationStateBot++;
+                        break;
+                    case 2:
+                        clawGrab.setPosition(CLAW_RELEASE);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        sliderRetractionMidBox();
+                        rotationStateBot++;
+                        break;
+                    case 3:
+                        clawRightRot.setPosition(CLAW_ROT_GROUND);
+                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        Thread.sleep(300);
+                        rotationStateBot=0;
+                        break;
+                }
+            }
+
+            }
+        /*    if (gamepad1.b){
+                switch (rotationState){
+                    case 0:
+
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        rotationState++;
+                        break;
+                    case 1:
+                        sliderExtensionTopBox();
+                        clawRightRot.setPosition(CLAW_ROT_BACK);
+                        clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        clawExtend.setPosition(CLAW_EXTENDED);
+                        Thread.sleep(300);
+                        rotationState++;
+                        break;
+                    case 2:
+                        clawGrab.setPosition(CLAW_RELEASE);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        sliderRetractionTopBox();
+                        rotationState++;
+                        break;
+                    case 3:
+                        clawRightRot.setPosition(CLAW_ROT_GROUND);
+                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        Thread.sleep(300);
+                        rotationState=0;
+                        break;
+                }
+            }
+
+
+            if (gamepad1.x){
+                switch (rotationState){
+                    case 0:
+
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        rotationState++;
+                        break;
+                    case 1:
+                        sliderExtensionTopBox();
+                        clawRightRot.setPosition(CLAW_ROT_BACK);
+                        clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        clawExtend.setPosition(CLAW_EXTENDED);
+                        Thread.sleep(300);
+                        rotationState++;
+                        break;
+                    case 2:
+                        clawGrab.setPosition(CLAW_RELEASE);
+                        Thread.sleep(300);
+                        clawExtend.setPosition(CLAW_RETRACTED);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                        sliderRetractionTopBox();
+                        rotationState++;
+                        break;
+                    case 3:
+                        clawRightRot.setPosition(CLAW_ROT_GROUND);
+                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        Thread.sleep(300);
+                        rotationState=0;
+                        break;
+                }
+            }
+
+*/
+
+            /*
+
+
+
+
+            //left servo 0.97 drop
+            //0.4 backwards
+            //0.65 mid/netural
+*/
+
+
         }
     }
-}
