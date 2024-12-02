@@ -30,7 +30,7 @@ public class TestOp extends LinearOpMode {
     DcMotor frontLeft, frontRight, backLeft, backRight, sliderLeft, sliderRight;
     ServoImplEx clawExtend, clawGrab, clawRightRot, clawLeftRot;
 
-    Encoder leftSliderEncoder,rightSliderEncoder;
+    Encoder leftSliderEncoder,rightSliderEncoder,perp,par0,par1;
 
     double leftRot, rightRot, extend=0;
 
@@ -62,9 +62,21 @@ public class TestOp extends LinearOpMode {
         // Control Hub Port 1
         backRight = hardwareMap.get(DcMotorEx.class,"rightFront");
 
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+
         rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
 
+
+        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
+
+        //Expansion hub 0, Left encoder
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
+        par1.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //Control Hub Port 1, Back encoder
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
 
@@ -106,19 +118,37 @@ public class TestOp extends LinearOpMode {
             if (gamepad1.y){
                 frontLeft.setPower(0.5);
             }
+            else {
+                frontLeft.setPower(0);
+            }
             if (gamepad1.b){
                 frontRight.setPower(0.5);
             }
+            else {
+                frontRight.setPower(0);
+            }
             if (gamepad1.x){
                 backLeft.setPower(0.5);
-
             }
+            else {
+                backLeft.setPower(0);
+            }
+
             if (gamepad1.a){
                 backRight.setPower(0.5);
             }
+            else {
+                backRight.setPower(0);
+            }
 
 
 
+            telemetry.addData("par0",par0.getPositionAndVelocity().position);
+            telemetry.addData("par1",par1.getPositionAndVelocity().position);
+            telemetry.addData("perp",perp.getPositionAndVelocity().position);
+
+
+            telemetry.update();
 
 
         }

@@ -60,7 +60,7 @@ public class TeleOperationA extends LinearOpMode {
     int rotationStateBot=0;
     int clawGrabState=0;
 
-    int init=0;
+    int init=1;
 
 
     public void rotateClaw(double position){
@@ -118,6 +118,7 @@ public class TeleOperationA extends LinearOpMode {
         telemetry.update();
         //Expansion Hub 0
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
+        //TODO switch the right front and right rear port
         //Control Hub 0
         frontRight =hardwareMap.get(DcMotorEx.class,"rightRear");
         //Expansion Hub 1
@@ -229,8 +230,8 @@ public class TeleOperationA extends LinearOpMode {
             telemetry.addData("turn", turn);
 
             double heading = pose.heading.toDouble();
-            double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
-            double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
+            double rotX = x * Math.cos(heading) - y * Math.sin(heading);
+            double rotY = x * Math.sin(heading) + y * Math.cos(heading);
 
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
