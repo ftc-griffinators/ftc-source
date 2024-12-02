@@ -150,6 +150,7 @@ public class TeleOperationA extends LinearOpMode {
         clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
 
         clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
+        
         clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
 
 
@@ -219,7 +220,7 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
-            double x = -gamepad1.left_stick_x;
+            double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double turn= gamepad1.right_stick_x;
 

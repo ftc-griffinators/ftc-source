@@ -62,10 +62,8 @@ public class TestOp extends LinearOpMode {
         // Control Hub Port 1
         backRight = hardwareMap.get(DcMotorEx.class,"rightFront");
 
-
-     /*   rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
+        rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
-*/
 
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
@@ -78,7 +76,7 @@ public class TestOp extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-      //  rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
+       rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
 
 
 //"clawExtend" is port 2 on control hub
@@ -105,8 +103,18 @@ public class TestOp extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
+            if (gamepad1.y){
+                frontLeft.setPower(0.5);
+            }
+            if (gamepad1.b){
+                frontRight.setPower(0.5);
+            }
+            if (gamepad1.x){
+                backLeft.setPower(0.5);
+
+            }
             if (gamepad1.a){
-                clawExtend.setPosition(CLAW_EXTENDED);
+                backRight.setPower(0.5);
             }
 
 
