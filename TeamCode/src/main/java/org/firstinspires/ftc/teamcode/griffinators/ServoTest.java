@@ -50,18 +50,23 @@ public class ServoTest extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             if (gamepad1.a) {
-                clawLeftRot.setPosition(clawLeftRot.getPosition()+ 0.02);
-                sleep(20);
-                clawRightRot.setPosition(clawRightRot.getPosition()+0.02);
-                sleep(20);
+                clawLeftRot.setPosition(clawLeftRot.getPosition()+ 0.1);
+                sleep(200);
+                clawRightRot.setPosition(clawRightRot.getPosition()+0.1);
+                sleep(200);
 
             }
             if (gamepad1.b) {
                 clawLeftRot.setPosition(clawLeftRot.getPosition()- 0.10 );
-                sleep(20);
+                sleep(200);
 
                 clawRightRot.setPosition(clawRightRot.getPosition()- 0.10);
-                sleep(20);
+                sleep(200);
 
             }
+
+            if (gamepad1.dpad_left){
+                clawLeftRot.setPosition(0);
+            }
+
     }}}

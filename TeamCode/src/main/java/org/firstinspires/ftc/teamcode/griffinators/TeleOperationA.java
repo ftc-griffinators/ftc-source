@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,11 +18,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.teamcode.griffinators.Parts.PIDController;
 
 
 @TeleOp(name ="TeleOperationA",group = "Robot")
@@ -45,22 +39,22 @@ public class TeleOperationA extends LinearOpMode {
     private final double CLAW_EXTENDED=0;
     private final double CLAW_RETRACTED=0.26;
     private final double CLAW_ROT_MID=0.54;
-    private final double CLAW_ROT_GROUND=0.20;
+    private final double CLAW_ROT_GROUND=0.205;
     private final double CLAW_ROT_FRONT=0.28;
     private final double CLAW_GRAB=0.83;
     private final double CLAW_RELEASE=0.71;
     private final double CLAW_ROT_BACK=0.76;
-    private final double CLAW_SPECIMENT=0.50;
+
 
 
     static int sliderStateTopBox=0;
     static int sliderStateMidBox=0;
     int clawExtendState=0;
-    int rotationStateTop=0;
-    int rotationStateBot=0;
+    int boxScoringStateTop=0;
+    int boxScoringStateBot =0;
     int clawGrabState=0;
 
-    int init=1;
+    int init=0;
 
 
     public void rotateClaw(double position){
@@ -101,13 +95,16 @@ public class TeleOperationA extends LinearOpMode {
     }
 
 
+
+
+
     private void smoothing(int initial){
 
-        while (sliderLeft.isBusy() && sliderRight.isBusy() ){
+
             sliderRight.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderRight.getCurrentPosition())));
             sliderLeft.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderLeft.getCurrentPosition())));
 
-        }
+
     }
 
     @Override
@@ -120,11 +117,11 @@ public class TeleOperationA extends LinearOpMode {
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
         //TODO switch the right front and right rear port
         //Control Hub 0
-        frontRight =hardwareMap.get(DcMotorEx.class,"rightRear");
+        frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
         //Expansion Hub 1
         backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
         // Control Hub Port 1
-        backRight = hardwareMap.get(DcMotorEx.class,"rightFront");
+        backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
 
         // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
@@ -221,6 +218,7 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
+
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double turn= gamepad1.right_stick_x;
@@ -248,10 +246,11 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
-            frontLeft.setPower(frontLeftPower);
-            backLeft.setPower(backLeftPower);
-            frontRight.setPower(frontRightPower);
-            backRight.setPower(backRightPower);
+            frontLeft.setPower(frontLeftPower*0.8);
+            backLeft.setPower(backLeftPower*0.8);
+            frontRight.setPower(frontRightPower*0.8);
+            backRight.setPower(backRightPower*0.8);
+
 
 
 
@@ -281,11 +280,7 @@ public class TeleOperationA extends LinearOpMode {
                         break;
                 }
             }
-            if (gamepad1.dpad_down){
-                clawRightRot.setPosition(CLAW_SPECIMENT);
-                clawLeftRot.setPosition(CLAW_SPECIMENT);
 
-            }
 
             //Grounded rotation
             if (gamepad1.a){
@@ -336,8 +331,8 @@ public class TeleOperationA extends LinearOpMode {
 
             //Reset Basket scoring
                 if (gamepad1.start) {
-                    rotationStateTop=0;
-                    rotationStateBot=0;
+                    boxScoringStateTop=0;
+                    boxScoringStateBot =0;
                     clawExtend.setPosition(CLAW_RETRACTED);
                         sliderRetractionTopBox();
                     clawRightRot.setPosition(CLAW_ROT_GROUND);
@@ -349,74 +344,63 @@ public class TeleOperationA extends LinearOpMode {
             //Grab success Basket scoring phase
 
             if (gamepad1.y){
-                switch (rotationStateTop){
+                switch (boxScoringStateTop){
                     case 0:
 
                         clawRightRot.setPosition(CLAW_ROT_FRONT);
                         clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         clawExtend.setPosition(CLAW_RETRACTED);
                         Thread.sleep(300);
-                        rotationStateTop++;
+                        boxScoringStateTop++;
                         break;
                     case 1:
                         sliderExtensionTopBox();
                         clawRightRot.setPosition(CLAW_ROT_BACK);
                         clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        Thread.sleep(500);
                         clawExtend.setPosition(CLAW_EXTENDED);
-                        Thread.sleep(300);
-                        rotationStateTop++;
+                        boxScoringStateTop++;
                         break;
                     case 2:
                         clawGrab.setPosition(CLAW_RELEASE);
                         Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        sliderRetractionTopBox();
-                        rotationStateTop++;
-                        break;
-                    case 3:
                         clawRightRot.setPosition(CLAW_ROT_GROUND);
                         clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                        Thread.sleep(300);
-                        rotationStateTop=0;
+                        sliderRetractionTopBox();
+                        boxScoringStateTop=0;;
                         break;
+
                 }
             }
 
 
             if (gamepad1.b){
-                switch (rotationStateBot){
+                switch (boxScoringStateBot){
                     case 0:
 
                         clawRightRot.setPosition(CLAW_ROT_FRONT);
                         clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
-                        rotationStateBot++;
+                        boxScoringStateBot++;
                         break;
                     case 1:
                         sliderExtensionMidBox();
                         clawRightRot.setPosition(CLAW_ROT_BACK);
                         clawLeftRot.setPosition(CLAW_ROT_BACK);
+                        Thread.sleep(500);
                         clawExtend.setPosition(CLAW_EXTENDED);
-                        Thread.sleep(300);
-                        rotationStateBot++;
+                        boxScoringStateBot++;
                         break;
                     case 2:
                         clawGrab.setPosition(CLAW_RELEASE);
                         Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        sliderRetractionMidBox();
-                        rotationStateBot++;
-                        break;
-                    case 3:
                         clawRightRot.setPosition(CLAW_ROT_GROUND);
                         clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                        Thread.sleep(300);
-                        rotationStateBot=0;
+                        sliderRetractionMidBox();
+                        boxScoringStateBot =0;
                         break;
                 }
             }
