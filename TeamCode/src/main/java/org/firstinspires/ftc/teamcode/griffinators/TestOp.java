@@ -27,10 +27,9 @@ import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 
 public class TestOp extends LinearOpMode {
 
-    DcMotor frontLeft, frontRight, backLeft, backRight, sliderLeft, sliderRight;
-    ServoImplEx clawExtend, clawGrab, clawRightRot, clawLeftRot;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;
 
-    Encoder leftSliderEncoder,rightSliderEncoder,perp,par0,par1;
+    Encoder leftSliderEncoder,rightSliderEncoder;
 
     double leftRot, rightRot, extend=0;
 
@@ -53,33 +52,42 @@ public class TestOp extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        //Expansion Hub 0
         frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
+        //TODO switch the right front and right rear port
         //Control Hub 0
-        frontRight =hardwareMap.get(DcMotorEx.class,"rightRear");
+        frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
         //Expansion Hub 1
         backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
         // Control Hub Port 1
-        backRight = hardwareMap.get(DcMotorEx.class,"rightFront");
+        backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
+
+
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
 
 
-        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
 
-        //Expansion hub 0, Left encoder
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
-        par1.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //Control Hub Port 1, Back encoder
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));
-        // Expansion Hub 2
+       // Expansion Hub 2
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
-
+        sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         //Control Hub port 2
@@ -90,62 +98,53 @@ public class TestOp extends LinearOpMode {
 
        rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
 
+        Pose2d pose = new Pose2d(0, 0, 0);
 
-//"clawExtend" is port 2 on control hub
-        clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
-        //"clawGrab" is port 3 on control hub
-        clawGrab = hardwareMap.get(ServoImplEx.class,"clawGrab");
-        //"clawRightRot" is port 0 on control hub
-        clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
 
-        // "clawLeftRot" is port 1 on control hub
-        clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
+        ThreeDeadWheelLocalizer localizer=new ThreeDeadWheelLocalizer(hardwareMap,MecanumDrive.PARAMS.inPerTick);
 
-        clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
         while (opModeIsActive()){
-            if (gamepad1.y){
-                frontLeft.setPower(0.5);
-            }
-            else {
-                frontLeft.setPower(0);
-            }
-            if (gamepad1.b){
-                frontRight.setPower(0.5);
-            }
-            else {
-                frontRight.setPower(0);
-            }
-            if (gamepad1.x){
-                backLeft.setPower(0.5);
-            }
-            else {
-                backLeft.setPower(0);
-            }
+            pose = pose.plus(localizer.update().value());
 
-            if (gamepad1.a){
-                backRight.setPower(0.5);
-            }
-            else {
-                backRight.setPower(0);
-            }
+            double x = gamepad1.left_stick_x;
+            double y = -gamepad1.left_stick_y;
+            double turn= gamepad1.right_stick_x;
+
+
+            double heading = pose.heading.toDouble();
+            double rotX = x * Math.cos(heading) - y * Math.sin(heading);
+            double rotY = x * Math.sin(heading) + y * Math.cos(heading);
+
+
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
 
 
-            telemetry.addData("par0",par0.getPositionAndVelocity().position);
-            telemetry.addData("par1",par1.getPositionAndVelocity().position);
-            telemetry.addData("perp",perp.getPositionAndVelocity().position);
+
+            double frontLeftPower = (rotY + rotX + turn) / denominator;
+            double frontRightPower = (rotY - rotX - turn )/ denominator;
+            double backLeftPower = (rotY - rotX + turn )/ denominator;
+            double backRightPower = (rotY + rotX - turn) / denominator;
+
+
+
+
+
+            frontLeft.setPower(frontLeftPower*0.8);
+            backLeft.setPower(backLeftPower*0.8);
+            frontRight.setPower(frontRightPower*0.8);
+            backRight.setPower(backRightPower*0.8);
+
+
+
+
+            telemetry.addData("par0",localizer.par0.getPositionAndVelocity().position);
+            telemetry.addData("par1",localizer.par1.getPositionAndVelocity().position);
+            telemetry.addData("perp",localizer.perp.getPositionAndVelocity().position);
 
 
             telemetry.update();

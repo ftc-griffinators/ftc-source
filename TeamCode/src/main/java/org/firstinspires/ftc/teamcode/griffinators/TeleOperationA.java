@@ -205,7 +205,7 @@ public class TeleOperationA extends LinearOpMode {
                 sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                clawGrab.setPosition(CLAW_GRAB);
+                clawGrab.setPosition(CLAW_RELEASE);
                 rotateClaw(CLAW_ROT_GROUND);
                 clawExtend.setPosition(CLAW_RETRACTED);
 
@@ -223,9 +223,6 @@ public class TeleOperationA extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             double turn= gamepad1.right_stick_x;
 
-            telemetry.addData("x", x);
-            telemetry.addData("y", y);
-            telemetry.addData("turn", turn);
 
             double heading = pose.heading.toDouble();
             double rotX = x * Math.cos(heading) - y * Math.sin(heading);
@@ -406,90 +403,7 @@ public class TeleOperationA extends LinearOpMode {
             }
 
             }
-        /*    if (gamepad1.b){
-                switch (rotationState){
-                    case 0:
 
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        Thread.sleep(300);
-                        clawExtend.setPosition(CLAW_RETRACTED);
-                        rotationState++;
-                        break;
-                    case 1:
-                        sliderExtensionTopBox();
-                        clawRightRot.setPosition(CLAW_ROT_BACK);
-                        clawLeftRot.setPosition(CLAW_ROT_BACK);
-                        clawExtend.setPosition(CLAW_EXTENDED);
-                        Thread.sleep(300);
-                        rotationState++;
-                        break;
-                    case 2:
-                        clawGrab.setPosition(CLAW_RELEASE);
-                        Thread.sleep(300);
-                        clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        sliderRetractionTopBox();
-                        rotationState++;
-                        break;
-                    case 3:
-                        clawRightRot.setPosition(CLAW_ROT_GROUND);
-                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                        Thread.sleep(300);
-                        rotationState=0;
-                        break;
-                }
-            }
-
-
-            if (gamepad1.x){
-                switch (rotationState){
-                    case 0:
-
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        Thread.sleep(300);
-                        clawExtend.setPosition(CLAW_RETRACTED);
-                        rotationState++;
-                        break;
-                    case 1:
-                        sliderExtensionTopBox();
-                        clawRightRot.setPosition(CLAW_ROT_BACK);
-                        clawLeftRot.setPosition(CLAW_ROT_BACK);
-                        clawExtend.setPosition(CLAW_EXTENDED);
-                        Thread.sleep(300);
-                        rotationState++;
-                        break;
-                    case 2:
-                        clawGrab.setPosition(CLAW_RELEASE);
-                        Thread.sleep(300);
-                        clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_FRONT);
-                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
-                        sliderRetractionTopBox();
-                        rotationState++;
-                        break;
-                    case 3:
-                        clawRightRot.setPosition(CLAW_ROT_GROUND);
-                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                        Thread.sleep(300);
-                        rotationState=0;
-                        break;
-                }
-            }
-
-*/
-
-            /*
-
-
-
-
-            //left servo 0.97 drop
-            //0.4 backwards
-            //0.65 mid/netural
-*/
 
 
         }

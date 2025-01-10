@@ -64,13 +64,13 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.0029351323;
-        public double lateralInPerTick = 0.0021752822542179108;
-        public double trackWidthTicks = 5175.703698586717;
+        public double lateralInPerTick = 0.002160631061436812;
+        public double trackWidthTicks = 5218.631600778634;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8386045830199724;
-        public double kV = 0.0005780059019899397;
-        public double kA = 0.0001;
+        public double kS = 0.8036854487198668;
+        public double kV = 0.0005763899660573857;
+        public double kA = 0.0000955;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -83,11 +83,11 @@ public final class MecanumDrive {
 
         // path controller gains
         public double axialGain = 10;
-        public double lateralGain = 7;
-        public double headingGain = 0.0; // shared with turn
+        public double lateralGain = 6;
+        public double headingGain = 2; // shared with turn
 
         public double axialVelGain = 0.5;
-        public double lateralVelGain = 1.5;
+        public double lateralVelGain = 0.1;
         public double headingVelGain = 0.15; // shared with turn
     }
 
@@ -296,7 +296,18 @@ public final class MecanumDrive {
                 t = Actions.now() - beginTs;
             }
 
-            if (t >= timeTrajectory.duration+0.5) {
+
+
+            Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
+            targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
+
+            PoseVelocity2d robotVelRobot = updatePoseEstimate();
+
+            Pose2d error = txWorldTarget.value().minusExp(pose);
+
+
+            if ((t >= timeTrajectory.duration && error.position.norm() < 2.5
+                    && robotVelRobot.linearVel.norm() < 1 && robotVelRobot.angVel < 0.2 && Math.abs(error.heading.toDouble()) < 3) || t >= timeTrajectory.duration + 2) {
                 leftFront.setPower(0);
                 leftBack.setPower(0);
                 rightBack.setPower(0);
@@ -304,11 +315,6 @@ public final class MecanumDrive {
 
                 return false;
             }
-
-            Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
-            targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
-
-            PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
                     PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
@@ -339,7 +345,7 @@ public final class MecanumDrive {
             p.put("y", pose.position.y);
             p.put("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 
-            Pose2d error = txWorldTarget.value().minusExp(pose);
+
             p.put("xError", error.position.x);
             p.put("yError", error.position.y);
             p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));

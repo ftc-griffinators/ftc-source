@@ -32,17 +32,15 @@ public class BlueSampleAuto extends LinearOpMode {
                 .strafeTo(first.position).build();
         Action moveToSubmersible2= mecanumDrive.actionBuilder(first)
                 .strafeTo(second.position).build();
-        Action moveToSubmersible3  = mecanumDrive.actionBuilder(second)
-                .splineTo(mecanumDrive.pose.position, 0).build();
+        Action moveToSubmersible3  = mecanumDrive.actionBuilder(mecanumDrive.pose)
+                .turnTo(-Math.PI/2).build();
 
 
 
         waitForStart();
 
-        for (int i = 0; i < 5; i++) {
-            Actions.runBlocking(moveToSubmersible);
-            Actions.runBlocking(moveToSubmersible2);
+
             Actions.runBlocking(moveToSubmersible3);
-        }
+
     }
 }
