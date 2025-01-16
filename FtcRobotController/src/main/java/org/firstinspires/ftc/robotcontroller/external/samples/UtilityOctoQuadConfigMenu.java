@@ -51,7 +51,7 @@ import java.util.Stack;
  *
  * See the sensor's product page: https://www.tindie.com/products/digitalchickenlabs/octoquad-8ch-quadrature-pulse-width-decoder/
  */
-@TeleOp(name = "OctoQuad Configuration Tool", group="OctoQuad")
+@TeleOp(name = "OctoQuad Configuration Tool", group = "OctoQuad")
 @Disabled
 public class UtilityOctoQuadConfigMenu extends LinearOpMode
 {
@@ -84,16 +84,15 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
     {
         octoquad = hardwareMap.getAll(OctoQuad.class).get(0);
 
-        if(octoquad.getChipId() != OctoQuad.OCTOQUAD_CHIP_ID)
+        if (octoquad.getChipId() != OctoQuad.OCTOQUAD_CHIP_ID)
         {
             telemetry.addLine("Error: cannot communicate with OctoQuad. Check your wiring and configuration and try again");
             telemetry.update();
 
             error = true;
-        }
-        else
+        } else
         {
-            if(octoquad.getFirmwareVersion().maj != OctoQuad.SUPPORTED_FW_VERSION_MAJ)
+            if (octoquad.getFirmwareVersion().maj != OctoQuad.SUPPORTED_FW_VERSION_MAJ)
             {
                 telemetry.addLine("Error: The OctoQuad is running a different major firmware version than this driver was built for. Cannot run configuration tool");
                 telemetry.update();
@@ -102,7 +101,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             }
         }
 
-        if(error)
+        if (error)
         {
             waitForStart();
             return;
@@ -126,7 +125,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
         menuHwInfo.addChild(new TelemetryMenu.StaticItem("Board Firmware: v" + octoquad.getFirmwareVersion()));
         //menuHwInfo.addChild(new TelemetryMenu.StaticItem("Board unique ID: FIXME"));
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
             optionsEncoderDirections[i] = new TelemetryMenu.BooleanOption(
                     String.format("Encoder %d direction", i),
@@ -136,7 +135,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
         }
         menuEncoderDirections.addChildren(optionsEncoderDirections);
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
             optionsVelocityIntervals[i] = new TelemetryMenu.IntegerOption(
                     String.format("Chan %d velocity intvl", i),
@@ -146,7 +145,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
         }
         menuVelocityIntervals.addChildren(optionsVelocityIntervals);
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
             OctoQuad.ChannelPulseWidthParams params = octoquad.getSingleChannelPulseWidthParams(i);
 
@@ -173,17 +172,15 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                if(lastClickTime == 0)
+                if (lastClickTime == 0)
                 {
                     return name;
-                }
-                else
+                } else
                 {
-                    if(System.currentTimeMillis() - lastClickTime < 1000)
+                    if (System.currentTimeMillis() - lastClickTime < 1000)
                     {
                         return name + " **OK**";
-                    }
-                    else
+                    } else
                     {
                         lastClickTime = 0;
                         return name;
@@ -208,17 +205,15 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                if(lastClickTime == 0)
+                if (lastClickTime == 0)
                 {
                     return name;
-                }
-                else
+                } else
                 {
-                    if(System.currentTimeMillis() - lastClickTime < 1000)
+                    if (System.currentTimeMillis() - lastClickTime < 1000)
                     {
                         return name + " **OK**";
-                    }
-                    else
+                    } else
                     {
                         lastClickTime = 0;
                         return name;
@@ -256,7 +251,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
     void sendSettingsToRam()
     {
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
             octoquad.setSingleEncoderDirection(i, optionsEncoderDirections[i].getValue() ? OctoQuad.EncoderDirection.REVERSE : OctoQuad.EncoderDirection.FORWARD);
             octoquad.setSingleVelocitySampleInterval(i, optionsVelocityIntervals[i].getValue());
@@ -296,24 +291,22 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
     public static class TelemetryMenu
     {
         private final MenuElement root;
+        private final Telemetry telemetry;
         private MenuElement currentLevel;
-
         private boolean dpadUpPrev;
         private boolean dpadDnPrev;
         private boolean dpadRightPrev;
         private boolean dpadLeftPrev;
         private boolean xPrev;
         private boolean lbPrev;
-
         private int selectedIdx = 0;
         private Stack<Integer> selectedIdxStack = new Stack<>();
 
-        private final Telemetry telemetry;
-
         /**
          * TelemetryMenu constructor
+         *
          * @param telemetry pass in 'telemetry' from your OpMode
-         * @param root the root menu element
+         * @param root      the root menu element
          */
         public TelemetryMenu(Telemetry telemetry, MenuElement root)
         {
@@ -328,6 +321,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
         /**
          * Call this from inside your loop to put the current menu state into
          * telemetry, and process gamepad inputs for navigating the menu
+         *
          * @param gamepad the gamepad you want to use to navigate the menu
          */
         public void loop(Gamepad gamepad)
@@ -353,8 +347,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
                 if (dpadRight && !dpadRightPrev) // rising edge
                 {
                     ((OptionElement) currentSelection).onRightInput();
-                }
-                else if (dpadLeft && !dpadLeftPrev) // rising edge
+                } else if (dpadLeft && !dpadLeftPrev) // rising edge
                 {
                     ((OptionElement) currentSelection).onLeftInput();
                 }
@@ -364,8 +357,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             if (dpadUp && !dpadUpPrev) // rising edge
             {
                 selectedIdx--; // Move selection pointer up
-            }
-            else if (dpadDn && !dpadDnPrev) // rising edge
+            } else if (dpadDn && !dpadDnPrev) // rising edge
             {
                 selectedIdx++; // Move selection pointer down
             }
@@ -373,9 +365,8 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             // Make selected index sane (don't let it go out of bounds) :eyes:
             if (selectedIdx >= children.size())
             {
-                selectedIdx = children.size()-1;
-            }
-            else if (selectedIdx < 0)
+                selectedIdx = children.size() - 1;
+            } else if (selectedIdx < 0)
             {
                 selectedIdx = 0;
             }
@@ -504,7 +495,8 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
             /**
              * Create a new MenuElement; may either be the root menu, or a submenu (set isRoot accordingly)
-             * @param name the name for this menu
+             *
+             * @param name   the name for this menu
              * @param isRoot whether this is a root menu, or a submenu
              */
             public MenuElement(String name, boolean isRoot)
@@ -520,6 +512,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
             /**
              * Add a child element to this menu (may either be an Option or another menu)
+             *
              * @param child the child element to add
              */
             public void addChild(Element child)
@@ -530,6 +523,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
             /**
              * Add multiple child elements to this menu (may either be option, or another menu)
+             *
              * @param children the children to add
              */
             public void addChildren(Element[] children)
@@ -558,17 +552,23 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             /**
              * Override this to get notified when the element is clicked
              */
-            void onClick() {}
+            void onClick()
+            {
+            }
 
             /**
              * Override this to get notified when the element gets a "left edit" input
              */
-            protected void onLeftInput() {}
+            protected void onLeftInput()
+            {
+            }
 
             /**
              * Override this to get notified when the element gets a "right edit" input
              */
-            protected void onRightInput() {}
+            protected void onRightInput()
+            {
+            }
         }
 
         public static class EnumOption extends OptionElement
@@ -594,7 +594,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 idx++;
 
-                if(idx > e.length-1)
+                if (idx > e.length - 1)
                 {
                     idx = 0;
                 }
@@ -605,9 +605,9 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 idx--;
 
-                if(idx < 0)
+                if (idx < 0)
                 {
-                    idx = e.length-1;
+                    idx = e.length - 1;
                 }
             }
 
@@ -649,7 +649,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 i--;
 
-                if(i < min)
+                if (i < min)
                 {
                     i = max;
                 }
@@ -660,7 +660,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 i++;
 
-                if(i > max)
+                if (i > max)
                 {
                     i = min;
                 }
@@ -728,11 +728,10 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 String valStr;
 
-                if(customTrue != null && customFalse != null)
+                if (customTrue != null && customFalse != null)
                 {
                     valStr = val ? customTrue : customFalse;
-                }
-                else
+                } else
                 {
                     valStr = val ? "true" : "false";
                 }

@@ -66,27 +66,28 @@ import java.util.List;
  */
 @TeleOp(name = "Concept: AprilTag Localization", group = "Concept")
 @Disabled
-public class ConceptAprilTagLocalization extends LinearOpMode {
+public class ConceptAprilTagLocalization extends LinearOpMode
+{
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
      * Variables to store the position and orientation of the camera on the robot. Setting these
      * values requires a definition of the axes of the camera and robot:
-     *
+     * <p>
      * Camera axes:
      * Origin location: Center of the lens
      * Axes orientation: +x right, +y down, +z forward (from camera's perspective)
-     *
+     * <p>
      * Robot axes (this is typical, but you can define this however you want):
      * Origin location: Center of the robot at field height
      * Axes orientation: +x right, +y forward, +z upward
-     *
+     * <p>
      * Position:
      * If all values are zero (no translation), that implies the camera is at the center of the
      * robot. Suppose your camera is positioned 5 inches to the left, 7 inches forward, and 12
      * inches above the ground - you would need to set the position to (-5, 7, 12).
-     *
+     * <p>
      * Orientation:
      * If all values are zero (no rotation), that implies the camera is pointing straight up. In
      * most cases, you'll need to set the pitch to -90 degrees (rotation about the x-axis), meaning
@@ -110,7 +111,8 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
     private VisionPortal visionPortal;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         initAprilTag();
 
@@ -120,7 +122,8 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
             telemetryAprilTag();
 
@@ -128,9 +131,11 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
             telemetry.update();
 
             // Save CPU resources; can resume streaming when needed.
-            if (gamepad1.dpad_down) {
+            if (gamepad1.dpad_down)
+            {
                 visionPortal.stopStreaming();
-            } else if (gamepad1.dpad_up) {
+            } else if (gamepad1.dpad_up)
+            {
                 visionPortal.resumeStreaming();
             }
 
@@ -146,7 +151,8 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag() {
+    private void initAprilTag()
+    {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
@@ -181,9 +187,11 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
         // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM) {
+        if (USE_WEBCAM)
+        {
             builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        } else {
+        } else
+        {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
@@ -215,14 +223,17 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
     /**
      * Add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag() {
+    private void telemetryAprilTag()
+    {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
+        for (AprilTagDetection detection : currentDetections)
+        {
+            if (detection.metadata != null)
+            {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
                         detection.robotPose.getPosition().x,
@@ -232,7 +243,8 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
                         detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
                         detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
                         detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
-            } else {
+            } else
+            {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }

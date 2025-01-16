@@ -29,17 +29,18 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-
-import static com.qualcomm.hardware.rev.RevHubOrientationOnRobot.xyzOrientation;
 
 /*
  * This OpMode shows how to use the new universal IMU interface. This
@@ -80,7 +81,9 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override public void runOpMode() throws InterruptedException {
+    @Override
+    public void runOpMode() throws InterruptedException
+    {
 
         // Retrieve and initialize the IMU.
         // This sample expects the IMU to be in a REV Hub and named "imu".
@@ -157,14 +160,17 @@ public class SensorIMUNonOrthogonal extends LinearOpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Loop and update the dashboard
-        while (!isStopRequested()) {
+        while (!isStopRequested())
+        {
             telemetry.addData("Hub orientation", "X=%.1f,  Y=%.1f,  Z=%.1f \n", xRotation, yRotation, zRotation);
 
             // Check to see if heading reset is requested
-            if (gamepad1.y) {
+            if (gamepad1.y)
+            {
                 telemetry.addData("Yaw", "Resetting\n");
                 imu.resetYaw();
-            } else {
+            } else
+            {
                 telemetry.addData("Yaw", "Press Y (triangle) on Gamepad to reset\n");
             }
 

@@ -5,11 +5,10 @@
 */
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -26,12 +25,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 @TeleOp(name = "Sensor: SparkFun OTOS", group = "Sensor")
 @Disabled
-public class SensorSparkFunOTOS extends LinearOpMode {
+public class SensorSparkFunOTOS extends LinearOpMode
+{
     // Create an instance of the sensor
     SparkFunOTOS myOtos;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() throws InterruptedException
+    {
         // Get a reference to the sensor
         myOtos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
 
@@ -42,18 +43,21 @@ public class SensorSparkFunOTOS extends LinearOpMode {
         waitForStart();
 
         // Loop until the OpMode ends
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
             // Get the latest position, which includes the x and y coordinates, plus the
             // heading angle
             SparkFunOTOS.Pose2D pos = myOtos.getPosition();
 
             // Reset the tracking if the user requests it
-            if (gamepad1.y) {
+            if (gamepad1.y)
+            {
                 myOtos.resetTracking();
             }
 
             // Re-calibrate the IMU if the user requests it
-            if (gamepad1.x) {
+            if (gamepad1.x)
+            {
                 myOtos.calibrateImu();
             }
 
@@ -72,7 +76,8 @@ public class SensorSparkFunOTOS extends LinearOpMode {
         }
     }
 
-    private void configureOtos() {
+    private void configureOtos()
+    {
         telemetry.addLine("Configuring OTOS...");
         telemetry.update();
 

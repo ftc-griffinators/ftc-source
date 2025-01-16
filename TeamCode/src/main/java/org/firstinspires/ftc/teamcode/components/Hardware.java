@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.griffinators;
+package org.firstinspires.ftc.teamcode.components;
 
 
-import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
+import static org.firstinspires.ftc.teamcode.parts.Utility.sliderSmoothMovement;
 
-import org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.*;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -18,45 +17,45 @@ import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 
-import java.util.Base64;
-
-public class Hardware {
-    private LinearOpMode myOpMode = null;
-    public Hardware (LinearOpMode opmode) {myOpMode = opmode;}
-
-    DcMotorEx frontLeft,frontRight,backLeft,backRight,sliderLeft,sliderRight;
+public class Hardware
+{
+    DcMotorEx frontLeft, frontRight, backLeft, backRight, sliderLeft, sliderRight;
     Servo clawExtend, clawGrab, clawRightRot, clawLeftRot;
-    Encoder leftSliderEncoder,rightSliderEncoder;
-
-
-
+    Encoder leftSliderEncoder, rightSliderEncoder;
     Pose2d pose = new Pose2d(0, 0, 0);
+    private LinearOpMode myOpMode = null;
     Localizer localizer = new ThreeDeadWheelLocalizer(myOpMode.hardwareMap, MecanumDrive.PARAMS.inPerTick);
-    public void initHardware(){
-        //Expansion Hub 0
-        frontLeft =  myOpMode.hardwareMap.get(DcMotorEx.class,"leftFront");
-        //Control Hub 0
-        frontRight =myOpMode.hardwareMap.get(DcMotorEx.class,"rightFront");
-        //Expansion Hub 1
-        backLeft = myOpMode.hardwareMap.get(DcMotorEx.class,"leftRear");
-        // Control Hub Port 1
-        backRight = myOpMode.hardwareMap.get(DcMotorEx.class,"rightRear");
-        // Expansion Hub 2
-        sliderLeft=myOpMode.hardwareMap.get(DcMotorEx.class,"leftSlider");
-        //Control Hub port 2
-        sliderRight=myOpMode.hardwareMap.get(DcMotorEx.class,"rightSlider");
+    public Hardware(LinearOpMode opmode)
+    {
+        myOpMode = opmode;
+    }
 
-         leftSliderEncoder=new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class,"leftSlider"))) ;
-         rightSliderEncoder=new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class,"rightSlider")));
+    public void initHardware()
+    {
+        //Expansion Hub 0
+        frontLeft = myOpMode.hardwareMap.get(DcMotorEx.class, "leftFront");
+        //Control Hub 0
+        frontRight = myOpMode.hardwareMap.get(DcMotorEx.class, "rightFront");
+        //Expansion Hub 1
+        backLeft = myOpMode.hardwareMap.get(DcMotorEx.class, "leftRear");
+        // Control Hub Port 1
+        backRight = myOpMode.hardwareMap.get(DcMotorEx.class, "rightRear");
+        // Expansion Hub 2
+        sliderLeft = myOpMode.hardwareMap.get(DcMotorEx.class, "leftSlider");
+        //Control Hub port 2
+        sliderRight = myOpMode.hardwareMap.get(DcMotorEx.class, "rightSlider");
+
+        leftSliderEncoder = new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class, "leftSlider")));
+        rightSliderEncoder = new OverflowEncoder(new RawEncoder(myOpMode.hardwareMap.get(DcMotorEx.class, "rightSlider")));
 
         //"clawExtend" is port 2 on control hub
-        clawExtend = myOpMode.hardwareMap.get(Servo.class,"clawExtend");
+        clawExtend = myOpMode.hardwareMap.get(Servo.class, "clawExtend");
         //"clawGrab" is port 3 on control hub
-        clawGrab = myOpMode.hardwareMap.get(Servo.class,"clawGrab");
+        clawGrab = myOpMode.hardwareMap.get(Servo.class, "clawGrab");
         //"clawRightRot" is port 0 on control hub
-        clawRightRot = myOpMode.hardwareMap.get(Servo.class,"clawRightRot");
+        clawRightRot = myOpMode.hardwareMap.get(Servo.class, "clawRightRot");
         // "clawLeftRot" is port 1 on control hub
-        clawLeftRot = myOpMode.hardwareMap.get(Servo.class,"clawLeftRot");
+        clawLeftRot = myOpMode.hardwareMap.get(Servo.class, "clawLeftRot");
 
         backLeft.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -77,7 +76,8 @@ public class Hardware {
     }
 
 
-    public void TeleOpMecanumDrive(double x,double y,double turn){
+    public void TeleOpMecanumDrive(double x, double y, double turn)
+    {
         pose = pose.plus(localizer.update().value());
 
         double heading = pose.heading.toDouble();
@@ -96,27 +96,33 @@ public class Hardware {
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
     }
-    public void sliderExtension(){
+
+    public void sliderExtension()
+    {
         sliderRight.setTargetPosition(4000);
         sliderLeft.setTargetPosition(4000);
         sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (sliderLeft.isBusy() && sliderRight.isBusy()){
-            sliderRight.setPower(sliderSmoothMovement(0,4000,sliderRight.getCurrentPosition()));
-            sliderLeft.setPower(sliderSmoothMovement(0,4000,sliderLeft.getCurrentPosition()));
+        while (sliderLeft.isBusy() && sliderRight.isBusy())
+        {
+            sliderRight.setPower(sliderSmoothMovement(0, 4000, sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0, 4000, sliderLeft.getCurrentPosition()));
         }
     }
-    public void sliderRetraction(){
+
+    public void sliderRetraction()
+    {
         sliderRight.setTargetPosition(0);
         sliderLeft.setTargetPosition(0);
 
         sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (sliderLeft.isBusy() && sliderRight.isBusy()){
-            sliderRight.setPower(sliderSmoothMovement(0,4000,4000-sliderRight.getCurrentPosition()));
-            sliderLeft.setPower(sliderSmoothMovement(0,4000,4000-sliderLeft.getCurrentPosition()));
+        while (sliderLeft.isBusy() && sliderRight.isBusy())
+        {
+            sliderRight.setPower(sliderSmoothMovement(0, 4000, 4000 - sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0, 4000, 4000 - sliderLeft.getCurrentPosition()));
         }
     }
 

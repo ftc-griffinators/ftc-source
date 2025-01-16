@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
  *
  * For detailed instructions on how a HuskyLens is used in FTC, please see this tutorial:
  * https://ftc-docs.firstinspires.org/en/latest/devices/huskylens/huskylens.html
- * 
+ *
  * This sample illustrates how to detect AprilTags, but can be used to detect other types
  * of objects by changing the algorithm. It assumes that the HuskyLens is configured with
  * a name of "huskylens".
@@ -61,7 +61,8 @@ import java.util.concurrent.TimeUnit;
  */
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
 @Disabled
-public class SensorHuskyLens extends LinearOpMode {
+public class SensorHuskyLens extends LinearOpMode
+{
 
     private final int READ_PERIOD = 1;
 
@@ -92,9 +93,11 @@ public class SensorHuskyLens extends LinearOpMode {
          * failing on initialization.  In the case of this device, it's because the
          * call to knock() failed.
          */
-        if (!huskyLens.knock()) {
+        if (!huskyLens.knock())
+        {
             telemetry.addData(">>", "Problem communicating with " + huskyLens.getDeviceName());
-        } else {
+        } else
+        {
             telemetry.addData(">>", "Press start to continue");
         }
 
@@ -124,8 +127,10 @@ public class SensorHuskyLens extends LinearOpMode {
          *
          * Note again that the device only recognizes the 36h11 family of tags out of the box.
          */
-        while(opModeIsActive()) {
-            if (!rateLimit.hasExpired()) {
+        while (opModeIsActive())
+        {
+            if (!rateLimit.hasExpired())
+            {
                 continue;
             }
             rateLimit.reset();
@@ -141,7 +146,8 @@ public class SensorHuskyLens extends LinearOpMode {
              */
             HuskyLens.Block[] blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
-            for (int i = 0; i < blocks.length; i++) {
+            for (int i = 0; i < blocks.length; i++)
+            {
                 telemetry.addData("Block", blocks[i].toString());
                 /*
                  * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:

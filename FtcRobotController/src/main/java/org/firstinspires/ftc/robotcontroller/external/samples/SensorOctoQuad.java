@@ -22,9 +22,10 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /*
@@ -54,27 +55,29 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * See the sensor's product page: https://www.tindie.com/products/35114/
  */
-@TeleOp(name = "OctoQuad Basic", group="OctoQuad")
+@TeleOp(name = "OctoQuad Basic", group = "OctoQuad")
 @Disabled
-public class SensorOctoQuad extends LinearOpMode {
+public class SensorOctoQuad extends LinearOpMode
+{
 
     // Identify which encoder OctoQuad inputs are connected to each odometry pod.
-    private final int ODO_LEFT  = 0; // Facing forward direction on left side of robot (Axial motion)
+    private final int ODO_LEFT = 0; // Facing forward direction on left side of robot (Axial motion)
     private final int ODO_RIGHT = 1; // Facing forward direction on right side or robot (Axial motion)
-    private final int ODO_PERP  = 2; // Facing perpendicular direction at the center of the robot (Lateral motion)
+    private final int ODO_PERP = 2; // Facing perpendicular direction at the center of the robot (Lateral motion)
 
     // Declare the OctoQuad object and members to store encoder positions and velocities
-    private OctoQuad    octoquad;
+    private OctoQuad octoquad;
 
-    private int         posLeft;
-    private int         posRight;
-    private int         posPerp;
+    private int posLeft;
+    private int posRight;
+    private int posPerp;
 
     /**
      * This function is executed when this OpMode is selected from the Driver Station.
      */
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         // Connect to OctoQuad by referring to its name in the Robot Configuration.
         octoquad = hardwareMap.get(OctoQuad.class, "octoquad");
@@ -84,9 +87,9 @@ public class SensorOctoQuad extends LinearOpMode {
 
         // Reverse the count-direction of any encoder that is not what you require.
         // e.g. if you push the robot forward and the left encoder counts down, then reverse it so it counts up.
-        octoquad.setSingleEncoderDirection(ODO_LEFT,  OctoQuad.EncoderDirection.REVERSE);
+        octoquad.setSingleEncoderDirection(ODO_LEFT, OctoQuad.EncoderDirection.REVERSE);
         octoquad.setSingleEncoderDirection(ODO_RIGHT, OctoQuad.EncoderDirection.FORWARD);
-        octoquad.setSingleEncoderDirection(ODO_PERP,  OctoQuad.EncoderDirection.FORWARD);
+        octoquad.setSingleEncoderDirection(ODO_PERP, OctoQuad.EncoderDirection.FORWARD);
 
         // Any changes that are made should be saved in FLASH just in case there is a sensor power glitch.
         octoquad.saveParametersToFlash();
@@ -104,11 +107,13 @@ public class SensorOctoQuad extends LinearOpMode {
         octoquad.resetAllPositions();
 
         // Loop while displaying the odometry pod positions.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
             telemetry.addData(">", "Press X to Reset Encoders\n");
 
             // Check for X button to reset encoders.
-            if (gamepad1.x) {
+            if (gamepad1.x)
+            {
                 // Reset the position of all encoders to zero.
                 octoquad.resetAllPositions();
             }
@@ -124,7 +129,8 @@ public class SensorOctoQuad extends LinearOpMode {
         }
     }
 
-    private void readOdometryPods() {
+    private void readOdometryPods()
+    {
         // For best performance, we should only perform ONE transaction with the OctoQuad each cycle.
         // Since this example only needs to read positions from a few channels, we could use either
         //   readPositionRange(idxFirst, idxLast) to get a select number of sequential channels
@@ -134,8 +140,8 @@ public class SensorOctoQuad extends LinearOpMode {
         // Since both calls take almost the same amount of time, and the actual channels may not end up
         // being sequential, we will read all of the encoder positions, and then pick out the ones we need.
         int[] positions = octoquad.readAllPositions();
-        posLeft  = positions[ODO_LEFT];
+        posLeft = positions[ODO_LEFT];
         posRight = positions[ODO_RIGHT];
-        posPerp  = positions[ODO_PERP];
+        posPerp = positions[ODO_PERP];
     }
 }
