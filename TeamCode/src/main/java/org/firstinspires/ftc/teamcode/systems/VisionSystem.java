@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.math.Transform;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
@@ -23,6 +24,8 @@ public class VisionSystem
     private static final int MIN_BLOB_AREA = 50;
     private static final int MAX_BLOB_AREA = 20000;
     private static final double CENTER_THRESHOLD = 30; // pixels
+
+    private static final Transform TARGET_FRAME = new Transform(160, 120, 0); // Center of frame
 
     private final HardwareMap hardwareMap;
     private final String cameraName;
@@ -47,19 +50,9 @@ public class VisionSystem
             visionPortal.close();
         }
 
-        colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(currentColor)
-                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(currentROI)
-                .setDrawContours(true)
-                .setBlurSize(5)
-                .build();
+        colorLocator = new ColorBlobLocatorProcessor.Builder().setTargetColorRange(currentColor).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY).setRoi(currentROI).setDrawContours(true).setBlurSize(5).build();
 
-        visionPortal = new VisionPortal.Builder()
-                .addProcessor(colorLocator)
-                .setCameraResolution(new Size(320, 240))
-                .setCamera(hardwareMap.get(WebcamName.class, cameraName))
-                .build();
+        visionPortal = new VisionPortal.Builder().addProcessor(colorLocator).setCameraResolution(new Size(320, 240)).setCamera(hardwareMap.get(WebcamName.class, cameraName)).build();
     }
 
     public void setTargetColor(ColorRange color)
@@ -72,71 +65,89 @@ public class VisionSystem
     {
         this.currentROI = ImageRegion.asUnityCenterCoordinates(
                 centerX - width / 2,
-                centerY + height / 2,
-                centerX + width / 2,
-                centerY - height / 2
-        );
+                centerY + height / 2, centerX + width / 2, centerY - height / 2);
         initVision();
+    }
+
+    public Transform getTargetPose()
+    {
+        List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
+        ColorBlobLocatorProcessor.Util.filterByArea(MIN_BLOB_AREA, MAX_BLOB_AREA, blobs);
+
+        if (!blobs.isEmpty())
+        {
+            ColorBlobLocatorProcessor.Blob largest = blobs.get(0);
+            RotatedRect boxFit = largest.getBoxFit();
+
+            return new Transform(boxFit.center.x, boxFit.center.y, boxFit.angle);
+        }
+        return Transform.INVALID;
+    }
+
+    public Transform getAlignmentDelta()
+    {
+        Transform currentPose = getTargetPose();
+        if (currentPose == Transform.INVALID)
+        {
+            return Transform.INVALID;
+        }
+        return currentPose.delta(TARGET_FRAME);
     }
 
     public boolean isTargetCentered()
     {
-        List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
-        ColorBlobLocatorProcessor.Util.filterByArea(MIN_BLOB_AREA, MAX_BLOB_AREA, blobs);
-
-        if (!blobs.isEmpty())
+        Transform delta = getAlignmentDelta();
+        if (delta == Transform.INVALID)
         {
-            ColorBlobLocatorProcessor.Blob largest = blobs.get(0);
-            RotatedRect boxFit = largest.getBoxFit();
-            return Math.abs(boxFit.center.x - 160) < CENTER_THRESHOLD;  // 160 is center for 320 width
+            return false;
         }
-        return false;
+        return Math.abs(delta.position.x) < CENTER_THRESHOLD;
     }
 
     public String getAlignmentHint()
     {
-        List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
-        ColorBlobLocatorProcessor.Util.filterByArea(MIN_BLOB_AREA, MAX_BLOB_AREA, blobs);
+        Transform delta = getAlignmentDelta();
 
-        if (!blobs.isEmpty())
+        if (delta == Transform.INVALID)
         {
-            ColorBlobLocatorProcessor.Blob largest = blobs.get(0);
-            RotatedRect boxFit = largest.getBoxFit();
-            double offset = boxFit.center.x - 160;  // Distance from center
-
-            if (Math.abs(offset) < CENTER_THRESHOLD)
-            {
-                return "Centered";
-            } else
-            {
-                return offset > 0 ? "Move Right" : "Move Left";
-            }
+            return "No Target";
         }
-        return "No Target";
+
+        if (Math.abs(delta.position.x) < CENTER_THRESHOLD)
+        {
+            return "Centered";
+        }
+
+        return delta.position.x > 0 ? "Move Right" : "Move Left";
     }
 
     @SuppressLint("DefaultLocale")
     public void updateTelemetry(Telemetry telemetry)
     {
-        List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
-        ColorBlobLocatorProcessor.Util.filterByArea(MIN_BLOB_AREA, MAX_BLOB_AREA, blobs);
+        Transform targetPose = getTargetPose();
+        Transform delta = getAlignmentDelta();
 
         telemetry.addData("Alignment", getAlignmentHint());
 
-        if (!blobs.isEmpty())
+        if (targetPose != Transform.INVALID)
         {
-            ColorBlobLocatorProcessor.Blob largest = blobs.get(0);
-            RotatedRect boxFit = largest.getBoxFit();
+            telemetry.addData("Target Position", String.format("(%.0f, %.0f)", targetPose.position.x, targetPose.position.y));
+            telemetry.addData("Target Angle", String.format("%.1f°", targetPose.orientation.yaw));
+            telemetry.addData("Delta X", String.format("%.0f px", delta.position.x));
+            telemetry.addData("Delta Y", String.format("%.0f px", delta.position.y));
+            telemetry.addData("Delta Angle", String.format("%.1f°", delta.orientation.yaw));
 
+            // additional blob info
+            ColorBlobLocatorProcessor.Blob largest = colorLocator.getBlobs().get(0);
             telemetry.addData("Area", largest.getContourArea());
-            telemetry.addData("Center", String.format("(%.0f, %.0f)",
-                    boxFit.center.x, boxFit.center.y));
             telemetry.addData("Density", String.format("%.2f", largest.getDensity()));
         }
 
         telemetry.update();
     }
 
+    // i feel like these should be elsewhere
+    // instead of being bundled here
     public void openClaw()
     {
         clawServo.setPosition(CLAW_OPEN);

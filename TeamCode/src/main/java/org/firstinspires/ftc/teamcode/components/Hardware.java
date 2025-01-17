@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.components;
 
 
-import static org.firstinspires.ftc.teamcode.parts.Utility.sliderSmoothMovement;
+import static org.firstinspires.ftc.teamcode.utils.Utility.sliderSmoothMovement;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Localizer;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.utils.Localizer;
+import org.firstinspires.ftc.teamcode.drive.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.ThreeDeadWheelLocalizer;
 
 public class Hardware
 {
@@ -25,6 +25,7 @@ public class Hardware
     Pose2d pose = new Pose2d(0, 0, 0);
     private LinearOpMode myOpMode = null;
     Localizer localizer = new ThreeDeadWheelLocalizer(myOpMode.hardwareMap, MecanumDrive.PARAMS.inPerTick);
+
     public Hardware(LinearOpMode opmode)
     {
         myOpMode = opmode;
@@ -121,8 +122,10 @@ public class Hardware
 
         while (sliderLeft.isBusy() && sliderRight.isBusy())
         {
-            sliderRight.setPower(sliderSmoothMovement(0, 4000, 4000 - sliderRight.getCurrentPosition()));
-            sliderLeft.setPower(sliderSmoothMovement(0, 4000, 4000 - sliderLeft.getCurrentPosition()));
+            sliderRight.setPower(sliderSmoothMovement(0, 4000,
+                    4000 - sliderRight.getCurrentPosition()));
+            sliderLeft.setPower(sliderSmoothMovement(0, 4000,
+                    4000 - sliderLeft.getCurrentPosition()));
         }
     }
 
