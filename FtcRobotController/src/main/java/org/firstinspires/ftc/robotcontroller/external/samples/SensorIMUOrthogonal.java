@@ -34,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -87,9 +86,7 @@ public class SensorIMUOrthogonal extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void runOpMode() throws InterruptedException
-    {
+    @Override public void runOpMode() throws InterruptedException {
 
         // Retrieve and initialize the IMU.
         // This sample expects the IMU to be in a REV Hub and named "imu".
@@ -112,7 +109,7 @@ public class SensorIMUOrthogonal extends LinearOpMode
          * To Do:  EDIT these two lines to match YOUR mounting configuration.
          */
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -121,18 +118,15 @@ public class SensorIMUOrthogonal extends LinearOpMode
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         // Loop and update the dashboard
-        while (!isStopRequested())
-        {
+        while (!isStopRequested()) {
 
             telemetry.addData("Hub orientation", "Logo=%s   USB=%s\n ", logoDirection, usbDirection);
 
             // Check to see if heading reset is requested
-            if (gamepad1.y)
-            {
+            if (gamepad1.y) {
                 telemetry.addData("Yaw", "Resetting\n");
                 imu.resetYaw();
-            } else
-            {
+            } else {
                 telemetry.addData("Yaw", "Press Y (triangle) on Gamepad to reset\n");
             }
 

@@ -89,6 +89,10 @@ public final class MecanumDrive {
         public double axialVelGain = 0.5;
         public double lateralVelGain = 0.1;
         public double headingVelGain = 0.15; // shared with turn
+
+
+
+
     }
 
 
@@ -306,8 +310,8 @@ public final class MecanumDrive {
             Pose2d error = txWorldTarget.value().minusExp(pose);
 
 
-            if ((t >= timeTrajectory.duration && error.position.norm() < 2.5
-                    && robotVelRobot.linearVel.norm() < 1 && robotVelRobot.angVel < 0.2 && Math.abs(error.heading.toDouble()) < 3) || t >= timeTrajectory.duration + 2) {
+            if ((t >= timeTrajectory.duration && error.position.norm() < 0.5
+                    && robotVelRobot.linearVel.norm() < 0.3 && robotVelRobot.angVel < 0.08 && Math.abs(error.heading.toDouble()) < 2) || t >= timeTrajectory.duration + 3) {
                 leftFront.setPower(0);
                 leftBack.setPower(0);
                 rightBack.setPower(0);
@@ -316,6 +320,9 @@ public final class MecanumDrive {
                 return false;
             }
 
+            if (t> timeTrajectory.duration){
+                p.put("Aligning", "true");
+            }
             PoseVelocity2dDual<Time> command = new HolonomicController(
                     PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
                     PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain

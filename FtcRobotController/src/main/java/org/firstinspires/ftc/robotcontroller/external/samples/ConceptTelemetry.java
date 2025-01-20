@@ -34,7 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -49,44 +48,39 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 @TeleOp(name = "Concept: Telemetry", group = "Concept")
 @Disabled
-public class ConceptTelemetry extends LinearOpMode
-{
-    static final String[] poem = new String[]{
-
-            "Mary had a little lamb,",
-            "His fleece was white as snow,",
-            "And everywhere that Mary went,",
-            "The lamb was sure to go.",
-            "",
-            "He followed her to school one day,",
-            "Which was against the rule,",
-            "It made the children laugh and play",
-            "To see a lamb at school.",
-            "",
-            "And so the teacher turned it out,",
-            "But still it lingered near,",
-            "And waited patiently about,",
-            "Till Mary did appear.",
-            "",
-            "\"Why does the lamb love Mary so?\"",
-            "The eager children cry.",
-            "\"Why, Mary loves the lamb, you know,\"",
-            "The teacher did reply.",
-            "",
-            ""
-    };
-    /**
-     * Keeps track of the line of the poem which is to be emitted next
-     */
+public class ConceptTelemetry extends LinearOpMode  {
+    /** Keeps track of the line of the poem which is to be emitted next */
     int poemLine = 0;
-    /**
-     * Keeps track of how long it's been since we last emitted a line of poetry
-     */
+
+    /** Keeps track of how long it's been since we last emitted a line of poetry */
     ElapsedTime poemElapsed = new ElapsedTime();
 
-    @Override
-    public void runOpMode()
-    {
+    static final String[] poem = new String[] {
+
+        "Mary had a little lamb,",
+        "His fleece was white as snow,",
+        "And everywhere that Mary went,",
+        "The lamb was sure to go.",
+        "",
+        "He followed her to school one day,",
+        "Which was against the rule,",
+        "It made the children laugh and play",
+        "To see a lamb at school.",
+        "",
+        "And so the teacher turned it out,",
+        "But still it lingered near,",
+        "And waited patiently about,",
+        "Till Mary did appear.",
+        "",
+        "\"Why does the lamb love Mary so?\"",
+        "The eager children cry.",
+        "\"Why, Mary loves the lamb, you know,\"",
+        "The teacher did reply.",
+        "",
+        ""
+    };
+
+    @Override public void runOpMode() {
 
         /* we keep track of how long it's been since the OpMode was started, just
          * to have some interesting data to show */
@@ -104,8 +98,7 @@ public class ConceptTelemetry extends LinearOpMode
          * elapsed time as we sit here and wait. If we didn't want to do anything while
          * we waited, we would just call waitForStart().
          */
-        while (!isStarted())
-        {
+        while (!isStarted()) {
             telemetry.addData("time", "%.1f seconds", opmodeRunTime.seconds());
             telemetry.update();
             idle();
@@ -122,26 +115,21 @@ public class ConceptTelemetry extends LinearOpMode
          *
          * @see Telemetry#getMsTransmissionInterval()
          */
-        telemetry.addData("voltage", "%.1f volts", new Func<Double>()
-        {
-            @Override
-            public Double value()
-            {
+        telemetry.addData("voltage", "%.1f volts", new Func<Double>() {
+            @Override public Double value() {
                 return getBatteryVoltage();
             }
-        });
+            });
 
         // Reset to keep some timing stats for the post-'start' part of the OpMode
         opmodeRunTime.reset();
         int loopCount = 1;
 
         // Go go gadget robot!
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
 
             // Emit poetry if it's been a while
-            if (poemElapsed.seconds() > sPoemInterval)
-            {
+            if (poemElapsed.seconds() > sPoemInterval) {
                 emitPoemLine();
             }
 
@@ -169,22 +157,18 @@ public class ConceptTelemetry extends LinearOpMode
     }
 
     // emits a line of poetry to the telemetry log
-    void emitPoemLine()
-    {
+    void emitPoemLine() {
         telemetry.log().add(poem[poemLine]);
-        poemLine = (poemLine + 1) % poem.length;
+        poemLine = (poemLine+1) % poem.length;
         poemElapsed.reset();
     }
 
     // Computes the current battery voltage
-    double getBatteryVoltage()
-    {
+    double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor : hardwareMap.voltageSensor)
-        {
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double voltage = sensor.getVoltage();
-            if (voltage > 0)
-            {
+            if (voltage > 0) {
                 result = Math.min(result, voltage);
             }
         }

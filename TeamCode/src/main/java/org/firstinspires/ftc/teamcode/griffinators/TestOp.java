@@ -1,30 +1,19 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
-import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
-
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ftc.DeadWheelDirectionDebugger;
-import com.acmerobotics.roadrunner.ftc.DriveViewFactory;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 
 @TeleOp(name = "Testing",group = "Robot")
-
 public class TestOp extends LinearOpMode {
 
     DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;

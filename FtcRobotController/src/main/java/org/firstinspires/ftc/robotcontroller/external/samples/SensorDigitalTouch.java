@@ -44,13 +44,11 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  */
 @TeleOp(name = "Sensor: digital channel", group = "Sensor")
 @Disabled
-public class SensorDigitalTouch extends LinearOpMode
-{
+public class SensorDigitalTouch extends LinearOpMode {
     DigitalChannel digitalTouch;  // Digital channel Object
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
 
         // get a reference to our touchSensor object.
         digitalTouch = hardwareMap.get(DigitalChannel.class, "digitalTouch");
@@ -64,16 +62,13 @@ public class SensorDigitalTouch extends LinearOpMode
 
         // while the OpMode is active, loop and read the digital channel.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
 
             // button is pressed if value returned is LOW or false.
             // send the info back to driver station using telemetry function.
-            if (digitalTouch.getState() == false)
-            {
+            if (digitalTouch.getState() == false) {
                 telemetry.addData("Button", "PRESSED");
-            } else
-            {
+            } else {
                 telemetry.addData("Button", "NOT PRESSED");
             }
 

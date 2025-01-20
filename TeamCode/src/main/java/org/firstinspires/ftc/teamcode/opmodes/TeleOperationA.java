@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.griffinators;
+package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.griffinators.Parts.Utility.sliderSmoothMovement;
+import static org.firstinspires.ftc.teamcode.parts.Utility.sliderSmoothMovement;
 
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -69,16 +68,11 @@ public class TeleOperationA extends LinearOpMode {
         sliderRight.setTargetPosition(4200);
         sliderLeft.setTargetPosition(4200);
         smoothing(sliderLeft.getCurrentPosition());
-
-        // smoothing(sliderLeft.getCurrentPosition());
-
     }
     public void sliderRetractionTopBox(){
         sliderRight.setTargetPosition(50);
         sliderLeft.setTargetPosition(50);
         smoothing(sliderLeft.getCurrentPosition());
-
-       // smoothing(sliderLeft.getCurrentPosition());
     }
 
     public void sliderExtensionMidBox(){
@@ -99,12 +93,8 @@ public class TeleOperationA extends LinearOpMode {
 
 
     private void smoothing(int initial){
-
-
             sliderRight.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderRight.getCurrentPosition())));
             sliderLeft.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderLeft.getCurrentPosition())));
-
-
     }
 
     @Override

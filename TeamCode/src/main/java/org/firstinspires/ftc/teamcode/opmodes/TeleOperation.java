@@ -4,294 +4,159 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.teamcode.parts.PIDController;
-import org.firstinspires.ftc.teamcode.parts.enums.RobotState;
 
-@TeleOp(name = "TeleOperation", group = "Robot")
-public class TeleOperation extends LinearOpMode
-{
-    private static final double MOVEMENT_DEADZONE = 0.1;
-    private static final double CURVE_POWER = 3;
-    private static final double MAX_THRESHOLD = 0.9;
-    private static final double SLOW_MODE_FACTOR = 0.5;
-    private static final double CLAW_OPEN_POS = 0.12;
-    private static final double CLAW_CLOSED_POS = 0.32;
-    private static final double LAUNCH_ANGLE_LOW = 40 / 180f;
-    private static final double LAUNCH_ANGLE_HIGH = 60 / 180f;
-    private static final int ARM_EXTENSION_UP = 200;
-    private static final int ARM_ROTATION_UP = 170;
-    private static final int ARM_EXTENSION_DOWN = 100;
-    private static final int ARM_ROTATION_DOWN = 90;
-    private static final double DEBOUNCE_THRESHOLD = 0.2;
-    private final ElapsedTime debounceTimer = new ElapsedTime();
-    private final ElapsedTime launchTimer = new ElapsedTime();
-    private DcMotor frontLeft, frontRight, backLeft, backRight;
-    private DcMotor armExtendLeft, armExtendRight, armControlLeft, armControlRight;
-    private Servo clawLeft, clawRight, launch, launchAngle;
-    private PIDController drivePID;
-    private PIDController armPID;
-    private Localizer localizer;
-    private Pose2d robotPose = new Pose2d(0, 0, 0);
-    private RobotState currentState = RobotState.IDLE;
-    private boolean isLaunching = false;
+@TeleOp(name="TeleOperation", group="Robot")
 
-    @Override
-    public void runOpMode()
-    {
-        initializeHardware();
-        drivePID = new PIDController(0.1, 0.01, 0.05, 0.1, 50);
-        armPID = new PIDController(0.2, 0.01, 0.05, 0.1, 50);
-        localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
+public class TeleOperation extends LinearOpMode {
+	
+	private final ElapsedTime runtime = new ElapsedTime();
+	DcMotor frontLeft, frontRight, backLeft, backRight, armExtendLeft, armExtendRight, armControlLeft, armControlRight;
+	Servo clawExtension, clawGrab, clawRightRot, clawLeftRot;
+	double i=0.4;
 
-        waitForStart();
+	private Pose2d pose = new Pose2d(0,0,0);
+	@Override
+	public void runOpMode() throws InterruptedException{
+		
+		telemetry.addData("Status", "Initialized");
+		telemetry.update();
 
-        while (opModeIsActive())
-        {
-            updateRobotPose();
 
-            switch (currentState)
-            {
-                case IDLE:
-                    handleIdle();
-                    break;
-                case DRIVING:
-                    handleDriving(false);
-                    break;
-                case SLIDING:
-                    handleDriving(true);
-                    break;
-                case ARM_CONTROL:
-                    handleArmControl();
-                    break;
-                case CLAW_CONTROL:
-                    handleClawControl();
-                    break;
-                case LAUNCHING:
-                    handleLaunching();
-                    break;
-            }
+		//Expansion Hub 0
+		frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
 
-            updateTelemetry();
-        }
-    }
 
-    private void handleIdle()
-    {
-        stopMotors();
 
-        if (Math.abs(gamepad1.left_stick_x) > MOVEMENT_DEADZONE ||
-                Math.abs(gamepad1.left_stick_y) > MOVEMENT_DEADZONE)
-        {
-            currentState = gamepad1.right_trigger > 0.5 ?
-                    RobotState.SLIDING : RobotState.DRIVING;
-        } else if (gamepad2.left_bumper || gamepad2.right_bumper)
-        {
-            currentState = RobotState.CLAW_CONTROL;
-        } else if (gamepad2.dpad_up || gamepad2.dpad_down)
-        {
-            currentState = RobotState.ARM_CONTROL;
-        } else if (gamepad1.x && debounceTimer.seconds() > DEBOUNCE_THRESHOLD)
-        {
-            debounceTimer.reset();
-            currentState = RobotState.LAUNCHING;
-        }
-    }
+		//Control Hub 0
+		frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
 
-    private void handleDriving(boolean isSliding)
-    {
-        double x = responseCurve(gamepad1.left_stick_x);
-        double y = -responseCurve(gamepad1.left_stick_y);
 
-        if (Math.abs(x) < MOVEMENT_DEADZONE && Math.abs(y) < MOVEMENT_DEADZONE)
-        {
-            currentState = RobotState.IDLE;
-            return;
-        }
 
-        double theta = Math.atan2(y, x);
-        double power = Math.hypot(x, y);
-        double turn = responseCurve(gamepad1.right_stick_x);
+		//Expansion Hub 1
+		backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
 
-        double headingCompensation = isSliding ? 0 : robotPose.heading.log();
-        double sin = Math.sin(theta - Math.PI / 4 - headingCompensation);
-        double cos = Math.cos(theta - Math.PI / 4 - headingCompensation);
-        double max = Math.max(Math.abs(sin), Math.abs(cos));
+		// Control Hub Port 1
+		backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
 
-        double[] powers = {
-                power * cos / max + turn,  // Front Left
-                power * sin / max - turn,  // Front Right
-                power * sin / max + turn,  // Back Left
-                power * cos / max - turn   // Back Right
-        };
 
-        // Apply slow mode if active
-        if (gamepad1.left_trigger > 0.5)
-        {
-            for (int i = 0; i < powers.length; i++)
-            {
-                powers[i] *= SLOW_MODE_FACTOR;
-            }
-        }
 
-        // Apply PID if not sliding
-        if (!isSliding)
-        {
-            powers[0] = drivePID.calculate(powers[0], frontLeft.getPower());
-            powers[1] = drivePID.calculate(powers[1], frontRight.getPower());
-            powers[2] = drivePID.calculate(powers[2], backLeft.getPower());
-            powers[3] = drivePID.calculate(powers[3], backRight.getPower());
-        }
 
-        frontLeft.setPower(powers[0]);
-        frontRight.setPower(powers[1]);
-        backLeft.setPower(powers[2]);
-        backRight.setPower(powers[3]);
-    }
 
-    private void handleArmControl()
-    {
-        if (gamepad2.dpad_up)
-        {
-            armPIDControl(ARM_EXTENSION_UP, ARM_ROTATION_UP);
-        } else if (gamepad2.dpad_down)
-        {
-            armPIDControl(ARM_EXTENSION_DOWN, ARM_ROTATION_DOWN);
-        }
-        currentState = RobotState.IDLE;
-    }
+//		//"ce" is port 5 on control hub
+//		clawExtension = hardwareMap.servo.get("ce");
+//		//"c" is port 4
+//		clawGrab = hardwareMap.servo.get("c");
+//		//"cr" ia port 2
+//		clawRightRot = hardwareMap.servo.get("cr");
+//		// "cl" is port 3
+//		clawLeftRot = hardwareMap.servo.get("cl");
+//
 
-    private void armPIDControl(int targetExtensionPosition, int targetRotationPosition)
-    {
-        double currentExtensionPosition = armExtendLeft.getCurrentPosition();
-        double currentRotationPosition = armControlLeft.getCurrentPosition();
+		backLeft.setDirection(DcMotor.Direction.REVERSE);
+		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        double adjustedExtensionPower =
-                armPID.calculate(targetExtensionPosition, currentExtensionPosition);
-        armExtendLeft.setPower(adjustedExtensionPower);
-        armExtendRight.setPower(adjustedExtensionPower);
+		waitForStart();
+		runtime.reset();
+		runtime.startTime();
 
-        double adjustedRotationPower =
-                armPID.calculate(targetRotationPosition, currentRotationPosition);
-        armControlLeft.setPower(adjustedRotationPower);
-        armControlRight.setPower(adjustedRotationPower);
-    }
+		Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
 
-    private void handleClawControl()
-    {
-        if (gamepad2.left_bumper && debounceTimer.seconds() > DEBOUNCE_THRESHOLD)
-        {
-            debounceTimer.reset();
-            toggleClaw(clawLeft);
-        }
-        if (gamepad2.right_bumper && debounceTimer.seconds() > DEBOUNCE_THRESHOLD)
-        {
-            debounceTimer.reset();
-            toggleClaw(clawRight);
-        }
-        currentState = RobotState.IDLE;
-    }
 
-    private void toggleClaw(Servo claw)
-    {
-        claw.setPosition(claw.getPosition() == CLAW_CLOSED_POS ? CLAW_OPEN_POS : CLAW_CLOSED_POS);
-    }
+		while (opModeIsActive()) {
 
-    private void handleLaunching()
-    {
-        if (!isLaunching)
-        {
-            launchAngle.setPosition(LAUNCH_ANGLE_LOW);
-            launchTimer.reset();
-            isLaunching = true;
-        } else
-        {
-            if (launchTimer.seconds() >= 1.0 && launchTimer.seconds() < 2.0)
-            {
-                launch.setPosition(0.5f);
-            } else if (launchTimer.seconds() >= 2.0 && launchTimer.seconds() < 2.5)
-            {
-                launch.setPosition(-0.5f);
-            } else if (launchTimer.seconds() >= 2.5)
-            {
-                launchAngle.setPosition(LAUNCH_ANGLE_HIGH);
-                isLaunching = false;
-                currentState = RobotState.IDLE;
-            }
-        }
-    }
 
-    private double responseCurve(double input)
-    {
-        return Math.copySign(
-                Math.min(Math.pow(Math.abs(input) / MAX_THRESHOLD, CURVE_POWER), 1.0),
-                input
-        );
-    }
+		////////	MOVEMENT	///////		
 
-    private void updateRobotPose()
-    {
-        robotPose = robotPose.plus(localizer.update().value());
-    }
+		pose = pose.plus(localizer.update().value());
+		if (gamepad1.right_bumper) {
+			pose = new Pose2d(0,0,-Math.PI/2);
+		}
+		if (gamepad1.left_bumper) {
+			pose = new Pose2d(0,0,Math.PI/2);
+		}
 
-    private void stopMotors()
-    {
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
-    }
+		double x = responseCurve(gamepad1.left_stick_x,	3,0.9);
+		double y = responseCurve(-gamepad1.left_stick_y, 3, 0.9);
+//		double turn = responseCurve(gamepad1.right_stick_x, 5, 0.95);
+//		if (Math.hypot(-gamepad1.left_stick_y,-gamepad1.left_stick_x) >= 0.95) {
+//			x = -gamepad1.left_stick_y - gamepad2.left_stick_y / 5;
+//			y = -gamepad1.left_stick_x - gamepad2.left_stick_x / 5;
+//		} else {
+//			x = -gamepad1.left_stick_y/2 - gamepad2.left_stick_y / 5;
+//			y = -gamepad1.left_stick_x/2 - gamepad2.left_stick_x / 5;
+//		}
+		double theta = Math.atan2(y, x);
+		double power = Math.hypot(x, y);
+		double turn;
+		if (Math.abs(gamepad1.right_stick_x) >= 0.95) {
+			turn = gamepad1.right_stick_x/2;
+		} else {
+			turn = gamepad1.right_stick_x/4 ;
+		}
+		double sin = Math.sin(theta - Math.PI/4 - pose.heading.log());
+		double cos = Math.cos(theta - Math.PI/4 - pose.heading.log());
+		double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-    private void initializeHardware()
-    {
-        frontLeft = hardwareMap.get(DcMotor.class, "leftFront");
-        frontRight = hardwareMap.get(DcMotor.class, "rightFront");
-        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
-        backRight = hardwareMap.get(DcMotor.class, "rightBack");
+		/*
+		if (gamepad1.dpad_left) {
+			time1.reset();
+		} else if (gamepad1.dpad_right) {
+			time1.reset();
+		}
 
-        armExtendLeft = hardwareMap.get(DcMotor.class, "acl");
-        armExtendRight = hardwareMap.get(DcMotor.class, "acr");
-        armControlLeft = hardwareMap.get(DcMotor.class, "ael");
-        armControlRight = hardwareMap.get(DcMotor.class, "aer");
+		if (time1.seconds() < 0.6 && runtime.seconds() > 2) {
+			turn = 1;
+		}
+*/
+		double FLpower = power * cos/max + turn;
+		double FRpower = power * sin/max - turn;
+		double BLpower = power * sin/max + turn;
+		double BRpower = power * cos/max - turn;
 
-        clawLeft = hardwareMap.servo.get("cl");
-        clawRight = hardwareMap.servo.get("cr");
-        launch = hardwareMap.servo.get("l");
-        launchAngle = hardwareMap.servo.get("lc");
+		if((power + Math.abs(turn)) > 1) {
+			FLpower /= power + turn;
+			FRpower /= power + turn;
+			BLpower /= power + turn;
+			BRpower /= power + turn;
+		}
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        armControlLeft.setDirection(DcMotor.Direction.REVERSE);
-        armExtendLeft.setDirection(DcMotor.Direction.REVERSE);
+		frontLeft.setPower(FLpower);
+		frontRight.setPower(FRpower);
+		backLeft.setPower(BLpower);
+		backRight.setPower(BRpower);
 
-        // Set zero power behavior
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
 
-    private void updateTelemetry()
-    {
-        telemetry.addData("State", currentState);
-        telemetry.addData("Pose", "X: %.2f, Y: %.2f, θ: %.2f°",
-                robotPose.position.x,
-                robotPose.position.y,
-                Math.toDegrees(robotPose.heading.log()));
-        telemetry.addData("Arm Extension", "L: %d, R: %d",
-                armExtendLeft.getCurrentPosition(),
-                armExtendRight.getCurrentPosition());
-        telemetry.addData("Arm Rotation", "L: %d, R: %d",
-                armControlLeft.getCurrentPosition(),
-                armControlRight.getCurrentPosition());
-        telemetry.addData("Claw", "L: %.2f, R: %.2f",
-                clawLeft.getPosition(),
-                clawRight.getPosition());
-        telemetry.update();
-    }
+
+
+
+
+		}
+	}
+	
+	
+	
+	
+/*
+	
+	private void setExtension(int amount){
+		armExtendLeft.setTargetPosition(amount);
+		armExtendRight.setTargetPosition(amount);
+	}
+	
+	private void setRotation(int amount){
+		armControlLeft.setTargetPosition(amount);
+		armControlRight.setTargetPosition(amount);
+	}
+*/
+	private double responseCurve (double raw, int curvePower, double maxThreshold) {
+		return Math.copySign(Math.min(Math.pow(Math.abs(raw)/maxThreshold, curvePower), 1), raw);
+	}
 }

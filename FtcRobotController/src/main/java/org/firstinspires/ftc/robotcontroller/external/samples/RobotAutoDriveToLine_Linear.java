@@ -60,27 +60,25 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
  *   Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Robot: Auto Drive To Line", group = "Robot")
+@Autonomous(name="Robot: Auto Drive To Line", group="Robot")
 @Disabled
-public class RobotAutoDriveToLine_Linear extends LinearOpMode
-{
+public class RobotAutoDriveToLine_Linear extends LinearOpMode {
 
-    static final double WHITE_THRESHOLD = 0.5;  // spans between 0.0 - 1.0 from dark to light
-    static final double APPROACH_SPEED = 0.25;
-    /**
-     * The variable to store a reference to our color sensor hardware object
-     */
-    NormalizedColorSensor colorSensor;
     /* Declare OpMode members. */
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor         leftDrive   = null;
+    private DcMotor         rightDrive  = null;
+
+    /** The variable to store a reference to our color sensor hardware object */
+    NormalizedColorSensor colorSensor;
+
+    static final double     WHITE_THRESHOLD = 0.5;  // spans between 0.0 - 1.0 from dark to light
+    static final double     APPROACH_SPEED  = 0.25;
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
 
         // Initialize the drive system variables.
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -99,9 +97,8 @@ public class RobotAutoDriveToLine_Linear extends LinearOpMode
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
 
         // If necessary, turn ON the white LED (if there is no LED switch on the sensor)
-        if (colorSensor instanceof SwitchableLight)
-        {
-            ((SwitchableLight) colorSensor).enableLight(true);
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensor).enableLight(true);
         }
 
         // Some sensors allow you to set your light sensor gain for optimal sensitivity...
@@ -111,8 +108,7 @@ public class RobotAutoDriveToLine_Linear extends LinearOpMode
 
         // Wait for driver to press START)
         // Abort this loop is started or stopped.
-        while (opModeInInit())
-        {
+        while (opModeInInit()) {
 
             // Send telemetry message to signify robot waiting;
             telemetry.addData("Status", "Ready to drive to white line.");    //
@@ -126,8 +122,7 @@ public class RobotAutoDriveToLine_Linear extends LinearOpMode
         rightDrive.setPower(APPROACH_SPEED);
 
         // run until the white line is seen OR the driver presses STOP;
-        while (opModeIsActive() && (getBrightness() < WHITE_THRESHOLD))
-        {
+        while (opModeIsActive() && (getBrightness() < WHITE_THRESHOLD)) {
             sleep(5);
         }
 
@@ -137,10 +132,9 @@ public class RobotAutoDriveToLine_Linear extends LinearOpMode
     }
 
     // to obtain reflected light, read the normalized values from the color sensor.  Return the Alpha channel.
-    double getBrightness()
-    {
+    double getBrightness() {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        telemetry.addData("Light Level (0 to 1)", "%4.2f", colors.alpha);
+        telemetry.addData("Light Level (0 to 1)",  "%4.2f", colors.alpha);
         telemetry.update();
 
         return colors.alpha;

@@ -87,17 +87,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Disabled
-@TeleOp(name = "Concept: Gamepad Rumble", group = "Concept")
+@TeleOp(name="Concept: Gamepad Rumble", group ="Concept")
 public class ConceptGamepadRumble extends LinearOpMode
 {
-    final double HALF_TIME = 60.0;              // Wait this many seconds before rumble-alert for half-time.
-    final double TRIGGER_THRESHOLD = 0.75;     // Squeeze more than 3/4 to get rumble.
     boolean lastA = false;                      // Use to track the prior button state.
     boolean lastLB = false;                     // Use to track the prior button state.
     boolean highLevel = false;                  // used to prevent multiple level-based rumbles.
     boolean secondHalf = false;                 // Use to prevent multiple half-time warning rumbles.
+
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence.
     ElapsedTime runtime = new ElapsedTime();    // Use to determine when end game is starting.
+
+    final double HALF_TIME = 60.0;              // Wait this many seconds before rumble-alert for half-time.
+    final double TRIGGER_THRESHOLD  = 0.75;     // Squeeze more than 3/4 to get rumble.
 
     @Override
     public void runOpMode()
@@ -121,26 +123,24 @@ public class ConceptGamepadRumble extends LinearOpMode
         while (opModeIsActive())
         {
             // Read and save the current gamepad button states.
-            boolean currentA = gamepad1.a;
-            boolean currentLB = gamepad1.left_bumper;
+            boolean currentA = gamepad1.a ;
+            boolean currentLB = gamepad1.left_bumper ;
 
             // Display the current Rumble status.  Just for interest.
-            telemetry.addData(">", "Are we RUMBLING? %s\n", gamepad1.isRumbling() ? "YES" : "no");
+            telemetry.addData(">", "Are we RUMBLING? %s\n", gamepad1.isRumbling() ? "YES" : "no" );
 
             // ----------------------------------------------------------------------------------------
             // Example 1. b) Watch the runtime timer, and run the custom rumble when we hit half-time.
             //               Make sure we only signal once by setting "secondHalf" flag to prevent further rumbles.
             // ----------------------------------------------------------------------------------------
-            if ((runtime.seconds() > HALF_TIME) && !secondHalf)
-            {
+            if ((runtime.seconds() > HALF_TIME) && !secondHalf)  {
                 gamepad1.runRumbleEffect(customRumbleEffect);
-                secondHalf = true;
+                secondHalf =true;
             }
 
             // Display the time remaining while we are still counting down.
-            if (!secondHalf)
-            {
-                telemetry.addData(">", "Halftime Alert Countdown: %3.0f Sec \n", (HALF_TIME - runtime.seconds()));
+            if (!secondHalf) {
+                telemetry.addData(">", "Halftime Alert Countdown: %3.0f Sec \n", (HALF_TIME - runtime.seconds()) );
             }
 
 
@@ -148,19 +148,16 @@ public class ConceptGamepadRumble extends LinearOpMode
             // Example 2. If Left Bumper is being pressed, power the rumble motors based on the two trigger depressions.
             // This is useful to see how the rumble feels at various power levels.
             // ----------------------------------------------------------------------------------------
-            if (currentLB)
-            {
+            if (currentLB) {
                 // Left Bumper is being pressed, so send left and right "trigger" values to left and right rumble motors.
                 gamepad1.rumble(gamepad1.left_trigger, gamepad1.right_trigger, Gamepad.RUMBLE_DURATION_CONTINUOUS);
 
                 // Show what is being sent to rumbles
                 telemetry.addData(">", "Squeeze triggers to control rumbles");
                 telemetry.addData("> : Rumble", "Left: %.0f%%   Right: %.0f%%", gamepad1.left_trigger * 100, gamepad1.right_trigger * 100);
-            } else
-            {
+            } else {
                 // Make sure rumble is turned off when Left Bumper is released (only one time each press)
-                if (lastLB)
-                {
+                if (lastLB) {
                     gamepad1.stopRumble();
                 }
 
@@ -176,8 +173,7 @@ public class ConceptGamepadRumble extends LinearOpMode
             // Example 3. Blip 3 times at the moment that A (Cross) is pressed. (look for pressed transition)
             // BUT !!!  Skip it altogether if the Gamepad is already rumbling.
             // ----------------------------------------------------------------------------------------
-            if (currentA && !lastA)
-            {
+            if (currentA && !lastA) {
                 if (!gamepad1.isRumbling())  // Check for possible overlap of rumbles.
                     gamepad1.rumbleBlips(3);
             }
@@ -187,15 +183,12 @@ public class ConceptGamepadRumble extends LinearOpMode
             // ----------------------------------------------------------------------------------------
             // Example 4. Rumble once when gamepad right trigger goes above the THRESHOLD.
             // ----------------------------------------------------------------------------------------
-            if (gamepad1.right_trigger > TRIGGER_THRESHOLD)
-            {
-                if (!highLevel)
-                {
+            if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
+                if (!highLevel) {
                     gamepad1.rumble(0.9, 0, 200);  // 200 mSec burst on left motor.
                     highLevel = true;  // Hold off any more triggers
                 }
-            } else
-            {
+            } else {
                 highLevel = false;  // We can trigger again now.
             }
 
