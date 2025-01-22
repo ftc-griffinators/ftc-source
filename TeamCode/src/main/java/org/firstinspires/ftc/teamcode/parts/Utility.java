@@ -11,6 +11,10 @@ public class Utility {
         return -(1/(-63+Math.pow(Math.E,-x+5.2)))+1;
 
     }
+    public void servoDetectionRot(double upperBound, double lowerBound,double rotationSpeed){
+
+    }
+
 
 
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.components.Autonomous;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -11,14 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Slider;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 
 @Autonomous(name = "BlueSampleAuto")
 @Config
 public class BlueSampleAuto extends LinearOpMode {
-    public static double xPose=18.81505947359435;
-    public static double yPose=25.276865707856548;
-    public static double headingDegree=0.5256;
 
 
 
@@ -28,7 +26,7 @@ public class BlueSampleAuto extends LinearOpMode {
     public static Pose2d leftSampleZone=new Pose2d(18.81505947359435,25.276865707856548,0.4383081603154254);
 
 
-
+/*
     public double angleDegrees(double degrees){
         return degrees*(Math.PI/180);
     }
@@ -37,7 +35,7 @@ public class BlueSampleAuto extends LinearOpMode {
     //d2=45.57829841777924
 
 
-
+*/
 
     private void score(Claw claw, Slider slider){
         slider.sliderExtensionTopBox();
@@ -59,7 +57,7 @@ public class BlueSampleAuto extends LinearOpMode {
          MecanumDrive drive= new MecanumDrive(hardwareMap,new Pose2d(0,0,0));
 
 
-        Claw claw=new Claw(hardwareMap);
+        Claw claw=new Claw(hardwareMap, ColorRange.BLUE);
         Slider slider=new Slider(hardwareMap);
 
 
@@ -83,8 +81,6 @@ public class BlueSampleAuto extends LinearOpMode {
         sleep(500);
         score(claw,slider);
         sleep(500);
-
-
 
        Actions.runBlocking(BoxToRightSampleZone);
         sleep(1000);
