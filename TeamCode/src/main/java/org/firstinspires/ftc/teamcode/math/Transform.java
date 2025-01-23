@@ -6,13 +6,13 @@ import androidx.annotation.NonNull;
 
 public class Transform
 {
-    // Common constants
-    public static final Transform IDENTITY = new Transform(new Position(0, 0, 0), new Orientation(0, 0, 0));
-    public static final Transform INVALID = new Transform(new Position(Double.NaN, Double.NaN, Double.NaN), new Orientation(Double.NaN, Double.NaN, Double.NaN));
+    public static final Transform IDENTITY = new Transform(new Position(0, 0, 0),
+            new Orientation(0, 0, 0));
+    public static final Transform INVALID = new Transform(new Position(Double.NaN, Double.NaN,
+            Double.NaN), new Orientation(Double.NaN, Double.NaN, Double.NaN));
     public final Position position;
     public final Orientation orientation;
 
-    // Constructors
     public Transform(double x, double y, double yaw)
     {
         this(new Position(x, y), new Orientation(yaw));
@@ -29,7 +29,6 @@ public class Transform
         this.orientation = orientation;
     }
 
-    // Factory methods
     public static Transform from2D(double x, double y, double yaw)
     {
         return new Transform(x, y, yaw);
@@ -41,17 +40,16 @@ public class Transform
         return new Transform(x, y, z, roll, pitch, yaw);
     }
 
-    // Transform operations
+    // @Note: For proper 3D, you'd want to use rotation matrices or quaternions
     public Transform multiply(Transform other)
     {
-        // Basic transform composition
-        // Note: For proper 3D, you'd want to use rotation matrices or quaternions
         return new Transform(position.add(other.position), orientation.add(other.orientation));
     }
 
     public Transform inverse()
     {
-        return new Transform(position.scale(-1), new Orientation(-orientation.roll, -orientation.pitch, -orientation.yaw));
+        return new Transform(position.scale(-1), new Orientation(-orientation.roll,
+                -orientation.pitch, -orientation.yaw));
     }
 
     public Transform delta(Transform target)
@@ -94,9 +92,13 @@ public class Transform
     public boolean equals(Object o)
     {
         if (this == o)
-        { return true; }
+        {
+            return true;
+        }
         if (o == null || getClass() != o.getClass())
-        { return false; }
+        {
+            return false;
+        }
         Transform cframe = (Transform) o;
         return position.equals(cframe.position) && orientation.equals(cframe.orientation);
     }
@@ -160,12 +162,16 @@ public class Transform
         public boolean equals(Object o)
         {
             if (this == o)
-            { return true; }
+            {
+                return true;
+            }
             if (o == null || getClass() != o.getClass())
-            { return false; }
+            {
+                return false;
+            }
             Position position = (Position) o;
             return Math.abs(position.x - x) < 1e-6 && Math.abs(position.y - y) < 1e-6 &&
-                    Math.abs(position.z - z) < 1e-6;
+                   Math.abs(position.z - z) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")
@@ -200,9 +206,13 @@ public class Transform
             // normalize angle to [-180, 180]
             angle = angle % 360.0;
             if (angle > 180.0)
-            { angle -= 360.0; }
+            {
+                angle -= 360.0;
+            }
             if (angle < -180.0)
-            { angle += 360.0; }
+            {
+                angle += 360.0;
+            }
             return angle;
         }
 
@@ -230,12 +240,16 @@ public class Transform
         public boolean equals(Object o)
         {
             if (this == o)
-            { return true; }
+            {
+                return true;
+            }
             if (o == null || getClass() != o.getClass())
-            { return false; }
+            {
+                return false;
+            }
             Orientation that = (Orientation) o;
             return Math.abs(that.roll - roll) < 1e-6 && Math.abs(that.pitch - pitch) < 1e-6 &&
-                    Math.abs(that.yaw - yaw) < 1e-6;
+                   Math.abs(that.yaw - yaw) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")
