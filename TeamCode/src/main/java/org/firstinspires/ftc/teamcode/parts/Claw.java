@@ -55,13 +55,9 @@ public class Claw {
         //"clawGrab" is port 3
         clawGrab=hardwareMap.get(ServoImplEx.class,"clawGrab");
 
-        this.vision=new VisionSystem(hardwareMap,"Webcam");
-
-        vision.setTargetColor(color);
-        List<ColorBlobLocatorProcessor.Blob> blobs = vision.getBlobs();
-        this.targetPose = vision.getTargetPose(blobs);
-        this.alignmentDelta = vision.getAlignmentDelta(blobs);
-
+        this.vision = new VisionSystem(hardwareMap,"Webcam");
+        this.targetPose = vision.getTargetPose();
+        this.alignmentDelta = vision.getAlignmentDelta();
 
         clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
 

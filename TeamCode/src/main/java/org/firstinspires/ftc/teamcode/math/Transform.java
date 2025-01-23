@@ -155,7 +155,7 @@ public class Transform
 
         public boolean is2D()
         {
-            return Math.abs(z) < 1e-6;  // Small epsilon for floating point comparison
+            return Math.abs(z) < 1e-6;  // small epsilon for floating point comparison
         }
 
         @Override

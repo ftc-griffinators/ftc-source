@@ -11,13 +11,20 @@ public class VisionSystem
 {
     private static final double CENTER_THRESHOLD = 1.0; // delta degree from the crosshair
     private static final Transform TARGET_FRAME = new Transform(0, 0, 0);
-
     private final Limelight3A limelight;
+
+    public VisionSystem(HardwareMap hw, String device, int pl)
+    {
+        this.limelight = hw.get(Limelight3A.class, device);
+        this.init();
+        limelight.pipelineSwitch(pl);
+    }
 
     public VisionSystem(HardwareMap hw, String device)
     {
         this.limelight = hw.get(Limelight3A.class, device);
         this.init();
+        limelight.pipelineSwitch(0);
     }
 
     private void init()

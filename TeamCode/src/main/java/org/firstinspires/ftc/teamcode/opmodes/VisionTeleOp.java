@@ -16,13 +16,10 @@ public class VisionTeleOp extends LinearOpMode
     public void runOpMode()
     {
         VisionSystem vision = new VisionSystem(hardwareMap, "limelight");
-        vision.setPipeline(0);
-
         telemetry.addLine("Vision Test Ready");
         telemetry.update();
 
         waitForStart();
-
         while (opModeIsActive())
         {
             if (gamepad1.a)
