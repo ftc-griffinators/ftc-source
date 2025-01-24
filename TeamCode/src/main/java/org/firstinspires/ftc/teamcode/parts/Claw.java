@@ -23,13 +23,19 @@ public class Claw {
     public static double CLAW_PITCH_TOP;
     public static double CLAW_PITCH_BOT;
 
+    public double currentAlignerOrientation=0;
+
+
+
 
     VisionSystem vision;
-    public Transform targetPose, alignmentDelta;
+    public Transform targetPose=vision.getTargetPose();
+      public Transform alignmentDelta=vision.getAlignmentDelta();
 
     ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
 
-    public Claw(HardwareMap hardwareMap, ColorRange color)  {
+
+    public Claw(HardwareMap hardwareMap, VisionSystem vision)  {
         //"clawExtend" is port 2 on control hub
         clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
 
@@ -59,7 +65,18 @@ public class Claw {
 
         clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
+        this.vision=vision;
 
+
+    }
+
+
+    public void aligning(){
+        if (vision.hasValidTarget()){
+            currentAlignerOrientation+=alignmentDelta.orientation.yaw;
+            clawAlignment.setPosition(currentAlignerOrientation);
+
+        }
     }
 
 

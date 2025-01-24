@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Slider;
+import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 
 
@@ -60,8 +61,9 @@ public class BlueSampleAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
          MecanumDrive drive= new MecanumDrive(hardwareMap,new Pose2d(0,0,0));
 
+        VisionSystem visionSystem=new VisionSystem(hardwareMap,"limeLight");
 
-        Claw claw=new Claw(hardwareMap, ColorRange.BLUE);
+        Claw claw=new Claw(hardwareMap,visionSystem);
         Slider slider=new Slider(hardwareMap);
 
 

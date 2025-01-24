@@ -34,6 +34,8 @@ public class VisionTeleOp extends LinearOpMode
                 telemetry.addData("Area", String.format("%.2f%%", vision.getTargetArea()));
                 telemetry.addData("Centered", vision.isTargetCentered());
                 telemetry.addData("Staleness", vision.getStaleness() + "ms");
+                telemetry.addData("Orientation",pose.orientation.yaw);
+                telemetry.addData("Orientation4444",vision.testOrientation());
             }
 
             telemetry.update();

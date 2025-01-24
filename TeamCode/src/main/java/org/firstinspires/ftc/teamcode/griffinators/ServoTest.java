@@ -24,6 +24,8 @@ public class ServoTest extends LinearOpMode {
     public static double CLAW_PITCH_BOT;
     public static double CLAW_ALIGNMENT_LEFTMOST;
     public static double CLAW_ALIGNMENT_RIGHTMOST;
+    public static double CLAW_ALIGNMENT_MIDDLE;
+
 
     public static Servo.Direction d1= Servo.Direction.REVERSE;
     public static Servo.Direction d2= Servo.Direction.REVERSE;
@@ -97,8 +99,7 @@ public class ServoTest extends LinearOpMode {
                 clawPitch.setPosition(CLAW_PITCH_BOT);
             }
             if (gamepad1.dpad_left){
-
-
+                clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
             }
 
             if (gamepad1.dpad_right){
@@ -112,6 +113,8 @@ public class ServoTest extends LinearOpMode {
             telemetry.addData("clawAlignment.RIGHT: right_bumper",CLAW_ALIGNMENT_RIGHTMOST);
             telemetry.addData("clawPitch.TOP: dpad_up",CLAW_PITCH_TOP);
             telemetry.addData("clawPitch.BOTTOM: dpad_down",CLAW_PITCH_BOT);
+            telemetry.addData("clawAlignment.MIDDLE: dpad_left",CLAW_ALIGNMENT_MIDDLE);
+
 
 
 
