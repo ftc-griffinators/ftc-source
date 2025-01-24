@@ -8,28 +8,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.math.Transform;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
-@TeleOp(name = "Vision Test", group = "test")
+@TeleOp(name = "Vision Test", group = "Robot")
 public class VisionTeleOp extends LinearOpMode
 {
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode()
     {
-        VisionSystem vision = new VisionSystem(hardwareMap, "limelight");
+        VisionSystem vision = new VisionSystem(hardwareMap, "limeLight");
         telemetry.addLine("Vision Test Ready");
         telemetry.update();
 
         waitForStart();
         while (opModeIsActive())
         {
-            if (gamepad1.a)
-            {
-                vision.setPipeline(0);
-            }
-            if (gamepad1.b)
-            {
-                vision.setPipeline(1);
-            }
+            vision.setPipeline(1);
 
             telemetry.addData("Has Target", vision.hasValidTarget());
 

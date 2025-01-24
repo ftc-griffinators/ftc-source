@@ -171,7 +171,7 @@ public class Transform
             }
             Position position = (Position) o;
             return Math.abs(position.x - x) < 1e-6 && Math.abs(position.y - y) < 1e-6 &&
-                   Math.abs(position.z - z) < 1e-6;
+                    Math.abs(position.z - z) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")
@@ -249,7 +249,7 @@ public class Transform
             }
             Orientation that = (Orientation) o;
             return Math.abs(that.roll - roll) < 1e-6 && Math.abs(that.pitch - pitch) < 1e-6 &&
-                   Math.abs(that.yaw - yaw) < 1e-6;
+                    Math.abs(that.yaw - yaw) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")

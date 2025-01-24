@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.parts.Utility.sliderSmoothMovement;
 
 import com.acmerobotics.roadrunner.Pose2d;
 
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,6 +44,11 @@ public class TeleOperationA extends LinearOpMode {
     private final double CLAW_GRAB=0.83;
     private final double CLAW_RELEASE=0.71;
     private final double CLAW_ROT_BACK=0.76;
+
+
+    public double blueLimeLightPipeline=0;
+    public double yellowLimeLightPipeline=1;
+    public double redLimeLightPipeline=2;
 
 
 
@@ -101,6 +107,8 @@ public class TeleOperationA extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
 
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         //Expansion Hub 0
@@ -117,6 +125,11 @@ public class TeleOperationA extends LinearOpMode {
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
+
+
+        Limelight3A limelight= hardwareMap.get(Limelight3A.class,"limelight");
+
+        limelight.pipelineSwitch(0);
 
 
 

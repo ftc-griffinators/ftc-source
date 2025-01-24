@@ -103,6 +103,7 @@ public class SensorLimelight3A extends LinearOpMode {
             if (result != null) {
                 // Access general information
                 Pose3D botpose = result.getBotpose();
+
                 double captureLatency = result.getCaptureLatency();
                 double targetingLatency = result.getTargetingLatency();
                 double parseLatency = result.getParseLatency();

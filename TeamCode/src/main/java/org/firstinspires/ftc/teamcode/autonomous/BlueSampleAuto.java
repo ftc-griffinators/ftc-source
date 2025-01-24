@@ -18,6 +18,10 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 @Config
 public class BlueSampleAuto extends LinearOpMode {
 
+    public int blueLimeLightPipeline=0;
+    public int yellowLimeLightPipeline=1;
+    public int redLimeLightPipeline=2;
+
 
 
     public static Pose2d boxScoringPose= new Pose2d(7.5324,24.2975,-40.3282*Math.PI/180);

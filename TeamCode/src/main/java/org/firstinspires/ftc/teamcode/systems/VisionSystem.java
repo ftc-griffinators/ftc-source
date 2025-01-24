@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.systems;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.math.Transform;
 
+import java.util.List;
 import java.util.Optional;
 
 public class VisionSystem
@@ -13,18 +15,21 @@ public class VisionSystem
     private static final Transform TARGET_FRAME = new Transform(0, 0, 0);
     private final Limelight3A limelight;
 
-    public VisionSystem(HardwareMap hw, String device, int pl)
+    public VisionSystem(HardwareMap hardwareMap, String deviceName, int pipeline)
     {
-        this.limelight = hw.get(Limelight3A.class, device);
+        this.limelight = hardwareMap.get(Limelight3A.class, deviceName);
+        limelight.pipelineSwitch(pipeline);
         this.init();
-        limelight.pipelineSwitch(pl);
+
     }
 
-    public VisionSystem(HardwareMap hw, String device)
+
+    public VisionSystem(HardwareMap hardwareMap, String device)
     {
-        this.limelight = hw.get(Limelight3A.class, device);
-        this.init();
+        this.limelight = hardwareMap.get(Limelight3A.class, device);
         limelight.pipelineSwitch(0);
+        this.init();
+
     }
 
     private void init()
@@ -37,19 +42,48 @@ public class VisionSystem
     {
         limelight.pipelineSwitch(n);
     }
-
+    public void pausePipeline(){
+        limelight.pause();
+    }
+    public void stopPipeline(){
+        limelight.stop();
+    }
     public boolean hasValidTarget()
     {
         LLResult res = limelight.getLatestResult();
         return res != null && res.isValid();
     }
+    public int cornerParing(){
+        return 1;
+}
+public double testOrientation(){
+    LLResult res = limelight.getLatestResult();
+    LLResultTypes.ColorResult colorResult=res.getColorResults().get(0);
+    List<List<Double>> corners=colorResult.getTargetCorners();
+    double deltaX1=corners.get(0).get(0)-corners.get(2).get(0);
+    double deltaY1=corners.get(0).get(1)-corners.get(2).get(1);
+    double deltaX2=corners.get(1).get(0)-corners.get(3).get(0);
+    double deltaY2=corners.get(1).get(1)-corners.get(3).get(1);
+    return (Math.atan2(deltaY1,deltaX1)+Math.atan2(deltaY2,deltaX2))/2;
+}
+
+    public double getTargetOrientation(){
+        LLResult res = limelight.getLatestResult();
+        LLResultTypes.ColorResult colorResult=res.getColorResults().get(0);
+        List<List<Double>> corners=colorResult.getTargetCorners();
+        double deltaX=corners.get(0).get(0)-corners.get(2).get(0);
+        double deltaY=corners.get(0).get(1)-corners.get(2).get(1);
+        return Math.atan2(deltaY,deltaX);
+
+    }
 
     public Transform getTargetPose()
     {
         LLResult res = limelight.getLatestResult();
+        LLResultTypes.ColorResult colorResult=res.getColorResults().get(0);
         if (res == null || !res.isValid())
             return Transform.INVALID;
-        return new Transform(res.getTx(), res.getTy(), 0.0);
+        return new Transform(res.getTx(), res.getTy(), getTargetOrientation());
     }
 
     public Transform getAlignmentDelta()
