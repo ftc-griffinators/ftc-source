@@ -22,6 +22,7 @@ public class TestOp extends LinearOpMode {
 
     double leftRot, rightRot, extend=0;
 
+    //topBox=2500
 
     private final double CLAW_EXTENDED=0;
     private final double CLAW_RETRACTED=0.26;
@@ -31,9 +32,6 @@ public class TestOp extends LinearOpMode {
     private final double CLAW_GRAB=0.83;
     private final double CLAW_RELEASE=0.71;
     private final double CLAW_ROT_BACK=0.80;
-
-
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -63,11 +61,6 @@ public class TestOp extends LinearOpMode {
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
@@ -99,45 +92,16 @@ public class TestOp extends LinearOpMode {
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
 
-            double x = gamepad1.left_stick_x;
-            double y = -gamepad1.left_stick_y;
-            double turn= gamepad1.right_stick_x;
-
-
-            double heading = pose.heading.toDouble();
-            double rotX = x * Math.cos(heading) - y * Math.sin(heading);
-            double rotY = x * Math.sin(heading) + y * Math.cos(heading);
-
-
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
 
 
+            telemetry.addData("xPose",pose.position.x);
+            telemetry.addData("yPose",pose.position.y);
+            telemetry.addData("heading",pose.heading);
 
-            double frontLeftPower = (rotY + rotX + turn) / denominator;
-            double frontRightPower = (rotY - rotX - turn )/ denominator;
-            double backLeftPower = (rotY - rotX + turn )/ denominator;
-            double backRightPower = (rotY + rotX - turn) / denominator;
-
-
-
-
-
-            frontLeft.setPower(frontLeftPower*0.8);
-            backLeft.setPower(backLeftPower*0.8);
-            frontRight.setPower(frontRightPower*0.8);
-            backRight.setPower(backRightPower*0.8);
-
-
-
-
-            telemetry.addData("par0",localizer.par0.getPositionAndVelocity().position);
-            telemetry.addData("par1",localizer.par1.getPositionAndVelocity().position);
-            telemetry.addData("perp",localizer.perp.getPositionAndVelocity().position);
-
-
+            telemetry.addData("lefSlider",leftSliderEncoder.getPositionAndVelocity().position);
+            telemetry.addData("rightSlider",rightSliderEncoder.getPositionAndVelocity().position);
             telemetry.update();
-
 
         }
 

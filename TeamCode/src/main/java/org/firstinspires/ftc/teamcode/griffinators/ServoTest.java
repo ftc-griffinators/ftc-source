@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,21 +14,19 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 @TeleOp(name ="ServoTest",group = "Tests")
 @Config
 public class ServoTest extends LinearOpMode {
-    public static double CLAW_EXTENDED=0;
-    public static double CLAW_RETRACTED=0.26;
-    public static double CLAW_ROT_MID=0.54;
-    public static double CLAW_ROT_GROUND=0.205;
-    public static double CLAW_ROT_FRONT=0.28;
-    public static double CLAW_ROT_BACK=0.76;
-    public static double CLAW_GRAB=0.83;
-    public static double CLAW_RELEASE=0.71;
-    public static double CLAW_PITCH_TOP;
-    public static double CLAW_PITCH_BOT;
-    public static double CLAW_ALIGNMENT_LEFTMOST;
-    public static double CLAW_ALIGNMENT_RIGHTMOST;
-    public static double CLAW_ALIGNMENT_MIDDLE;
-
-
+    public static double CLAW_EXTENDED=0.26;
+    public static double CLAW_RETRACTED=0;
+    public static double CLAW_ROT_MID=0.15;
+    public static double CLAW_ROT_FRONT=0;
+    public static double CLAW_ROT_BACK=0.39;
+    public static double CLAW_GRAB=0;
+    public static double CLAW_RELEASE=0.3;
+    public static double CLAW_PITCH_TOP=0.5;
+    public static double CLAW_PITCH_MID=0.25;
+    public static double CLAW_PITCH_BOT=0;
+    public static double CLAW_ALIGNMENT_LEFTMOST=0.8;
+    public static double CLAW_ALIGNMENT_RIGHTMOST=0.19;
+    public static double CLAW_ALIGNMENT_MIDDLE=0.49;
     public static Servo.Direction d1= Servo.Direction.REVERSE;
     public static Servo.Direction d2= Servo.Direction.REVERSE;
     public static Servo.Direction d3= Servo.Direction.REVERSE;
@@ -38,6 +38,10 @@ public class ServoTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        TelemetryPacket p=new TelemetryPacket();
+
+        FtcDashboard dashboard=FtcDashboard.getInstance();
 
 
         clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
@@ -69,6 +73,11 @@ public class ServoTest extends LinearOpMode {
 
         clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
+        clawExtend.setDirection(Servo.Direction.REVERSE);
+
+
+
+        waitForStart();
         while (opModeIsActive()){
             if (gamepad1.a){
              clawGrab.setPosition(CLAW_GRAB);
@@ -92,33 +101,54 @@ public class ServoTest extends LinearOpMode {
             if (gamepad1.right_bumper){
                 clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
             }
+            if (gamepad1.dpad_left){
+              clawRightRot.setPosition(CLAW_ROT_FRONT);
+            }
+            if (gamepad1.dpad_right){
+                clawRightRot.setPosition(CLAW_ROT_MID);
+            }
+
+
             if (gamepad1.dpad_up){
-                clawPitch.setPosition(CLAW_PITCH_TOP);
+                clawLeftRot.setPosition(CLAW_ROT_FRONT);
             }
             if (gamepad1.dpad_down){
-                clawPitch.setPosition(CLAW_PITCH_BOT);
-            }
-            if (gamepad1.dpad_left){
-                clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+                clawLeftRot.setPosition(CLAW_ROT_MID);
             }
 
-            if (gamepad1.dpad_right){
 
-            }
+
             telemetry.addData("clawGrab.CLAW_GRAB: a",CLAW_GRAB);
             telemetry.addData("clawGrab.CLAW_RELEASE: b",CLAW_RELEASE);
             telemetry.addData("clawExtend.CLAW_EXTENDED: x",CLAW_EXTENDED);
             telemetry.addData("clawExtend.CLAW_RETRACTED: Y",CLAW_RETRACTED);
             telemetry.addData("clawAlignment.LEFT: left_bumper",CLAW_ALIGNMENT_LEFTMOST);
             telemetry.addData("clawAlignment.RIGHT: right_bumper",CLAW_ALIGNMENT_RIGHTMOST);
-            telemetry.addData("clawPitch.TOP: dpad_up",CLAW_PITCH_TOP);
-            telemetry.addData("clawPitch.BOTTOM: dpad_down",CLAW_PITCH_BOT);
-            telemetry.addData("clawAlignment.MIDDLE: dpad_left",CLAW_ALIGNMENT_MIDDLE);
-
-
-
+            telemetry.addData("clawLeftRot.FRONT: dpad_up",CLAW_ROT_FRONT);
+            telemetry.addData("clawLeftRot.MID: dpad_down",CLAW_ROT_MID);
+            telemetry.addData("clawRightRot.FRONT: dpad_left",CLAW_ROT_FRONT);
+            telemetry.addData("clawRightRot.MIDDLE: dpad_right",CLAW_ROT_MID);
 
             telemetry.update();
+
+            p.put("clawGrab.CLAW_GRAB: a",CLAW_GRAB);
+            p.put("clawGrab.CLAW_RELEASE: b",CLAW_RELEASE);
+            p.put("clawExtend.CLAW_EXTENDED: x",CLAW_EXTENDED);
+            p.put("clawExtend.CLAW_RETRACTED: Y",CLAW_RETRACTED);
+            p.put("clawAlignment.LEFT: left_bumper",CLAW_ALIGNMENT_LEFTMOST);
+            p.put("clawAlignment.RIGHT: right_bumper",CLAW_ALIGNMENT_RIGHTMOST);
+            p.put("clawLeftRot.FRONT: dpad_up",CLAW_ROT_FRONT);
+            p.put("clawLeftRot.MID: dpad_down",CLAW_ROT_MID);
+            p.put("clawRightRot.FRONT: dpad_left",CLAW_ROT_FRONT);
+            p.put("clawRightRot.MIDDLE: dpad_right",CLAW_ROT_MID);
+
+            dashboard.sendTelemetryPacket(p);
+
+
+
+
+
+
         }
 
 

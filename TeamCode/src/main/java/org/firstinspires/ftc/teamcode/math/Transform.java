@@ -25,6 +25,7 @@ public class Transform
 
     public Transform(Position position, Orientation orientation)
     {
+
         this.position = position;
         this.orientation = orientation;
     }
@@ -84,8 +85,7 @@ public class Transform
     }
 
     public boolean is2D()
-    {
-        return position.is2D() && orientation.is2D();
+    {return position.is2D() && orientation.is2D();
     }
 
     @Override

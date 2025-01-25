@@ -33,24 +33,21 @@ public class TeleOperationA extends LinearOpMode {
 
     double leftRot, rightRot, extend=0;
     DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;
-    ServoImplEx  clawGrab, clawRightRot, clawLeftRot, clawExtend;
+    ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
 
-
-    private final double CLAW_EXTENDED=0;
-    private final double CLAW_RETRACTED=0.26;
-    private final double CLAW_ROT_MID=0.54;
-    private final double CLAW_ROT_GROUND=0.205;
-    private final double CLAW_ROT_FRONT=0.28;
-    private final double CLAW_GRAB=0.83;
-    private final double CLAW_RELEASE=0.71;
-    private final double CLAW_ROT_BACK=0.76;
-
-
-    public double blueLimeLightPipeline=0;
-    public double yellowLimeLightPipeline=1;
-    public double redLimeLightPipeline=2;
-
-
+    public static double CLAW_EXTENDED=0.26;
+    public static double CLAW_RETRACTED=0;
+    public static double CLAW_ROT_MID=0.15;
+    public static double CLAW_ROT_FRONT=0;
+    public static double CLAW_ROT_BACK=0.39;
+    public static double CLAW_GRAB=0;
+    public static double CLAW_RELEASE=0.3;
+    public static double CLAW_PITCH_TOP=0.5;
+    public static double CLAW_PITCH_MID=0.25;
+    public static double CLAW_PITCH_BOT=0;
+    public static double CLAW_ALIGNMENT_LEFTMOST=0.8;
+    public static double CLAW_ALIGNMENT_RIGHTMOST=0.19;
+    public static double CLAW_ALIGNMENT_MIDDLE=0.49;
 
     static int sliderStateTopBox=0;
     static int sliderStateMidBox=0;
@@ -58,18 +55,11 @@ public class TeleOperationA extends LinearOpMode {
     int boxScoringStateTop=0;
     int boxScoringStateBot =0;
     int clawGrabState=0;
-
     int init=0;
-
-
     public void rotateClaw(double position){
         clawRightRot.setPosition(position);
         clawLeftRot.setPosition(position);
     }
-
-
-
-
     public void sliderExtensionTopBox(){
         sliderRight.setTargetPosition(4200);
         sliderLeft.setTargetPosition(4200);
@@ -80,24 +70,17 @@ public class TeleOperationA extends LinearOpMode {
         sliderLeft.setTargetPosition(50);
         smoothing(sliderLeft.getCurrentPosition());
     }
-
     public void sliderExtensionMidBox(){
         sliderRight.setTargetPosition(2100);
         sliderLeft.setTargetPosition(2100);
         smoothing(sliderLeft.getCurrentPosition());
 
     }
-
     public void sliderRetractionMidBox(){
         sliderRight.setTargetPosition(50);
         sliderLeft.setTargetPosition(50);
         smoothing(sliderLeft.getCurrentPosition());
     }
-
-
-
-
-
     private void smoothing(int initial){
             sliderRight.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderRight.getCurrentPosition())));
             sliderLeft.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderLeft.getCurrentPosition())));
@@ -105,10 +88,6 @@ public class TeleOperationA extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
-
-
-
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         //Expansion Hub 0
@@ -126,12 +105,9 @@ public class TeleOperationA extends LinearOpMode {
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
 
-
         Limelight3A limelight= hardwareMap.get(Limelight3A.class,"limelight");
 
         limelight.pipelineSwitch(0);
-
-
 
         //"clawExtend" is port 2 on control hub
         clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
@@ -143,9 +119,6 @@ public class TeleOperationA extends LinearOpMode {
         clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
         //"clawGrab" is port 3
         clawGrab=hardwareMap.get(ServoImplEx.class,"clawGrab");
-
-
-
         clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
 
         clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
@@ -153,11 +126,6 @@ public class TeleOperationA extends LinearOpMode {
         clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
         
         clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-
-
-
-
 
         Localizer localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -183,20 +151,15 @@ public class TeleOperationA extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-
         sliderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         sliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Pose2d pose = new Pose2d(0, 0, 0);
 
-
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         clawLeftRot.setDirection(Servo.Direction.REVERSE);
         waitForStart();
-
-
 
         //Field centric mecanum drive
         while (opModeIsActive()){
@@ -209,50 +172,30 @@ public class TeleOperationA extends LinearOpMode {
                 sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 clawGrab.setPosition(CLAW_RELEASE);
-                rotateClaw(CLAW_ROT_GROUND);
+                rotateClaw(CLAW_ROT_FRONT);
                 clawExtend.setPosition(CLAW_RETRACTED);
-
 
                 init=1;
             }
-
-
-
-
-
-
-
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double turn= gamepad1.right_stick_x;
-
 
             double heading = pose.heading.toDouble();
             double rotX = x * Math.cos(heading) - y * Math.sin(heading);
             double rotY = x * Math.sin(heading) + y * Math.cos(heading);
 
-
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
-
-
-
 
             double frontLeftPower = (rotY + rotX + turn) / denominator;
             double frontRightPower = (rotY - rotX - turn )/ denominator;
             double backLeftPower = (rotY - rotX + turn )/ denominator;
             double backRightPower = (rotY + rotX - turn) / denominator;
 
-
-
-
-
             frontLeft.setPower(frontLeftPower*0.8);
             backLeft.setPower(backLeftPower*0.8);
             frontRight.setPower(frontRightPower*0.8);
             backRight.setPower(backRightPower*0.8);
-
-
-
 
             //GRABBING TOGGLE
             if (gamepad1.right_bumper){
@@ -280,43 +223,16 @@ public class TeleOperationA extends LinearOpMode {
                         break;
                 }
             }
-
-
-            //Grounded rotation
-            if (gamepad1.a){
-                clawRightRot.setPosition(CLAW_ROT_GROUND);
-                clawLeftRot.setPosition(CLAW_ROT_GROUND);
-            }
             //Forward Rotation
             if (gamepad1.x){
                 clawRightRot.setPosition(CLAW_ROT_FRONT);
                 clawLeftRot.setPosition(CLAW_ROT_FRONT);
             }
-
             //point up rotation
             if (gamepad1.dpad_left){
                 clawRightRot.setPosition(CLAW_ROT_MID);
                 clawLeftRot.setPosition(CLAW_ROT_MID);
             }
-
-
-            //Slider move to the top basket
-
-            /*
-            if (gamepad1.dpad_up){
-                switch (sliderStateTopBox){
-                    case 0: sliderExtensionTopBox();
-                        sliderStateTopBox=1;
-                        sliderStateMidBox=0;
-                        break;
-                    case  1: sliderRetractionTopBox();
-                        sliderStateTopBox=0;
-                        break;
-                }
-            }
-            */
-
-            //Slider move to the middle basket
             if (gamepad1.dpad_up){
                 switch (sliderStateMidBox){
                     case 0:sliderExtensionMidBox();
@@ -328,25 +244,19 @@ public class TeleOperationA extends LinearOpMode {
                         break;
                 }
             }
-
             //Reset Basket scoring
                 if (gamepad1.start) {
                     boxScoringStateTop=0;
                     boxScoringStateBot =0;
                     clawExtend.setPosition(CLAW_RETRACTED);
                         sliderRetractionTopBox();
-                    clawRightRot.setPosition(CLAW_ROT_GROUND);
-                    clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                    clawRightRot.setPosition(CLAW_ROT_FRONT);
+                    clawLeftRot.setPosition(CLAW_ROT_FRONT);
                 }
-
-
-
             //Grab success Basket scoring phase
-
             if (gamepad1.y){
                 switch (boxScoringStateTop){
                     case 0:
-
                         clawRightRot.setPosition(CLAW_ROT_FRONT);
                         clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         clawExtend.setPosition(CLAW_RETRACTED);
@@ -365,20 +275,16 @@ public class TeleOperationA extends LinearOpMode {
                         clawGrab.setPosition(CLAW_RELEASE);
                         Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_GROUND);
-                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         sliderRetractionTopBox();
                         boxScoringStateTop=0;;
                         break;
-
                 }
             }
-
-
             if (gamepad1.b){
                 switch (boxScoringStateBot){
                     case 0:
-
                         clawRightRot.setPosition(CLAW_ROT_FRONT);
                         clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         Thread.sleep(300);
@@ -397,8 +303,8 @@ public class TeleOperationA extends LinearOpMode {
                         clawGrab.setPosition(CLAW_RELEASE);
                         Thread.sleep(300);
                         clawExtend.setPosition(CLAW_RETRACTED);
-                        clawRightRot.setPosition(CLAW_ROT_GROUND);
-                        clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                        clawRightRot.setPosition(CLAW_ROT_FRONT);
+                        clawLeftRot.setPosition(CLAW_ROT_FRONT);
                         sliderRetractionMidBox();
                         boxScoringStateBot =0;
                         break;
@@ -406,8 +312,5 @@ public class TeleOperationA extends LinearOpMode {
             }
 
             }
-
-
-
         }
     }

@@ -9,19 +9,23 @@ import org.firstinspires.ftc.teamcode.math.Transform;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 
+import java.util.List;
+
 public class Claw {
     public static double CLAW_EXTENDED=0;
     public static double CLAW_RETRACTED=0.26;
     public static double CLAW_ROT_MID=0.54;
     public static double CLAW_ROT_GROUND=0.205;
     public static double CLAW_ROT_FRONT=0.28;
+    public static double CLAW_ROT_BACK=0.76;
     public static double CLAW_GRAB=0.83;
     public static double CLAW_RELEASE=0.71;
-    public static double CLAW_ROT_BACK=0.76;
-    public static double CLAW_ALIGNMENT_LEFTMOST;
-    public static double CLAW_ALIGNMENT_RIGHTMOST;
     public static double CLAW_PITCH_TOP;
     public static double CLAW_PITCH_BOT;
+    public static double CLAW_PITCH_MID;
+    public static double CLAW_ALIGNMENT_LEFTMOST;
+    public static double CLAW_ALIGNMENT_RIGHTMOST;
+    public static double CLAW_ALIGNMENT_MIDDLE;
 
     public double currentAlignerOrientation=0;
 
@@ -29,10 +33,11 @@ public class Claw {
 
 
     VisionSystem vision;
-    public Transform targetPose=vision.getTargetPose();
-      public Transform alignmentDelta=vision.getAlignmentDelta();
+
+
 
     ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
+
 
 
     public Claw(HardwareMap hardwareMap, VisionSystem vision)  {
@@ -63,18 +68,24 @@ public class Claw {
 
         clawPitch.setPwmRange(new PwmControl.PwmRange(500,2500));
 
+        /*
+        clawGrab.scaleRange();
+        clawRightRot.scaleRange();
+        clawLeftRot.scaleRange();
+        clawExtend.scaleRange();
+        clawAlignment.scaleRange();
+        clawPitch.scaleRange();
+*/
+
         clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
         this.vision=vision;
 
-
     }
 
-
-    public void aligning(){
+    public void orientationAligning(List<List<Double>> corner) {
         if (vision.hasValidTarget()){
-            currentAlignerOrientation+=alignmentDelta.orientation.yaw;
-            clawAlignment.setPosition(currentAlignerOrientation);
+
 
         }
     }
