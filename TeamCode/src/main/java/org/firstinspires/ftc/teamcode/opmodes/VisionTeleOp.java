@@ -42,7 +42,7 @@ public class VisionTeleOp extends LinearOpMode
                 excess++;
             }
 
-            Transform pose = vision.getTargetPose(corners);
+            Transform pose = vision.getTargetDiffPose(corners);
             if (vision.hasValidTarget())
             {
                 telemetry.addData("Valid",vision.hasValidTarget());
@@ -50,14 +50,15 @@ public class VisionTeleOp extends LinearOpMode
                 telemetry.addData("num of wrong",wrong);
                 telemetry.addData("Num of corners",vision.numOfCorners);
                 telemetry.addData("Corners overflow",excess);
-                /*
+
                 telemetry.addData("TX", String.format("%.2f°", pose.position.x));
                 telemetry.addData("TY", String.format("%.2f°", pose.position.y));
+                telemetry.addData("Is aligned",vision.isTargetAligned(corners));
 
 
 
-                telemetry.addData("Orientation",pose.orientation.yaw);
-                */
+                telemetry.addData("Orientation",pose.orientation.yaw*(180/Math.PI));
+
 
                         }
 

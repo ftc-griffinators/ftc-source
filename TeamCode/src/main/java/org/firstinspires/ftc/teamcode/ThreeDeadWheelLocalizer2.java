@@ -12,13 +12,12 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.messages.ThreeDeadWheelInputsMessage;
 
 @Config
-public final class ThreeDeadWheelLocalizer implements Localizer {
+public final class ThreeDeadWheelLocalizer2 implements Localizer {
     public static class Params {
         public double par0YTicks = -2621.144848271604; // y position of the first parallel encoder (in tick units)
         public double par1YTicks = 2519.0743034289853; // y position of the second parallel encoder (in tick units)
@@ -35,7 +34,7 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
     private int lastPar0Pos, lastPar1Pos, lastPerpPos;
     private boolean initialized;
 
-    public ThreeDeadWheelLocalizer(HardwareMap hardwareMap, double inPerTick) {
+    public ThreeDeadWheelLocalizer2(HardwareMap hardwareMap, double inPerTick) {
         // TODO: make sure your config has **motors** with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
@@ -45,15 +44,13 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         //Control hub port 0, Right encoder
         par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
 
-        par0.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         //Expansion hub 0, Left encoder
         par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
 
 
-
-
+            par1.setDirection(DcMotorEx.Direction.REVERSE);
 
         //Control Hub Port 1, Back encoder
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));

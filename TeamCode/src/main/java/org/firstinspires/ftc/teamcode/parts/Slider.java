@@ -8,9 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Slider {
-    public static double startingSlider=50;
-    public static double sliderTop=4200;
-    public static double sliderMid=2100;
+    public static int INIT_SLIDER =50;
+    public static int SLIDER_TOP =3100;
+    public static int SLIDER_MID =200;
+    public static int SLIDER_TOP_BAR;
 
     DcMotorEx sliderLeft,sliderRight;
 
@@ -19,8 +20,6 @@ public class Slider {
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
-
-
 
         sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -31,9 +30,10 @@ public class Slider {
         sliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
+
     public void sliderInit(){
-        sliderLeft.setTargetPosition(50);
-        sliderRight.setTargetPosition(50);
+        sliderLeft.setTargetPosition(INIT_SLIDER);
+        sliderRight.setTargetPosition(INIT_SLIDER);
 
         sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -43,22 +43,27 @@ public class Slider {
         sliderRight.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderRight.getCurrentPosition())));
         sliderLeft.setPower(sliderSmoothMovement(0,4000,Math.abs(initial-sliderLeft.getCurrentPosition())));
     }
-
-    public void sliderExtensionTopBox(){
-        sliderRight.setTargetPosition(4200);
-        sliderLeft.setTargetPosition(4200);
+    public void sliderExtensionTopBar(){
+        sliderRight.setTargetPosition(SLIDER_TOP_BAR);
+        sliderRight.setTargetPosition(SLIDER_TOP_BAR);
         sliderRight.setPower(1);
         sliderLeft.setPower(1);
     }
 
-    public void sliderRetractionBox(){
-        sliderRight.setTargetPosition(50);
-        sliderLeft.setTargetPosition(50);
+    public void sliderExtensionTopBox(){
+        sliderRight.setTargetPosition(SLIDER_TOP);
+        sliderLeft.setTargetPosition(SLIDER_TOP);
+        sliderRight.setPower(1);
+        sliderLeft.setPower(1);
+    }
+    public void sliderRetraction(){
+        sliderRight.setTargetPosition(INIT_SLIDER);
+        sliderLeft.setTargetPosition(INIT_SLIDER);
         smoothing(sliderLeft.getCurrentPosition());
     }
     public void sliderExtensionMidBox(){
-        sliderRight.setTargetPosition(2100);
-        sliderLeft.setTargetPosition(2100);
+        sliderRight.setTargetPosition(SLIDER_MID);
+        sliderLeft.setTargetPosition(SLIDER_MID);
         sliderRight.setPower(1);
         sliderLeft.setPower(1);
     }

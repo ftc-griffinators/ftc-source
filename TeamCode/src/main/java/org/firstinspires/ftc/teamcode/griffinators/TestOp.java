@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -20,7 +22,9 @@ public class TestOp extends LinearOpMode {
 
     Encoder leftSliderEncoder,rightSliderEncoder;
 
-    double leftRot, rightRot, extend=0;
+   ;
+   TelemetryPacket packet=new TelemetryPacket();
+   FtcDashboard ftcDashboard=FtcDashboard.getInstance();
 
     //topBox=2500
 
@@ -78,7 +82,7 @@ public class TestOp extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-       rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
+        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Pose2d pose = new Pose2d(0, 0, 0);
 
@@ -97,8 +101,12 @@ public class TestOp extends LinearOpMode {
 
             telemetry.addData("xPose",pose.position.x);
             telemetry.addData("yPose",pose.position.y);
-            telemetry.addData("heading",pose.heading);
+            telemetry.addData("heading",pose.heading.toDouble());
+            packet.put("xPose",pose.position.x);
+            packet.put("yPose",pose.position.y);
+            packet.put("heading",pose.heading.toDouble());
 
+            ftcDashboard.sendTelemetryPacket(packet);
             telemetry.addData("lefSlider",leftSliderEncoder.getPositionAndVelocity().position);
             telemetry.addData("rightSlider",rightSliderEncoder.getPositionAndVelocity().position);
             telemetry.update();

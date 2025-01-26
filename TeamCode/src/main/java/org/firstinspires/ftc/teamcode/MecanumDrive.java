@@ -53,6 +53,8 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -311,7 +313,7 @@ public final class MecanumDrive {
 
 
             if ((t >= timeTrajectory.duration && error.position.norm() < 0.5
-                    && robotVelRobot.linearVel.norm() < 0.3 && robotVelRobot.angVel < 0.08 && Math.abs(error.heading.toDouble()) < 2) || t >= timeTrajectory.duration + 3) {
+                    && robotVelRobot.linearVel.norm() < 0.3 && robotVelRobot.angVel < 0.08 && Math.abs(error.heading.toDouble()) < 2) || t >= timeTrajectory.duration + 1) {
                 leftFront.setPower(0);
                 leftBack.setPower(0);
                 rightBack.setPower(0);
