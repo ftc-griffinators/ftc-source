@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.griffinators;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -22,11 +20,8 @@ public class TestOp extends LinearOpMode {
 
     Encoder leftSliderEncoder,rightSliderEncoder;
 
-   ;
-   TelemetryPacket packet=new TelemetryPacket();
-   FtcDashboard ftcDashboard=FtcDashboard.getInstance();
+    double leftRot, rightRot, extend=0;
 
-    //topBox=2500
 
     private final double CLAW_EXTENDED=0;
     private final double CLAW_RETRACTED=0.26;
@@ -36,6 +31,9 @@ public class TestOp extends LinearOpMode {
     private final double CLAW_GRAB=0.83;
     private final double CLAW_RELEASE=0.71;
     private final double CLAW_ROT_BACK=0.80;
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -66,6 +64,11 @@ public class TestOp extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
 
@@ -82,7 +85,7 @@ public class TestOp extends LinearOpMode {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+       rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);;
 
         Pose2d pose = new Pose2d(0, 0, 0);
 
@@ -96,20 +99,45 @@ public class TestOp extends LinearOpMode {
         while (opModeIsActive()){
             pose = pose.plus(localizer.update().value());
 
+            double x = gamepad1.left_stick_x;
+            double y = -gamepad1.left_stick_y;
+            double turn= gamepad1.right_stick_x;
+
+
+            double heading = pose.heading.toDouble();
+            double rotX = x * Math.cos(heading) - y * Math.sin(heading);
+            double rotY = x * Math.sin(heading) + y * Math.cos(heading);
+
+
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
 
 
-            telemetry.addData("xPose",pose.position.x);
-            telemetry.addData("yPose",pose.position.y);
-            telemetry.addData("heading",pose.heading.toDouble());
-            packet.put("xPose",pose.position.x);
-            packet.put("yPose",pose.position.y);
-            packet.put("heading",pose.heading.toDouble());
 
-            ftcDashboard.sendTelemetryPacket(packet);
-            telemetry.addData("lefSlider",leftSliderEncoder.getPositionAndVelocity().position);
-            telemetry.addData("rightSlider",rightSliderEncoder.getPositionAndVelocity().position);
+            double frontLeftPower = (rotY + rotX + turn) / denominator;
+            double frontRightPower = (rotY - rotX - turn )/ denominator;
+            double backLeftPower = (rotY - rotX + turn )/ denominator;
+            double backRightPower = (rotY + rotX - turn) / denominator;
+
+
+
+
+
+            frontLeft.setPower(frontLeftPower*0.8);
+            backLeft.setPower(backLeftPower*0.8);
+            frontRight.setPower(frontRightPower*0.8);
+            backRight.setPower(backRightPower*0.8);
+
+
+
+
+            telemetry.addData("par0",localizer.par0.getPositionAndVelocity().position);
+            telemetry.addData("par1",localizer.par1.getPositionAndVelocity().position);
+            telemetry.addData("perp",localizer.perp.getPositionAndVelocity().position);
+
+
             telemetry.update();
+
 
         }
 

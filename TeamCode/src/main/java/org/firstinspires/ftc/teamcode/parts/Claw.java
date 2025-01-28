@@ -91,46 +91,56 @@ public class Claw {
 
 
 
-    public boolean orientationAligning(List<List<Double>> corner, boolean isValid, VisionSystem vision) {
+    public boolean orientationAligning(List<List<Double>> corner, boolean isValid, VisionSystem vision)
+    {
+        if (!isValid || corner == null || corner.size() != 4)
+            return false;
 
+        double orientation = vision.getCamRelativeTargetOrientation(corner);
+        if (Double.isNaN(orientation))
+            return false;
 
-            if ( isValid  && !Double.isNaN(vision.getCamRelativeTargetOrientation(corner))){
+        if (vision.isTargetAligned(corner))
+            return true;
 
-                if (vision.isTargetAligned(corner)){
-                    return true;
-                }
+        try
+        {
+            double currentServoPose = clawAlignment.getPosition();
+            String direction = vision.turnLeftOrRight(corner);
 
-                    double currentServoPose=clawAlignment.getPosition();
-                    String direction= vision.turnLeftOrRight(corner);
-                    if (direction=="left"){
-                        clawAlignment.setPosition(currentServoPose+0.0034);
-                    }
-                    if (direction=="right") {
-                        clawAlignment.setPosition(currentServoPose - 0.0034);
-                    }
-
-
-
+            if ("left".equals(direction))
+            {
+                clawAlignment.setPosition(currentServoPose + 0.0034);
             }
-            in++;
+            else if ("right".equals(direction))
+            {
+                clawAlignment.setPosition(currentServoPose - 0.0034);
+            }
+        }
+        catch (Exception e)
+        {
+            // NOTE: log error or smth on telemetry idk
+            return false;
+        }
 
+        in++;
         return false;
     }
 
 
-    public void  sampleGrabbing(List<List<Double>> corner, boolean isValid, VisionSystem vision){
+    public void sampleGrabbing(List<List<Double>> corner, boolean isValid, VisionSystem vision)
+    {
         alignerReset();
-        while (!vision.isTargetAligned(corner) ){
-           if (orientationAligning( corner,  isValid,  vision)){
-               o++;
-               break;
+        // if valid = false for fast path;
+        if (corner == null || !isValid || corner.size() != 4)
+            return;
 
-           }
-
-           in++;
-
-
-           break;
+        // try to align if not already
+        if (!vision.isTargetAligned(corner))
+        {
+            if (orientationAligning(corner, true, vision))
+                ++o;
+            ++in;
         }
     }
 

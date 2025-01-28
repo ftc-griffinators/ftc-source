@@ -113,25 +113,39 @@ public List<List<Double>> getCorners(){
         return new ArrayList<>(1);
        }
 
-
-
-    public double getCamRelativeTargetOrientation(List<List<Double>> corners){
-
-       List<List<Double>> points=twoMidpoints(corners);
-       if (points==null) {
+    public double getCamRelativeTargetOrientation(List<List<Double>> corners)
+    {
+       if (corners == null || corners.size() != 4)
            return Double.NaN;
-       }
-        double deltaX1=points.get(0).get(0)-points.get(1).get(0)  ;
-        double deltaY1=points.get(0).get(1)-points.get(1).get(1);
 
-        double angle=Math.atan2(deltaY1,deltaX1);
-        if (angle<(-Math.PI/2)){
-            return Math.PI+angle;
+       for (List<Double> corner : corners)
+       {
+           if (corner == null || corner.size() != 2 || corner.get(0) == null || corner.get(1) == null) {
+               return Double.NaN;
+           }
+       }
+
+        List<List<Double>> points = twoMidpoints(corners);
+        if (points == null || points.size() != 2)
+            return Double.NaN;
+
+        try
+        {
+            double dx = points.get(0).get(0) - points.get(1).get(0);
+            double dy = points.get(0).get(1) - points.get(1).get(1);
+
+            double angle = Math.atan2(dy, dx);
+
+            if (angle < (-Math.PI/2))
+                return Math.PI + angle;
+            if (angle > (Math.PI/2))
+                return (-Math.PI) + angle;
+            return angle;
         }
-        if (angle>(Math.PI/2)){
-            return (-Math.PI)+angle;
+        catch (Exception e)
+        {
+            return Double.NaN;
         }
-        return angle;
     }
 
 
