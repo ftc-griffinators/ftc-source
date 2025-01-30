@@ -1,4 +1,7 @@
-package org.firstinspires.ftc.teamcode.griffinators;
+package org.firstinspires.ftc.teamcode.tests;
+
+
+import static org.firstinspires.ftc.teamcode.parts.Claw.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,35 +20,13 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.teamcode.math.Transform;
-import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Slider;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 @TeleOp(name ="ServoTest",group = "Tests")
 @Config
 public class ServoTest extends LinearOpMode {
-    public static double CLAW_EXTENDED=0.4;
-    public static double CLAW_RETRACTED=0;
-    public static double CLAW_ROT_MID=0.15;
-    public static double CLAW_ROT_FRONT=0.06;
-    public static double CLAW_ROT_BACK=0.4;
-    public static double CLAW_ROT_GROUND=0;
-    public static double CLAW_GRAB=0;
-    public static double CLAW_RELEASE=0.09;
-    public static double CLAW_PITCH_TOP=0.5;
-    public static double CLAW_PITCH_MID=0.265;
-    public static double CLAW_PITCH_BOT=0.02;
-    public static double CLAW_PITCH_SCORE=0.4;
-    public static double CLAW_ALIGNMENT_LEFTMOST=0.8;
-    public static double CLAW_ALIGNMENT_RIGHTMOST=0.19;
-    public static double CLAW_ALIGNMENT_MIDDLE=0.49;
-    public static double CLAW_270=0.65;
-    public static double CLAW_45=0.32;
+
 
     public int wrong;
     public int excess;
@@ -60,7 +41,7 @@ public class ServoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        VisionSystem vision = new VisionSystem(hardwareMap, "limeLight");
+        VisionSystem vision = new VisionSystem(hardwareMap);
 
 
         vision.setPipeline(0);

@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
 import java.util.List;
@@ -91,8 +90,7 @@ public class Claw {
 
 
 
-    public boolean orientationAligning(List<List<Double>> corner, boolean isValid, VisionSystem vision)
-    {
+    public boolean orientationAligning(List<List<Double>> corner, boolean isValid, VisionSystem vision) {
         if (!isValid || corner == null || corner.size() != 4)
             return false;
 
@@ -138,7 +136,7 @@ public class Claw {
         // try to align if not already
         if (!vision.isTargetAligned(corner))
         {
-            if (orientationAligning(corner, true, vision))
+            if (orientationAligning(corner, isValid, vision))
                 ++o;
             ++in;
         }
@@ -155,7 +153,7 @@ public class Claw {
 
 
 
-    public void clawAutoInit() throws InterruptedException {
+    public void clawAutoSampleInit() throws InterruptedException {
         clawGrab.setPosition(CLAW_GRAB);
 
         Thread.sleep(200);

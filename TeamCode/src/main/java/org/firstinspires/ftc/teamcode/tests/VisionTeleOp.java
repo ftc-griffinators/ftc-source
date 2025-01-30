@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.tests;
 
 import android.annotation.SuppressLint;
 
@@ -20,7 +20,7 @@ public class VisionTeleOp extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        VisionSystem vision = new VisionSystem(hardwareMap, "limeLight");
+        VisionSystem vision = new VisionSystem(hardwareMap);
         telemetry.addLine("Vision Test Ready");
         telemetry.update();
 

@@ -17,25 +17,25 @@ public class VisionSystem
 {
     public static int visonError=0;
 
-    public static  double CENTER_THRESHOLD = 1.0; // delta degree from the crosshair
-    public static  double ANGLE_THRESHOLD= 0.1; //5 degree within the correct alignment
+    public static  double CENTER_THRESHOLD = 5.0; // delta degree from the crosshair
+    public static  double ANGLE_THRESHOLD= 0.2; //5 degree within the correct alignment
     private static final Transform TARGET_FRAME = new Transform(0, 0, 0);
     private final Limelight3A limelight;
     public static final double DEGREE_TO_INCHES=0.5;
 
     public int numOfCorners=0;
-    public VisionSystem(HardwareMap hardwareMap, String deviceName, int pipeline)
+    public VisionSystem(HardwareMap hardwareMap, int pipeline)
     {
-        this.limelight = hardwareMap.get(Limelight3A.class, deviceName);
+        this.limelight = hardwareMap.get(Limelight3A.class, "limeLight");
         limelight.pipelineSwitch(pipeline);
         this.init();
 
     }
 
 
-    public VisionSystem(HardwareMap hardwareMap, String device)
+    public VisionSystem(HardwareMap hardwareMap)
     {
-        this.limelight = hardwareMap.get(Limelight3A.class, device);
+        this.limelight = hardwareMap.get(Limelight3A.class, "limeLight");
         limelight.pipelineSwitch(0);
         this.init();
 
@@ -63,9 +63,23 @@ public class VisionSystem
         return res != null && res.isValid();
     }
 
+    public List<List<Double>> getCorners(){
+        LLResult result = limelight.getLatestResult();
+        if (result!=null ) {
+            List<LLResultTypes.ColorResult> list = result.getColorResults();
+            if( hasValidTarget() | !list.isEmpty() ){
+                if (list.get(0).getTargetCorners().size()==4){
+                    return new ArrayList<>(list.get(0).getTargetCorners()) ;
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+
     private List<Double> midpoint(int corner1, int corner2, List<List<Double>> corners){
         List<Double> point=new ArrayList<>(2);
-        point.add(    (corners.get(corner1).get(0)+corners.get(corner2).get(0))/2    );
+        point.add((corners.get(corner1).get(0)+corners.get(corner2).get(0))/2    );
         point.add( (corners.get(corner1).get(1)+corners.get(corner2).get(1))/2   );
         return point;
     }
@@ -98,31 +112,13 @@ public class VisionSystem
 
          }
 }
-
-public List<List<Double>> getCorners(){
-        LLResult result = limelight.getLatestResult();
-        if (result!=null ) {
-            List<LLResultTypes.ColorResult> list = result.getColorResults();
-            if( hasValidTarget() | !list.isEmpty() ){
-                if (list.get(0).getTargetCorners().size()==4){
-                    return  new ArrayList<>(list.get(0).getTargetCorners()) ;
-                }
-                return new ArrayList<>(1);
-            }
-        }
-        return new ArrayList<>(1);
-       }
+//Corners from getTargetCorners() are labeled 0,1,2,3. Corner 0 and 2 are always diagonal to each other,
+    // Corner 1 and 3 are always diagonal to each other. Label name is the index of the getTargetCorners()
 
     public double getCamRelativeTargetOrientation(List<List<Double>> corners)
     {
-       if (corners == null || corners.size() != 4)
+       if (corners == null || corners.size() != 4) {
            return Double.NaN;
-
-       for (List<Double> corner : corners)
-       {
-           if (corner == null || corner.size() != 2 || corner.get(0) == null || corner.get(1) == null) {
-               return Double.NaN;
-           }
        }
 
         List<List<Double>> points = twoMidpoints(corners);
@@ -163,13 +159,13 @@ public List<List<Double>> getCorners(){
     }
 
     public Transform getTargetDiffPose(List<List<Double>> corners) {
-        if (corners.size()==1)
+        if (corners.size()!=4)
         {
             return Transform.INVALID;
         }
         LLResult res = limelight.getLatestResult();
         double orientation = getCamRelativeTargetOrientation(corners);
-        if (res == null || !res.isValid() || Double.isNaN(orientation)){return Transform.INVALID;}
+        if (!hasValidTarget()|| Double.isNaN(orientation)){return Transform.INVALID;}
         return new Transform(res.getTx(), res.getTy(), orientation);
     }
 /*

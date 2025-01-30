@@ -8,14 +8,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer2;
 
 public class Drive {
-    DcMotorEx frontLeft, frontRight, backLeft, backRight; //sliderLeft,sliderRight;
+    public DcMotorEx frontLeft, frontRight, backLeft, backRight; //sliderLeft,sliderRight;
 
-    Localizer localizer;
-    Pose2d pose = new Pose2d(0, 0, 0);
-
-
+    public Localizer localizer;
+    public Pose2d pose = new Pose2d(0, 0, 0);
 
 
 
@@ -30,7 +29,7 @@ public class Drive {
         backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
 
 
-         localizer = new ThreeDeadWheelLocalizer(hardwareMap, MecanumDrive.PARAMS.inPerTick);
+         localizer = new ThreeDeadWheelLocalizer2(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -53,6 +52,7 @@ public class Drive {
     }
 
     public  void mecanumDriving(double x, double y,double turn,double powerOutput){
+        this.pose = pose.plus(localizer.update().value());
         double heading = pose.heading.toDouble();
         double rotX = x * Math.cos(heading) - y * Math.sin(heading);
         double rotY = x * Math.sin(heading) + y * Math.cos(heading);

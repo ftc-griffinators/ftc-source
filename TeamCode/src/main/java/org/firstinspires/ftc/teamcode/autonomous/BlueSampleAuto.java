@@ -114,7 +114,7 @@ public class BlueSampleAuto extends LinearOpMode {
 
         waitForStart();
         slider.sliderInit();
-        claw.clawAutoInit();
+        claw.clawAutoSampleInit();
 
 
 
