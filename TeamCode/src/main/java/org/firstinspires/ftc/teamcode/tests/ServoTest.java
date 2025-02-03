@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Slider;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
@@ -33,9 +34,6 @@ public class ServoTest extends LinearOpMode {
 
 
 
-    ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;;
-    DcMotorEx  sliderLeft,sliderRight;
-    Encoder leftSliderEncoder,rightSliderEncoder;
 
 
     @Override
@@ -50,112 +48,68 @@ public class ServoTest extends LinearOpMode {
 
         FtcDashboard dashboard=FtcDashboard.getInstance();
 
-        sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
-        sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //Control Hub port 2
-        sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
-
-        sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        sliderRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        sliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
-        leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
-        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-
-        clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
-
-        //"clawRightRot" is port 0 on control hub
-        clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
-
-        // "clawLeftRot" is port 1 on control hub
-        clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
-        //"clawGrab" is port 3
-
-        clawGrab=hardwareMap.get(ServoImplEx.class,"clawGrab");
-
-        clawAlignment=hardwareMap.get(ServoImplEx.class,"clawAlignment");
-
-        clawPitch=hardwareMap.get(ServoImplEx.class,"clawPitch");
-
-        clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawAlignment.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawPitch.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawLeftRot.setDirection(Servo.Direction.REVERSE);
-
-        clawExtend.setDirection(Servo.Direction.REVERSE);
 
 
         Slider slider=new Slider(hardwareMap);
 
+        Claw claw =new Claw(hardwareMap);
+
+        Slider encoder= slider.getSliderEncoder(hardwareMap);
 
 
-
-        slider.sliderInit();
+        slider.initSlider();
 
 
         waitForStart();
         while (opModeIsActive()){
+
+
             if (gamepad1.left_bumper){
-             clawGrab.setPosition(CLAW_GRAB);
+             claw.clawGrab.setPosition(CLAW_GRAB);
             }
             if (gamepad1.right_bumper){
-                clawGrab.setPosition(CLAW_RELEASE);
+                claw.clawGrab.setPosition(CLAW_RELEASE);
             }
             if (gamepad1.left_stick_button){
-                clawExtend.setPosition(CLAW_EXTENDED);
+                claw.clawExtend.setPosition(CLAW_EXTENDED);
             }
             if (gamepad1.right_stick_button){
-                clawExtend.setPosition(CLAW_RETRACTED);
+                claw.clawExtend.setPosition(CLAW_RETRACTED);
             }
             if (gamepad1.dpad_left){
-                clawAlignment.setPosition(CLAW_270);
+                claw.clawAlignment.setPosition(CLAW_270);
             }
             if (gamepad1.dpad_right){
-                clawAlignment.setPosition(CLAW_45);
+                claw.clawAlignment.setPosition(CLAW_45);
             }
             if (gamepad1.dpad_up){
-                clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+                claw.clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
             }
             if (gamepad1.dpad_down){
-                clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
+                claw.clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
             }
 
             if (gamepad1.a){
-                clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                clawRightRot.setPosition(CLAW_ROT_GROUND);
+                claw.clawLeftRot.setPosition(CLAW_ROT_GROUND);
+                claw.clawRightRot.setPosition(CLAW_ROT_GROUND);
             }
             if (gamepad1.x){
-                clawRightRot.setPosition(CLAW_ROT_FRONT);
-                clawLeftRot.setPosition(CLAW_ROT_FRONT);
+                claw.clawRightRot.setPosition(CLAW_ROT_FRONT);
+                claw.clawLeftRot.setPosition(CLAW_ROT_FRONT);
 
             }
             if (gamepad1.y){
-                clawRightRot.setPosition(CLAW_ROT_BACK);
-                clawLeftRot.setPosition(CLAW_ROT_BACK);
+                claw.clawRightRot.setPosition(CLAW_ROT_BACK);
+                claw.clawLeftRot.setPosition(CLAW_ROT_BACK);
             }
             if (gamepad2.dpad_down){
-                clawPitch.setPosition(CLAW_PITCH_BOT);
+                claw.clawPitch.setPosition(CLAW_PITCH_BOT);
             }
             if (gamepad2.dpad_left){
-              clawPitch.setPosition(CLAW_PITCH_MID);
+                claw.clawPitch.setPosition(CLAW_PITCH_MID);
             }
             if (gamepad2.dpad_up){
-                clawPitch.setPosition(CLAW_PITCH_SCORE);
+                claw.clawPitch.setPosition(CLAW_PITCH_SCORE);
             }
 
             if (gamepad2.y){
@@ -224,8 +178,8 @@ public class ServoTest extends LinearOpMode {
 
 
 
-            telemetry.addData("lefSlider",leftSliderEncoder.getPositionAndVelocity().position);
-            telemetry.addData("rightSlider",rightSliderEncoder.getPositionAndVelocity().position);
+            telemetry.addData("lefSlider",encoder.leftSliderEncoder.getPositionAndVelocity().position);
+            telemetry.addData("rightSlider",encoder.rightSliderEncoder.getPositionAndVelocity().position);
             telemetry.update();
 
 

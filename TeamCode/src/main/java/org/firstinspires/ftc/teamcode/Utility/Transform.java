@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.math;
+package org.firstinspires.ftc.teamcode.Utility;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
@@ -27,6 +27,10 @@ public class Transform
 
         this.position = position;
         this.orientation = orientation;
+    }
+
+    public Transform(Position position, double yaw){
+        this(position,new Orientation(yaw));
     }
 
     public static Transform from2D(double x, double y, double yaw)

@@ -5,7 +5,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.math.Transform;
+import org.firstinspires.ftc.teamcode.Utility.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,40 +17,45 @@ public class VisionSystem
 {
     public static int visonError=0;
 
-    public static  double CENTER_THRESHOLD = 5.0; // delta degree from the crosshair
-    public static  double ANGLE_THRESHOLD= 0.2; //5 degree within the correct alignment
+    public static  double CENTER_THRESHOLD = 7.0; // delta degree from the crosshair
+    public static  double ANGLE_THRESHOLD= (10/180)*Math.PI; //5 degree within the correct alignment
     private static final Transform TARGET_FRAME = new Transform(0, 0, 0);
-    private final Limelight3A limelight;
+    public Limelight3A limelight;
     public static final double DEGREE_TO_INCHES=0.5;
 
-    public int numOfCorners=0;
+
     public VisionSystem(HardwareMap hardwareMap, int pipeline)
     {
-        this.limelight = hardwareMap.get(Limelight3A.class, "limeLight");
+        limelight = hardwareMap.get(Limelight3A.class, "limeLight");
         limelight.pipelineSwitch(pipeline);
-        this.init();
+        init();
 
     }
 
 
     public VisionSystem(HardwareMap hardwareMap)
     {
-        this.limelight = hardwareMap.get(Limelight3A.class, "limeLight");
+
+        limelight = hardwareMap.get(Limelight3A.class, "limeLight");
         limelight.pipelineSwitch(0);
-        this.init();
+        init();
 
     }
 
-    private void init()
+    public void init()
     {
-        limelight.setPollRateHz(60);
+        limelight.setPollRateHz(100);
         limelight.start();
+
     }
 
     public void setPipeline(int n)
     {
         limelight.pipelineSwitch(n);
     }
+
+
+
     public void pausePipeline(){
         limelight.pause();
     }
@@ -63,13 +68,16 @@ public class VisionSystem
         return res != null && res.isValid();
     }
 
+    //Corrected
+    //Returns a List with 4 elements or an empty array
     public List<List<Double>> getCorners(){
         LLResult result = limelight.getLatestResult();
+
         if (result!=null ) {
             List<LLResultTypes.ColorResult> list = result.getColorResults();
-            if( hasValidTarget() | !list.isEmpty() ){
-                if (list.get(0).getTargetCorners().size()==4){
-                    return new ArrayList<>(list.get(0).getTargetCorners()) ;
+            if( hasValidTarget() && !list.isEmpty() ){
+                if (list.get(0).getTargetCorners().size()==4) {
+                    return new ArrayList<>(list.get(0).getTargetCorners());
                 }
             }
         }
@@ -89,9 +97,8 @@ public class VisionSystem
     public List<List<Double>> twoMidpoints(List<List<Double>> corners){
         List<List<Double>> end=new ArrayList<>();
 
-         numOfCorners=corners.size();
-         if (corners.size()!=4){
-             visonError++;
+
+         if (corners.size()!=4 ){
              return null;
          }
          double d0_1=Math.sqrt(Math.pow(corners.get(0).get(0)-corners.get(1).get(0),2) + Math.pow(corners.get(0).get(1)-corners.get(1).get(1),2));
@@ -132,10 +139,9 @@ public class VisionSystem
 
             double angle = Math.atan2(dy, dx);
 
-            if (angle < (-Math.PI/2))
+            if (angle < 0) {
                 return Math.PI + angle;
-            if (angle > (Math.PI/2))
-                return (-Math.PI) + angle;
+            }
             return angle;
         }
         catch (Exception e)
@@ -143,47 +149,46 @@ public class VisionSystem
             return Double.NaN;
         }
     }
+    public Transform.Position getTargetPosition(){
+        LLResult res = limelight.getLatestResult();
+        if (!hasValidTarget() || res==null){
+            return Transform.INVALID.position;
+        }
+        return new Transform.Position(res.getTx(),res.getTy());
+    }
 
 
 
     public String turnLeftOrRight(List<List<Double>> corners){
         double angle=getCamRelativeTargetOrientation(corners);
-        if (angle>0){
+        if (angle>Math.PI/2){
             return "left";
         }
-        if (angle<0){
+        if (angle<Math.PI/2){
             return "right";
         }
 
         return "error";
     }
 
+
+
     public Transform getTargetDiffPose(List<List<Double>> corners) {
         if (corners.size()!=4)
         {
             return Transform.INVALID;
         }
-        LLResult res = limelight.getLatestResult();
         double orientation = getCamRelativeTargetOrientation(corners);
-        if (!hasValidTarget()|| Double.isNaN(orientation)){return Transform.INVALID;}
-        return new Transform(res.getTx(), res.getTy(), orientation);
-    }
-/*
-    public Transform getAlignmentDelta()
-    {
-        Transform currentPose = getTargetPose();
-        if (currentPose == Transform.INVALID)
+        Transform.Position position=getTargetPosition();
+        if (!hasValidTarget()|| Double.isNaN(orientation) || position==Transform.INVALID.position ) {
             return Transform.INVALID;
-        return currentPose.delta(TARGET_FRAME);
+        }
+        return new Transform(position, inverseAngleAxis(orientation));
     }
-    public boolean isTargetCentered()
-    {
-        Transform delta = getAlignmentDelta();
-        if (delta == Transform.INVALID)
-            return false;
-        return Math.abs(delta.position.x) < CENTER_THRESHOLD;
+
+    public double inverseAngleAxis(double angle){
+        return Math.PI-angle;
     }
-*/
 
     public boolean isTargetCentered(List<List<Double>> corners) {
         Transform crosshairAndAngle = getTargetDiffPose(corners);
@@ -195,7 +200,7 @@ public class VisionSystem
         Transform crosshairAndAngle = getTargetDiffPose(corners);
         if (crosshairAndAngle == Transform.INVALID) {return false;}
 
-        return (Math.abs(crosshairAndAngle.orientation.yaw ))<ANGLE_THRESHOLD ;
+        return crosshairAndAngle.orientation.yaw <ANGLE_THRESHOLD  ||  crosshairAndAngle.orientation.yaw >(Math.PI- ANGLE_THRESHOLD );
     }
 
     public double getTargetArea()

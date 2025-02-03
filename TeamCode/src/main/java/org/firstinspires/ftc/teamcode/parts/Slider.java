@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.parts;
 
 
 
+import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
+import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,16 +17,33 @@ public class Slider {
     public static int SLIDER_TOP_BAR;
     public static int SLIDER_HANGER;
     public static int RESET_CORRECTION=0;
+    public static int MAX_EXTENSION=3290;
 
-    DcMotorEx sliderLeft,sliderRight;
+
+    public Encoder leftSliderEncoder,rightSliderEncoder;
+    public DcMotorEx sliderLeft,sliderRight;
+
+
+    public Slider getSliderEncoder(HardwareMap hardwareMap){
+        this.rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
+        this.leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
+        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+        return this;
+
+    }
+
 
 
     public Slider( HardwareMap hardwareMap)  {
+
         sliderLeft=hardwareMap.get(DcMotorEx.class,"leftSlider");
         //Control Hub port 2
         sliderRight=hardwareMap.get(DcMotorEx.class,"rightSlider");
 
-        sliderLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        sliderRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -32,14 +52,17 @@ public class Slider {
         sliderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
-    public void sliderInit(){
+
+
+    public void initSlider(){
         sliderLeft.setTargetPosition(INIT_SLIDER);
         sliderRight.setTargetPosition(INIT_SLIDER);
 
         sliderLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         sliderRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
+        sliderRight.setPower(0.1);
+        sliderLeft.setPower(0.1);
     }
     public static double sliderSmoothMovement(int lowerBound, int upperBound,int current){
         double x= current/(upperBound-lowerBound);
@@ -47,6 +70,7 @@ public class Slider {
         return -(1/(-63+Math.pow(Math.E,-x+5.2)))+1;
 
     }
+
 
 
     private void smoothing(int initial){
@@ -62,7 +86,7 @@ public class Slider {
         sliderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sliderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        sliderInit();
+        initSlider();
 
 
 

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+import org.firstinspires.ftc.teamcode.Utility.Transform;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
 import java.util.List;
@@ -25,14 +26,17 @@ public class Claw {
     public static double CLAW_PITCH_MID=0.265;
     public static double CLAW_PITCH_BOT=0.02;
     public static double CLAW_PITCH_SCORE=0.48;
-    public static double CLAW_ALIGNMENT_LEFTMOST=0.8;
-    public static double CLAW_ALIGNMENT_RIGHTMOST=0.19;
-    public static double CLAW_ALIGNMENT_MIDDLE=0.49;
+    public static double CLAW_ALIGNMENT_LEFTMOST=0.84;
+    public static double CLAW_ALIGNMENT_RIGHTMOST=0.23;
+    public static double CLAW_ALIGNMENT_MIDDLE=0.53;
+
     public static double CLAW_270=0.65;
     public static double CLAW_45=0.32;
 
 
+    public double currentServoPose=0.5;
 
+    public int alignStatus=0;
 
     public static int o=0;
     public  static int in=0;
@@ -69,14 +73,9 @@ public class Claw {
 
         clawPitch.setPwmRange(new PwmControl.PwmRange(500,2500));
 
-        /*
-        clawGrab.scaleRange();
-        clawRightRot.scaleRange();
-        clawLeftRot.scaleRange();
-        clawExtend.scaleRange();
-        clawAlignment.scaleRange();
-        clawPitch.scaleRange();
-*/
+        clawAlignment.scaleRange(CLAW_ALIGNMENT_RIGHTMOST,CLAW_ALIGNMENT_LEFTMOST);
+
+
 
         clawLeftRot.setDirection(Servo.Direction.REVERSE);
 
@@ -86,60 +85,49 @@ public class Claw {
 
     }
 
+/*
+    public double scale(double min, double max){
+
+    }
+*/
 
 
+    public void orientationAligning(List<List<Double>> corner, VisionSystem vision, Transform pose) {
 
+        String direction =vision.turnLeftOrRight(corner);
+        if (Double.isNaN(pose.orientation.yaw)) {
 
-    public boolean orientationAligning(List<List<Double>> corner, boolean isValid, VisionSystem vision) {
-        if (!isValid || corner == null || corner.size() != 4)
-            return false;
-
-        double orientation = vision.getCamRelativeTargetOrientation(corner);
-        if (Double.isNaN(orientation))
-            return false;
-
-        if (vision.isTargetAligned(corner))
-            return true;
-
-        try
-        {
-            double currentServoPose = clawAlignment.getPosition();
-            String direction = vision.turnLeftOrRight(corner);
-
-            if ("left".equals(direction))
-            {
-                clawAlignment.setPosition(currentServoPose + 0.0034);
-            }
-            else if ("right".equals(direction))
-            {
-                clawAlignment.setPosition(currentServoPose - 0.0034);
-            }
+        } else if (vision.isTargetAligned(corner)) {
+            alignStatus=0;
         }
-        catch (Exception e)
-        {
-            // NOTE: log error or smth on telemetry idk
-            return false;
+        else{
+            clawAlignment.setPosition(alignmentAngleToServoPose(pose.orientation.yaw));
+            alignStatus=0;
         }
 
-        in++;
-        return false;
+    }
+
+    public double alignmentAngleToServoPose(double angle){
+        return angle/Math.PI;
+    }
+
+    public  void  anotherAligning(List<List<Double>> corner, VisionSystem vision, Transform pose){
+        double angle=(pose.orientation.yaw);
+
+        if (angle>-0.361111111*Math.PI && angle<-0.1388888*Math.PI){
+            clawAlignment.setPosition(0.25);
+        }
+        if (angle>0.1388888*Math.PI && angle<0.36111111*Math.PI){
+            clawAlignment.setPosition(0.75);
+        }
+
     }
 
 
-    public void sampleGrabbing(List<List<Double>> corner, boolean isValid, VisionSystem vision)
-    {
+    public void sampleGrabbing(List<List<Double>> corner, boolean isValid, VisionSystem vision) {
         alignerReset();
-        // if valid = false for fast path;
-        if (corner == null || !isValid || corner.size() != 4)
-            return;
 
-        // try to align if not already
-        if (!vision.isTargetAligned(corner))
-        {
-            if (orientationAligning(corner, isValid, vision))
-                ++o;
-            ++in;
-        }
+        //Put in code
     }
 
     public void specimentGrabbing(){
@@ -170,7 +158,7 @@ public class Claw {
 
      rotateArm(CLAW_ROT_FRONT);
     }
-    public  void  teleOpInit2(){
+    public  void  teleOpWithBarParkingInit(){
         rotateArm(CLAW_ROT_BACK);
         clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
         clawPitch.setPosition(CLAW_PITCH_MID);

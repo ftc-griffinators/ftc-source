@@ -98,7 +98,7 @@ public class TeleOperationA extends LinearOpMode {
             if (init==0){
 
                 claw.teleOpInit();
-                slider.sliderInit();
+                slider.initSlider();
                 init=1;
             }
 

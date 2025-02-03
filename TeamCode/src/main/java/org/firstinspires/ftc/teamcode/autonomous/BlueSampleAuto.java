@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.math.Transform;
+import org.firstinspires.ftc.teamcode.Utility.Transform;
 import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Drive;
 import org.firstinspires.ftc.teamcode.parts.Slider;
@@ -113,7 +113,7 @@ public class BlueSampleAuto extends LinearOpMode {
 
 
         waitForStart();
-        slider.sliderInit();
+        slider.initSlider();
         claw.clawAutoSampleInit();
 
 
