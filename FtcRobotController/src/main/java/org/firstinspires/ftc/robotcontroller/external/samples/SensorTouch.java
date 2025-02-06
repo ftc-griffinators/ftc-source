@@ -35,9 +35,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /*
- * This OpMode demonstrates how to use a REV Robotics Touch Sensor, REV Robotics Magnetic Limit Switch, or other device
- * that implements the TouchSensor interface. Any touch sensor that connects its output to ground when pressed
- * (known as "active low") can be configured as a "REV Touch Sensor". This includes REV's Magnetic Limit Switch.
+ * This OpMode demonstrates how to use a REV Robotics Touch Sensor, REV Robotics Magnetic Limit
+ * Switch, or other device
+ * that implements the TouchSensor interface. Any touch sensor that connects its output to ground
+ *  when pressed
+ * (known as "active low") can be configured as a "REV Touch Sensor". This includes REV's
+ * Magnetic Limit Switch.
  *
  * The OpMode assumes that the touch sensor is configured with a name of "sensor_touch".
  *
@@ -49,11 +52,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  */
 @TeleOp(name = "Sensor: REV touch sensor", group = "Sensor")
 @Disabled
-public class SensorTouch extends LinearOpMode {
+public class SensorTouch extends LinearOpMode
+{
     TouchSensor touchSensor;  // Touch sensor Object
 
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         // get a reference to our touchSensor object.
         touchSensor = hardwareMap.get(TouchSensor.class, "sensor_touch");
@@ -63,12 +68,16 @@ public class SensorTouch extends LinearOpMode {
 
         // while the OpMode is active, loop and read whether the sensor is being pressed.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
             // send the info back to driver station using telemetry function.
-            if (touchSensor.isPressed()) {
+            if (touchSensor.isPressed())
+            {
                 telemetry.addData("Touch Sensor", "Is Pressed");
-            } else {
+            }
+            else
+            {
                 telemetry.addData("Touch Sensor", "Is Not Pressed");
             }
 

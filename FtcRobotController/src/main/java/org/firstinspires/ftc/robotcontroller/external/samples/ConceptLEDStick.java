@@ -50,7 +50,8 @@ import com.qualcomm.robotcore.util.Range;
  * Why?
  * Because more LEDs == more fun!!
  *
- * This OpMode assumes that the QWIIC LED Stick is attached to an I2C interface named "back_leds" in the robot configuration.
+ * This OpMode assumes that the QWIIC LED Stick is attached to an I2C interface named "back_leds"
+ *  in the robot configuration.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
@@ -61,44 +62,57 @@ import com.qualcomm.robotcore.util.Range;
  */
 @TeleOp(name = "Concept: LED Stick", group = "Concept")
 @Disabled
-public class ConceptLEDStick extends OpMode {
+public class ConceptLEDStick extends OpMode
+{
+    private final static double END_GAME_TIME = 120 - 30;
     private boolean wasUp;
     private boolean wasDown;
     private int brightness = 5;  // this needs to be between 0 and 31
-    private final static double END_GAME_TIME = 120 - 30;
-
     private SparkFunLEDStick ledStick;
 
     @Override
-    public void init() {
+    public void init()
+    {
         ledStick = hardwareMap.get(SparkFunLEDStick.class, "back_leds");
         ledStick.setBrightness(brightness);
         ledStick.setColor(Color.GREEN);
     }
 
     @Override
-    public void start() {
+    public void start()
+    {
         resetRuntime();
     }
 
     @Override
-    public void loop() {
+    public void loop()
+    {
         telemetry.addLine("Hold the A button to turn blue");
         telemetry.addLine("Hold the B button to turn red");
         telemetry.addLine("Hold the left bumper to turn off");
         telemetry.addLine("Use DPAD Up/Down to change brightness");
-        
-        if (getRuntime() > END_GAME_TIME) {
-            int[] ledColors = {Color.RED, Color.YELLOW, Color.RED, Color.YELLOW, Color.RED,
-                    Color.YELLOW, Color.RED, Color.YELLOW, Color.RED, Color.YELLOW};
+
+        if (getRuntime() > END_GAME_TIME)
+        {
+            int[] ledColors = { Color.RED, Color.YELLOW, Color.RED, Color.YELLOW, Color.RED,
+                                Color.YELLOW, Color.RED, Color.YELLOW, Color.RED, Color.YELLOW
+            };
             ledStick.setColors(ledColors);
-        } else if (gamepad1.a) {
+        }
+        else if (gamepad1.a)
+        {
             ledStick.setColor(Color.BLUE);
-        } else if (gamepad1.b) {
+        }
+        else if (gamepad1.b)
+        {
             ledStick.setColor(Color.RED);
-        } else if (gamepad1.left_bumper) {
+        }
+        else if (gamepad1.left_bumper)
+        {
             ledStick.turnAllOff();
-        } else {
+        }
+        else
+        {
             ledStick.setColor(Color.GREEN);
         }
 
@@ -106,12 +120,16 @@ public class ConceptLEDStick extends OpMode {
          * Use DPAD up and down to change brightness
          */
         int newBrightness = brightness;
-        if (gamepad1.dpad_up && !wasUp) {
+        if (gamepad1.dpad_up && !wasUp)
+        {
             newBrightness = brightness + 1;
-        } else if (gamepad1.dpad_down && !wasDown) {
+        }
+        else if (gamepad1.dpad_down && !wasDown)
+        {
             newBrightness = brightness - 1;
         }
-        if (newBrightness != brightness) {
+        if (newBrightness != brightness)
+        {
             brightness = Range.clip(newBrightness, 0, 31);
             ledStick.setBrightness(brightness);
         }

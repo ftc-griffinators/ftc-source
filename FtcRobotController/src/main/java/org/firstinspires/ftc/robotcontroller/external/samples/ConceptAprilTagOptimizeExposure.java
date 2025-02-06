@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
@@ -45,47 +46,55 @@ import java.util.concurrent.TimeUnit;
 
 /*
  * This OpMode determines the best Exposure for minimizing image motion-blur on a Webcam
- * Note that it is not possible to control the exposure for a Phone Camera, so if you are using a Phone for the Robot Controller
+ * Note that it is not possible to control the exposure for a Phone Camera, so if you are using a
+ *  Phone for the Robot Controller
  * this OpMode/Feature only applies to an externally connected Webcam
  *
- * The goal is to determine the smallest (shortest) Exposure value that still provides reliable Tag Detection.
- * Starting with the minimum Exposure and maximum Gain, the exposure is slowly increased until the Tag is
+ * The goal is to determine the smallest (shortest) Exposure value that still provides reliable
+ * Tag Detection.
+ * Starting with the minimum Exposure and maximum Gain, the exposure is slowly increased until
+ * the Tag is
  * detected reliably from the likely operational distance.
  *
  *
- * The best way to run this optimization is to view the camera preview screen while changing the exposure and gains.
+ * The best way to run this optimization is to view the camera preview screen while changing the
+ * exposure and gains.
  *
  * To do this, you need to view the RobotController screen directly (not from Driver Station)
- * This can be done directly from a RC phone screen (if you are using an external Webcam), but for a Control Hub you must either plug an
- * HDMI monitor into the Control Hub HDMI port, or use an external viewer program like ScrCpy (https://scrcpy.org/)
+ * This can be done directly from a RC phone screen (if you are using an external Webcam), but
+ * for a Control Hub you must either plug an
+ * HDMI monitor into the Control Hub HDMI port, or use an external viewer program like ScrCpy
+ * (https://scrcpy.org/)
  *
- * Use Android Studio to Copy this Class, and Paste it into the TeamCode/src/main/java/org/firstinspires/ftc/teamcode folder.
+ * Use Android Studio to Copy this Class, and Paste it into the
+ * TeamCode/src/main/java/org/firstinspires/ftc/teamcode folder.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 
-@TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
+@TeleOp(name = "Optimize AprilTag Exposure", group = "Concept")
 @Disabled
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
-    private VisionPortal visionPortal = null;        // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
-    private int     myExposure  ;
-    private int     minExposure ;
-    private int     maxExposure ;
-    private int     myGain      ;
-    private int     minGain ;
-    private int     maxGain ;
-
     boolean thisExpUp = false;
     boolean thisExpDn = false;
     boolean thisGainUp = false;
     boolean thisGainDn = false;
-
     boolean lastExpUp = false;
     boolean lastExpDn = false;
     boolean lastGainUp = false;
     boolean lastGainDn = false;
-    @Override public void runOpMode()
+    private VisionPortal visionPortal = null;        // Used to manage the video source.
+    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection
+    // process.
+    private int myExposure;
+    private int minExposure;
+    private int maxExposure;
+    private int myGain;
+    private int minGain;
+    private int maxGain;
+
+    @Override
+    public void runOpMode()
     {
         // Initialize the Apriltag Detection process
         initAprilTag();
@@ -111,13 +120,17 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
             // Display how many Tags Detected
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             int numTags = currentDetections.size();
-            if (numTags > 0 )
+            if (numTags > 0)
+            {
                 telemetry.addData("Tag", "####### %d Detected  ######", currentDetections.size());
+            }
             else
+            {
                 telemetry.addData("Tag", "----------- none - ----------");
+            }
 
-            telemetry.addData("Exposure","%d  (%d - %d)", myExposure, minExposure, maxExposure);
-            telemetry.addData("Gain","%d  (%d - %d)", myGain, minGain, maxGain);
+            telemetry.addData("Exposure", "%d  (%d - %d)", myExposure, minExposure, maxExposure);
+            telemetry.addData("Gain", "%d  (%d - %d)", myGain, minGain, maxGain);
             telemetry.update();
 
             // check to see if we need to change exposure or gain.
@@ -127,20 +140,26 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
             thisGainDn = gamepad1.right_trigger > 0.25;
 
             // look for clicks to change exposure
-            if (thisExpUp && !lastExpUp) {
+            if (thisExpUp && !lastExpUp)
+            {
                 myExposure = Range.clip(myExposure + 1, minExposure, maxExposure);
                 setManualExposure(myExposure, myGain);
-            } else if (thisExpDn && !lastExpDn) {
+            }
+            else if (thisExpDn && !lastExpDn)
+            {
                 myExposure = Range.clip(myExposure - 1, minExposure, maxExposure);
                 setManualExposure(myExposure, myGain);
             }
 
             // look for clicks to change the gain
-            if (thisGainUp && !lastGainUp) {
-                myGain = Range.clip(myGain + 1, minGain, maxGain );
+            if (thisGainUp && !lastGainUp)
+            {
+                myGain = Range.clip(myGain + 1, minGain, maxGain);
                 setManualExposure(myExposure, myGain);
-            } else if (thisGainDn && !lastGainDn) {
-                myGain = Range.clip(myGain - 1, minGain, maxGain );
+            }
+            else if (thisGainDn && !lastGainDn)
+            {
+                myGain = Range.clip(myGain - 1, minGain, maxGain);
                 setManualExposure(myExposure, myGain);
             }
 
@@ -156,15 +175,14 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag() {
+    private void initAprilTag()
+    {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
         // Create the WEBCAM vision portal by using a builder.
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(aprilTag)
-                .build();
+        visionPortal = new VisionPortal.Builder().setCamera(hardwareMap.get(WebcamName.class,
+                "Webcam 1")).addProcessor(aprilTag).build();
     }
 
     /*
@@ -172,17 +190,22 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         Can only be called AFTER calling initAprilTag();
         Returns true if controls are set.
      */
-    private boolean    setManualExposure(int exposureMS, int gain) {
+    private boolean setManualExposure(int exposureMS, int gain)
+    {
         // Ensure Vision Portal has been setup.
-        if (visionPortal == null) {
+        if (visionPortal == null)
+        {
             return false;
         }
 
         // Wait for the camera to be open
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)
+        {
             telemetry.addData("Camera", "Waiting");
             telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+            while (!isStopRequested() &&
+                   (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING))
+            {
                 sleep(20);
             }
             telemetry.addData("Camera", "Ready");
@@ -194,11 +217,12 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         {
             // Set exposure.  Make sure we are in Manual Mode for these values to take effect.
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual)
+            {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
             sleep(20);
 
             // Set Gain.
@@ -206,7 +230,9 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
             gainControl.setGain(gain);
             sleep(20);
             return (true);
-        } else {
+        }
+        else
+        {
             return (false);
         }
     }
@@ -215,17 +241,22 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         Read this camera's minimum and maximum Exposure and Gain settings.
         Can only be called AFTER calling initAprilTag();
      */
-    private void getCameraSetting() {
+    private void getCameraSetting()
+    {
         // Ensure Vision Portal has been setup.
-        if (visionPortal == null) {
+        if (visionPortal == null)
+        {
             return;
         }
 
         // Wait for the camera to be open
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)
+        {
             telemetry.addData("Camera", "Waiting");
             telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+            while (!isStopRequested() &&
+                   (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING))
+            {
                 sleep(20);
             }
             telemetry.addData("Camera", "Ready");
@@ -233,10 +264,11 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         }
 
         // Get camera control values unless we are stopping.
-        if (!isStopRequested()) {
+        if (!isStopRequested())
+        {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            minExposure = (int)exposureControl.getMinExposure(TimeUnit.MILLISECONDS) + 1;
-            maxExposure = (int)exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
+            minExposure = (int) exposureControl.getMinExposure(TimeUnit.MILLISECONDS) + 1;
+            maxExposure = (int) exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
 
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             minGain = gainControl.getMinGain();

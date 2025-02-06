@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utility;
 
 import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 public class Transform
@@ -29,8 +30,9 @@ public class Transform
         this.orientation = orientation;
     }
 
-    public Transform(Position position, double yaw){
-        this(position,new Orientation(yaw));
+    public Transform(Position position, double yaw)
+    {
+        this(position, new Orientation(yaw));
     }
 
     public static Transform from2D(double x, double y, double yaw)
@@ -88,7 +90,8 @@ public class Transform
     }
 
     public boolean is2D()
-    {return position.is2D() && orientation.is2D();
+    {
+        return position.is2D() && orientation.is2D();
     }
 
     @Override
@@ -174,7 +177,7 @@ public class Transform
             }
             Position position = (Position) o;
             return Math.abs(position.x - x) < 1e-6 && Math.abs(position.y - y) < 1e-6 &&
-                    Math.abs(position.z - z) < 1e-6;
+                   Math.abs(position.z - z) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")
@@ -252,7 +255,7 @@ public class Transform
             }
             Orientation that = (Orientation) o;
             return Math.abs(that.roll - roll) < 1e-6 && Math.abs(that.pitch - pitch) < 1e-6 &&
-                    Math.abs(that.yaw - yaw) < 1e-6;
+                   Math.abs(that.yaw - yaw) < 1e-6;
         }
 
         @SuppressLint("DefaultLocale")

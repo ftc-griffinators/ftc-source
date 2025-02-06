@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ReadWriteFile;
+
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -48,12 +49,17 @@ import java.util.Locale;
  * This OpMode calibrates a BNO055 IMU per
  * "Section 3.11 Calibration" of the BNO055 specification.
  *
- *  Note: this is a Legacy example that will not work with newer Control/Expansion Hubs that use a different IMU
- *  Please use the new SensorIMUOrthogonal or SensorIMUNonOrthogonal samples for a more universal IMU interface.
+ *  Note: this is a Legacy example that will not work with newer Control/Expansion Hubs that use
+ * a different IMU
+ *  Please use the new SensorIMUOrthogonal or SensorIMUNonOrthogonal samples for a more universal
+ *  IMU interface.
  *
- * Manual calibration of the IMU is definitely NOT necessary: except for the magnetometer (which is not used by the
- * default "IMU" SensorMode), the BNO055 is internally self-calibrating and thus can be very successfully used without
- * manual intervention. That said, performing a one-time calibration, saving the results persistently, then loading them
+ * Manual calibration of the IMU is definitely NOT necessary: except for the magnetometer (which
+ * is not used by the
+ * default "IMU" SensorMode), the BNO055 is internally self-calibrating and thus can be very
+ * successfully used without
+ * manual intervention. That said, performing a one-time calibration, saving the results
+ * persistently, then loading them
  * again at each run can help reduce the time that automatic calibration requires.
  *
  * This summary of the calibration process from Intel is informative:
@@ -75,7 +81,8 @@ import java.util.Locale;
  *             hold, etc. 6 or more movements of this type may be required. You can move through
  *             any axis you desire, but make sure that the device is lying at least once
  *             perpendicular to the x, y, and z axis.</ol>
- *     3. MAG: Move slowly in a figure 8 pattern in the air, until the calibration values reaches 3.</ol>
+ *     3. MAG: Move slowly in a figure 8 pattern in the air, until the calibration values reaches
+ *  3.</ol>
  *     4. SYS: This will usually reach 3 when the other items have also reached 3. If not, continue
  *             slowly moving the device though various axes until it does."</ol>
  *
@@ -94,12 +101,13 @@ import java.util.Locale;
  * The AdafruitBNO055IMU Javadoc
  * The BNO055IMU.Parameters.calibrationDataFile Javadoc
  * The BNO055 product page: https://www.bosch-sensortec.com/bst/products/all_products/bno055
- * The BNO055 datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
+ * The BNO055 datasheet: https://www.bosch-sensortec
+ * .com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
  */
 @TeleOp(name = "Sensor: BNO055 IMU Calibration", group = "Sensor")
 @Disabled                            // Uncomment this to add to the OpMode list
 public class SensorBNO055IMUCalibration extends LinearOpMode
-    {
+{
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
@@ -114,7 +122,9 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
     // Main logic
     //----------------------------------------------------------------------------------------------
 
-    @Override public void runOpMode() {
+    @Override
+    public void runOpMode()
+    {
 
         telemetry.log().setCapacity(12);
         telemetry.log().add("");
@@ -127,10 +137,11 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         telemetry.log().add("calibration data to a file.");
         telemetry.log().add("");
 
-        // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imu".
+        // We are expecting the IMU to be attached to an I2C port on a Core Device Interface
+        // Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
+        parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
@@ -138,16 +149,19 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         telemetry.log().add("Waiting for start...");
 
         // Wait until we're told to go
-        while (!isStarted()) {
+        while (!isStarted())
+        {
             telemetry.update();
             idle();
         }
 
         telemetry.log().add("...started...");
 
-        while (opModeIsActive()) {
+        while (opModeIsActive())
+        {
 
-            if (gamepad1.a) {
+            if (gamepad1.a)
+            {
 
                 // Get the calibration data
                 BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
@@ -163,7 +177,8 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
                 telemetry.log().add("saved to '%s'", filename);
 
                 // Wait for the button to be released
-                while (gamepad1.a) {
+                while (gamepad1.a)
+                {
                     telemetry.update();
                     idle();
                 }
@@ -173,58 +188,75 @@ public class SensorBNO055IMUCalibration extends LinearOpMode
         }
     }
 
-    void composeTelemetry() {
+    void composeTelemetry()
+    {
 
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
-        telemetry.addAction(new Runnable() { @Override public void run()
-                {
+        telemetry.addAction(new Runnable()
+        {
+            @Override
+            public void run()
+            {
                 // Acquiring the angles is relatively expensive; we don't want
                 // to do that in each of the three items that need that info, as that's
                 // three times the necessary expense.
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                }
-            });
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
+                        AngleUnit.DEGREES);
+            }
+        });
 
-        telemetry.addLine()
-            .addData("status", new Func<String>() {
-                @Override public String value() {
-                    return imu.getSystemStatus().toShortString();
-                    }
-                })
-            .addData("calib", new Func<String>() {
-                @Override public String value() {
-                    return imu.getCalibrationStatus().toString();
-                    }
-                });
+        telemetry.addLine().addData("status", new Func<String>()
+        {
+            @Override
+            public String value()
+            {
+                return imu.getSystemStatus().toShortString();
+            }
+        }).addData("calib", new Func<String>()
+        {
+            @Override
+            public String value()
+            {
+                return imu.getCalibrationStatus().toString();
+            }
+        });
 
-        telemetry.addLine()
-            .addData("heading", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.firstAngle);
-                    }
-                })
-            .addData("roll", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.secondAngle);
-                    }
-                })
-            .addData("pitch", new Func<String>() {
-                @Override public String value() {
-                    return formatAngle(angles.angleUnit, angles.thirdAngle);
-                    }
-                });
+        telemetry.addLine().addData("heading", new Func<String>()
+        {
+            @Override
+            public String value()
+            {
+                return formatAngle(angles.angleUnit, angles.firstAngle);
+            }
+        }).addData("roll", new Func<String>()
+        {
+            @Override
+            public String value()
+            {
+                return formatAngle(angles.angleUnit, angles.secondAngle);
+            }
+        }).addData("pitch", new Func<String>()
+        {
+            @Override
+            public String value()
+            {
+                return formatAngle(angles.angleUnit, angles.thirdAngle);
+            }
+        });
     }
 
     //----------------------------------------------------------------------------------------------
     // Formatting
     //----------------------------------------------------------------------------------------------
 
-    String formatAngle(AngleUnit angleUnit, double angle) {
+    String formatAngle(AngleUnit angleUnit, double angle)
+    {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
 
-    String formatDegrees(double degrees){
+    String formatDegrees(double degrees)
+    {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }

@@ -10,18 +10,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
-public class Hanger  {
+public class Hanger
+{
+    public static int INIT_HANGER = 0;
+    public static int HANG = 2200;
     public DcMotorEx rightHanger, leftHanger;
-    public Encoder leftHangerEncoder,rightHangerEncoder;
-    public static int INIT_HANGER=0;
-    public static int HANG=2200;
+    public Encoder leftHangerEncoder, rightHangerEncoder;
 
 
-
-
-    public Hanger(HardwareMap hardwareMap){
-        leftHanger =hardwareMap.get(DcMotorEx.class,"leftHanger");
-        rightHanger=hardwareMap.get(DcMotorEx.class,"rightHanger");
+    public Hanger(HardwareMap hardwareMap)
+    {
+        leftHanger = hardwareMap.get(DcMotorEx.class, "leftHanger");
+        rightHanger = hardwareMap.get(DcMotorEx.class, "rightHanger");
 
 
         leftHanger.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -34,36 +34,46 @@ public class Hanger  {
         leftHanger.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
-    public Hanger getHangerEncoder(HardwareMap hardwareMap){
-        rightHangerEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightHanger")));
-        leftHangerEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftHanger")));
+
+    public Hanger getHangerEncoder(HardwareMap hardwareMap)
+    {
+        rightHangerEncoder = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,
+                "rightHanger")));
+        leftHangerEncoder = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,
+                "leftHanger")));
         leftHangerEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         return this;
     }
-public void initHanger(){
-    leftHanger.setTargetPosition(INIT_HANGER);
-    rightHanger.setTargetPosition(INIT_HANGER);
 
-    leftHanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    rightHanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void initHanger()
+    {
+        leftHanger.setTargetPosition(INIT_HANGER);
+        rightHanger.setTargetPosition(INIT_HANGER);
 
-    leftHanger.setPower(0.1);
-    rightHanger.setPower(0.1);
-//right,left- 2240
-}
-public void hang(){
-    leftHanger.setTargetPosition(HANG);
-    rightHanger.setTargetPosition(HANG);
-    leftHanger.setPower(1);
-    rightHanger.setPower(1);
-}
-public void resetHanger(){
-    leftHanger.setTargetPosition(INIT_HANGER);
-    rightHanger.setTargetPosition(INIT_HANGER);
-    leftHanger.setPower(1);
-    rightHanger.setPower(1);
-}
+        leftHanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightHanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftHanger.setPower(0.1);
+        rightHanger.setPower(0.1);
+        //right,left- 2240
+    }
+
+    public void hang()
+    {
+        leftHanger.setTargetPosition(HANG);
+        rightHanger.setTargetPosition(HANG);
+        leftHanger.setPower(1);
+        rightHanger.setPower(1);
+    }
+
+    public void resetHanger()
+    {
+        leftHanger.setTargetPosition(INIT_HANGER);
+        rightHanger.setTargetPosition(INIT_HANGER);
+        leftHanger.setPower(1);
+        rightHanger.setPower(1);
+    }
 
 }
