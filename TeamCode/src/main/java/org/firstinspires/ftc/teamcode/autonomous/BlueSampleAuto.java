@@ -9,13 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Utility.Transform;
 import org.firstinspires.ftc.teamcode.parts.Claw;
-import org.firstinspires.ftc.teamcode.parts.Drive;
 import org.firstinspires.ftc.teamcode.parts.Slider;
-import org.firstinspires.ftc.teamcode.systems.VisionSystem;
-
-import java.util.List;
 
 
 @Autonomous(name = "BlueSampleAuto")
@@ -28,6 +23,7 @@ public class BlueSampleAuto extends LinearOpMode {
 
 
 
+
     public static Pose2d boxScoringPose= new Pose2d(3.735,25.535,-0.7651);
     public static Pose2d rightSampleZone= new Pose2d(18.196714000801663,15.131687641769346,-0.087);
     public static Pose2d midSampleZone=new Pose2d(17.537188152180427,23.65763929740031,-0.087);
@@ -35,24 +31,6 @@ public class BlueSampleAuto extends LinearOpMode {
 
     public static Pose2d turnToNeg90= new Pose2d( 0,0,-1.5788);
     public static Pose2d bar=new Pose2d(54,0,0);
-
-
-    /*
-    public double angleDegrees(double degrees){
-        return degrees*(Math.PI/180);
-    }
-//x2=15.812798837347236
-    //y2=1.4188852297650303
-    //d2=45.57829841777924
-
-
-*/
-    private boolean sampleCentering(VisionSystem vision, List<List<Double>> corner, MecanumDrive drive, Transform pose, Drive trueDrive){
-        Action correction=drive.actionBuilder(drive.pose).strafeTo(new Vector2d(pose.position.x*VisionSystem.DEGREE_TO_INCHES,pose.position.y*VisionSystem.DEGREE_TO_INCHES)).build();
-      //  trueDrive.mecanumDriving(pose.position.x,pose.position.y,0,0.01);
-        return  vision.isTargetCentered(corner);
-    }
-
 
 
 
@@ -100,6 +78,8 @@ public class BlueSampleAuto extends LinearOpMode {
 
 
 
+
+
         Action startToBox = drive.actionBuilder(drive.pose).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
         Action turn=drive.actionBuilder(drive.pose).turnTo(-Math.PI/2).build();
         Action boxToBarScore=drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(bar.position.x, bar.position.y)).build();
@@ -110,6 +90,7 @@ public class BlueSampleAuto extends LinearOpMode {
         Action MidSampleZoneToBox =drive.actionBuilder(midSampleZone).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
         Action BoxToLeftSampleZone = drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(leftSampleZone.position.x, leftSampleZone.position.y)).turnTo(leftSampleZone.heading).build();
         Action LeftSampleZoneToBox =drive.actionBuilder(leftSampleZone).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
+
 
 
         waitForStart();
@@ -124,6 +105,7 @@ public class BlueSampleAuto extends LinearOpMode {
         sleep(500);
 
         Actions.runBlocking(boxToBarScore);
+
 
 
 

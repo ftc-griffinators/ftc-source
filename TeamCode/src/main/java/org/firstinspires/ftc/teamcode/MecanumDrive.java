@@ -359,7 +359,7 @@ public final class MecanumDrive {
             p.put("yError", error.position.y);
             p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
 
-            // only draw when active; only one drive action should be active at a time
+            // only draw when active; only one drive run should be active at a time
             Canvas c = p.fieldOverlay();
             drawPoseHistory(c);
 

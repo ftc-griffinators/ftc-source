@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.parts;
 
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
@@ -10,8 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Slider {
-    public static int INIT_SLIDER =50;
+
+@Config
+public class Slider  {
+    public static int INIT_SLIDER =80;
     public static int SLIDER_TOP =3100;
     public static int SLIDER_MID =200;
     public static int SLIDER_TOP_BAR;
@@ -27,8 +30,7 @@ public class Slider {
     public Slider getSliderEncoder(HardwareMap hardwareMap){
         this.rightSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"rightSlider")));
         this.leftSliderEncoder=new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class,"leftSlider")));
-        leftSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        rightSliderEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         return this;
 

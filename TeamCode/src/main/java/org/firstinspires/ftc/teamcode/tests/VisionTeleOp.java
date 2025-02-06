@@ -6,6 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
+import org.firstinspires.ftc.teamcode.Utility.ActionCondition;
+import org.firstinspires.ftc.teamcode.Utility.CustomAction;
+import org.firstinspires.ftc.teamcode.Utility.Sequencing;
+import org.firstinspires.ftc.teamcode.Utility.Sequencing.*;
 import org.firstinspires.ftc.teamcode.Utility.Timing;
 import org.firstinspires.ftc.teamcode.Utility.Transform;
 import org.firstinspires.ftc.teamcode.parts.Claw;
@@ -22,6 +26,11 @@ public class VisionTeleOp extends LinearOpMode
     public int rot;
     public boolean reload;
     public boolean toggle=false;
+
+
+
+
+
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() {
@@ -32,8 +41,21 @@ public class VisionTeleOp extends LinearOpMode
 
         Claw claw=new Claw(hardwareMap);
 
+        Timing timer=new Timing();
 
-        Timing delayer=Timing.delayTimer;
+
+        CustomAction align=new CustomAction(
+                claw::alignerReset,
+                ()->claw.orientationAligning(vision));
+
+        ActionCondition alignCondition=new ActionCondition(
+                ()->timer.delay(200),
+                ()->claw.startAligning);
+
+
+
+
+
 
 
 
@@ -53,6 +75,7 @@ public class VisionTeleOp extends LinearOpMode
             if (corners.isEmpty()){
                 rot++;
             }
+
             Transform pose = vision.getTargetDiffPose(corners);
 
             if (gamepad1.dpad_up){
@@ -72,16 +95,24 @@ public class VisionTeleOp extends LinearOpMode
                 }
 
 
-                if (gamepad1.left_stick_button){
 
-                    claw.alignerReset();
-                    claw.alignStatus=1;
-                    delayer.delay(400);
-                }
-                if (claw.alignStatus==1 && delayer.isDelayDone()){
-                    claw.orientationAligning(corners,vision,pose);
-                }
 
+            if (gamepad1.left_stick_button){
+                Sequencing.allActionsStatus.put(align,Boolean.TRUE);
+            }
+            if (Sequencing.allActionsStatus.get(align).equals(Boolean.TRUE)){
+                Sequencing.runInParallel(align,alignCondition);
+            }
+
+
+
+            if (gamepad1.right_stick_button ){
+                claw.alignerReset();
+
+            }
+            if (claw.startAligning && timer.delay(400)){
+                claw.orientationAligning(vision);
+            }
 
 
 
@@ -89,10 +120,10 @@ public class VisionTeleOp extends LinearOpMode
 
             telemetry.addData("Valid", vision.hasValidTarget());
                 telemetry.addData("Corner", corners);
-                telemetry.addData("num of time valid return but corners is null:", wrong);
-                telemetry.addData("number of times corners is not 4:", excess);
-                telemetry.addData("number of times corners is 0:", rot);
-                telemetry.addData("equality",excess==rot);
+                telemetry.addData("On", Sequencing.allActionsStatus.get(align));
+                telemetry.addData("Current step", align.currentStepNum);
+                telemetry.addData("Number of steps", align.numOfSteps);
+                telemetry.addData("Condition step",alignCondition.currentConditionStep);
 
                 telemetry.addData("TX", String.format("%.2f°", pose.position.x));
                 telemetry.addData("TY", String.format("%.2f°", pose.position.y));

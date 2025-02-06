@@ -94,7 +94,7 @@ public class VisionSystem
 
 
 
-    public List<List<Double>> twoMidpoints(List<List<Double>> corners){
+    private List<List<Double>> twoMidpoints(List<List<Double>> corners){
         List<List<Double>> end=new ArrayList<>();
 
 
@@ -122,7 +122,7 @@ public class VisionSystem
 //Corners from getTargetCorners() are labeled 0,1,2,3. Corner 0 and 2 are always diagonal to each other,
     // Corner 1 and 3 are always diagonal to each other. Label name is the index of the getTargetCorners()
 
-    public double getCamRelativeTargetOrientation(List<List<Double>> corners)
+    private double getCamRelativeTargetOrientation(List<List<Double>> corners)
     {
        if (corners == null || corners.size() != 4) {
            return Double.NaN;
@@ -174,6 +174,7 @@ public class VisionSystem
 
 
     public Transform getTargetDiffPose(List<List<Double>> corners) {
+
         if (corners.size()!=4)
         {
             return Transform.INVALID;
@@ -186,11 +187,12 @@ public class VisionSystem
         return new Transform(position, inverseAngleAxis(orientation));
     }
 
-    public double inverseAngleAxis(double angle){
+    private double inverseAngleAxis(double angle){
         return Math.PI-angle;
     }
 
     public boolean isTargetCentered(List<List<Double>> corners) {
+
         Transform crosshairAndAngle = getTargetDiffPose(corners);
         if (crosshairAndAngle == Transform.INVALID) {return false;}
         return (Math.abs(crosshairAndAngle.position.x) < CENTER_THRESHOLD) && (Math.abs(crosshairAndAngle.position.y) < CENTER_THRESHOLD) ;

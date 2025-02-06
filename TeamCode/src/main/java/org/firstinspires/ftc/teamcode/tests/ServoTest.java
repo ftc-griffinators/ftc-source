@@ -159,7 +159,6 @@ public class ServoTest extends LinearOpMode {
             telemetry.addData("clawRightRot.FRONT: dpad_left",CLAW_ROT_FRONT);
             telemetry.addData("clawRightRot.MIDDLE: dpad_right",CLAW_ROT_MID);
 
-            telemetry.update();
 
             p.put("clawGrab.CLAW_GRAB: a",CLAW_GRAB);
             p.put("clawGrab.CLAW_RELEASE: b",CLAW_RELEASE);

@@ -3,26 +3,30 @@ package org.firstinspires.ftc.teamcode.Utility;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class Timing  {
-
-
-
-   public ElapsedTime currentTimer;
+public class Timing {
+   public ElapsedTime delayTimer =new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
    public double delay;
-   public static Timing delayTimer;
+   boolean allowTimerReset=true;
 
 
-
-   public void delay(int delay){
-      this.currentTimer=new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-      this.delay=(double)delay;
+  private void resetOnce(){
+      if (allowTimerReset){
+         delayTimer.reset();
+      }
    }
-   public boolean isDelayDone(){
-      if (currentTimer.time()>delay){
+
+
+   public boolean delay(int delay){
+      resetOnce();
+      allowTimerReset=false;
+      if (delayTimer.time() > delay){
+         allowTimerReset=true;
          return true;
       }
       return false;
    }
+
+
 
 
 

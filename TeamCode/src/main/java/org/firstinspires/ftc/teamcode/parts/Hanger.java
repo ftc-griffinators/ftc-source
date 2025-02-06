@@ -10,11 +10,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
-public class Hanger {
+public class Hanger  {
     public DcMotorEx rightHanger, leftHanger;
     public Encoder leftHangerEncoder,rightHangerEncoder;
     public static int INIT_HANGER=0;
-    public static int HANG=2300;
+    public static int HANG=2200;
 
 
 
@@ -24,7 +24,7 @@ public class Hanger {
         rightHanger=hardwareMap.get(DcMotorEx.class,"rightHanger");
 
 
-        rightHanger.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftHanger.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         leftHanger.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -65,11 +65,5 @@ public void resetHanger(){
     leftHanger.setPower(1);
     rightHanger.setPower(1);
 }
-
-
-
-
-
-
 
 }

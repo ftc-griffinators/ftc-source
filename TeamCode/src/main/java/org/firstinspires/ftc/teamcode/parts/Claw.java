@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utility.Transform;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 import java.util.List;
 
 @Config
-public class Claw {
+public class Claw  {
     public static double CLAW_EXTENDED=0.38;
     public static double CLAW_RETRACTED=0;
     public static double CLAW_ROT_MID=0.15;
@@ -34,17 +35,19 @@ public class Claw {
     public static double CLAW_45=0.32;
 
 
-    public double currentServoPose=0.5;
 
-    public int alignStatus=0;
 
-    public static int o=0;
-    public  static int in=0;
-    public static String wrong =" ";
+
+
+    public boolean startAligning=false;
+
 
     public ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
+    public TouchSensor sensor;
 
     public Claw(HardwareMap hardwareMap)  {
+
+
         //"clawExtend" is port 2 on control hub
         clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
 
@@ -82,52 +85,39 @@ public class Claw {
         clawExtend.setDirection(Servo.Direction.REVERSE);
 
 
+      //  sensor=hardwareMap.get(TouchSensor.class,"touchSensor");
 
     }
 
-/*
-    public double scale(double min, double max){
+    public void orientationAligning( VisionSystem vision ) {
 
-    }
-*/
+        List<List<Double>> corner=vision.getCorners();
+        Transform pose=vision.getTargetDiffPose(corner);
 
-
-    public void orientationAligning(List<List<Double>> corner, VisionSystem vision, Transform pose) {
-
-        String direction =vision.turnLeftOrRight(corner);
         if (Double.isNaN(pose.orientation.yaw)) {
 
         } else if (vision.isTargetAligned(corner)) {
-            alignStatus=0;
+            startAligning =false;
         }
         else{
             clawAlignment.setPosition(alignmentAngleToServoPose(pose.orientation.yaw));
-            alignStatus=0;
+            startAligning =false;
         }
 
     }
+    /*
+    public boolean checkGrabbed(){
+       return sensor.isPressed();
+    }
+*/
 
     public double alignmentAngleToServoPose(double angle){
         return angle/Math.PI;
     }
 
-    public  void  anotherAligning(List<List<Double>> corner, VisionSystem vision, Transform pose){
-        double angle=(pose.orientation.yaw);
-
-        if (angle>-0.361111111*Math.PI && angle<-0.1388888*Math.PI){
-            clawAlignment.setPosition(0.25);
-        }
-        if (angle>0.1388888*Math.PI && angle<0.36111111*Math.PI){
-            clawAlignment.setPosition(0.75);
-        }
-
-    }
-
 
     public void sampleGrabbing(List<List<Double>> corner, boolean isValid, VisionSystem vision) {
-        alignerReset();
 
-        //Put in code
     }
 
     public void specimentGrabbing(){
@@ -173,7 +163,10 @@ public class Claw {
 
     public void alignerReset(){
         clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+        startAligning =true;
     }
+
+
 
 
     public void rotateArm(double position){
