@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
  *
  * For detailed instructions on how a HuskyLens is used in FTC, please see this tutorial:
  * https://ftc-docs.firstinspires.org/en/latest/devices/huskylens/huskylens.html
- * 
+ *
  * This sample illustrates how to detect AprilTags, but can be used to detect other types
  * of objects by changing the algorithm. It assumes that the HuskyLens is configured with
  * a name of "huskylens".
@@ -61,7 +61,8 @@ import java.util.concurrent.TimeUnit;
  */
 @TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
 @Disabled
-public class SensorHuskyLens extends LinearOpMode {
+public class SensorHuskyLens extends LinearOpMode
+{
 
     private final int READ_PERIOD = 1;
 
@@ -92,9 +93,12 @@ public class SensorHuskyLens extends LinearOpMode {
          * failing on initialization.  In the case of this device, it's because the
          * call to knock() failed.
          */
-        if (!huskyLens.knock()) {
+        if (!huskyLens.knock())
+        {
             telemetry.addData(">>", "Problem communicating with " + huskyLens.getDeviceName());
-        } else {
+        }
+        else
+        {
             telemetry.addData(">>", "Press start to continue");
         }
 
@@ -111,7 +115,8 @@ public class SensorHuskyLens extends LinearOpMode {
          * within the OpMode by calling selectAlgorithm() and passing it one of the values
          * found in the enumeration HuskyLens.Algorithm.
          *
-         * Other algorithm choices for FTC might be: OBJECT_RECOGNITION, COLOR_RECOGNITION or OBJECT_CLASSIFICATION.
+         * Other algorithm choices for FTC might be: OBJECT_RECOGNITION, COLOR_RECOGNITION or
+         * OBJECT_CLASSIFICATION.
          */
         huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
@@ -120,12 +125,15 @@ public class SensorHuskyLens extends LinearOpMode {
 
         /*
          * Looking for AprilTags per the call to selectAlgorithm() above.  A handy grid
-         * for testing may be found at https://wiki.dfrobot.com/HUSKYLENS_V1.0_SKU_SEN0305_SEN0336#target_20.
+         * for testing may be found at https://wiki.dfrobot.com/HUSKYLENS_V1
+         * .0_SKU_SEN0305_SEN0336#target_20.
          *
          * Note again that the device only recognizes the 36h11 family of tags out of the box.
          */
-        while(opModeIsActive()) {
-            if (!rateLimit.hasExpired()) {
+        while (opModeIsActive())
+        {
+            if (!rateLimit.hasExpired())
+            {
                 continue;
             }
             rateLimit.reset();
@@ -133,7 +141,8 @@ public class SensorHuskyLens extends LinearOpMode {
             /*
              * All algorithms, except for LINE_TRACKING, return a list of Blocks where a
              * Block represents the outline of a recognized object along with its ID number.
-             * ID numbers allow you to identify what the device saw.  See the HuskyLens documentation
+             * ID numbers allow you to identify what the device saw.  See the HuskyLens
+             * documentation
              * referenced in the header comment above for more information on IDs and how to
              * assign them to objects.
              *
@@ -141,10 +150,12 @@ public class SensorHuskyLens extends LinearOpMode {
              */
             HuskyLens.Block[] blocks = huskyLens.blocks();
             telemetry.addData("Block count", blocks.length);
-            for (int i = 0; i < blocks.length; i++) {
+            for (int i = 0; i < blocks.length; i++)
+            {
                 telemetry.addData("Block", blocks[i].toString());
                 /*
-                 * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
+                 * Here inside the FOR loop, you could save or evaluate specific info for the
+                 * currently recognized Bounding Box:
                  * - blocks[i].width and blocks[i].height   (size of box, in pixels)
                  * - blocks[i].left and blocks[i].top       (edges of box)
                  * - blocks[i].x and blocks[i].y            (center location)

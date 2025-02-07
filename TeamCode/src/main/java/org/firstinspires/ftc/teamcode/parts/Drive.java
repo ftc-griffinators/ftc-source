@@ -9,26 +9,27 @@ import org.firstinspires.ftc.teamcode.Localizer;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer2;
 
-public class Drive  {
+public class Drive
+{
     public DcMotorEx frontLeft, frontRight, backLeft, backRight; //sliderLeft,sliderRight;
 
     public Localizer localizer;
     public Pose2d pose = new Pose2d(0, 0, 0);
 
 
-
-    public Drive(HardwareMap hardwareMap){
-        frontLeft =  hardwareMap.get(DcMotorEx.class,"leftFront");
+    public Drive(HardwareMap hardwareMap)
+    {
+        frontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
         //TODO switch the right front and right rear port
         //Control Hub 0
-        frontRight =hardwareMap.get(DcMotorEx.class,"rightFront");
+        frontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
         //Expansion Hub 1
-        backLeft = hardwareMap.get(DcMotorEx.class,"leftRear");
+        backLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
         // Control Hub Port 1
-        backRight = hardwareMap.get(DcMotorEx.class,"rightRear");
+        backRight = hardwareMap.get(DcMotorEx.class, "rightRear");
 
 
-         localizer = new ThreeDeadWheelLocalizer2(hardwareMap, MecanumDrive.PARAMS.inPerTick);
+        localizer = new ThreeDeadWheelLocalizer2(hardwareMap, MecanumDrive.PARAMS.inPerTick);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -51,14 +52,16 @@ public class Drive  {
     }
 
 
-    public void stopDrive(){
+    public void stopDrive()
+    {
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
-    public  void mecanumDriving(double x, double y,double turn,double powerOutput){
+    public void mecanumDriving(double x, double y, double turn, double powerOutput)
+    {
         this.pose = pose.plus(localizer.update().value());
         double heading = pose.heading.toDouble();
         double rotX = x * Math.cos(heading) - y * Math.sin(heading);
@@ -67,14 +70,14 @@ public class Drive  {
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turn), 1);
 
         double frontLeftPower = (rotY + rotX + turn) / denominator;
-        double frontRightPower = (rotY - rotX - turn )/ denominator;
-        double backLeftPower = (rotY - rotX + turn )/ denominator;
+        double frontRightPower = (rotY - rotX - turn) / denominator;
+        double backLeftPower = (rotY - rotX + turn) / denominator;
         double backRightPower = (rotY + rotX - turn) / denominator;
 
-        frontLeft.setPower(frontLeftPower*powerOutput);
-        backLeft.setPower(backLeftPower*powerOutput);
-        frontRight.setPower(frontRightPower*powerOutput);
-        backRight.setPower(backRightPower*powerOutput);
+        frontLeft.setPower(frontLeftPower * powerOutput);
+        backLeft.setPower(backLeftPower * powerOutput);
+        frontRight.setPower(frontRightPower * powerOutput);
+        backRight.setPower(backRightPower * powerOutput);
     }
 
 }

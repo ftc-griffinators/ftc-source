@@ -33,42 +33,61 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /*
- * This OpMode illustrates how to use the DigitalChickenLabs OctoQuad Quadrature Encoder & Pulse Width Interface Module.
+ * This OpMode illustrates how to use the DigitalChickenLabs OctoQuad Quadrature Encoder & Pulse
+ * Width Interface Module.
  *
- *   The OctoQuad has 8 input channels that can used to read either Relative Quadrature Encoders or Pulse-Width Absolute Encoder inputs.
- *   Relative Quadrature encoders are found on most FTC motors, and some stand-alone position sensors like the REV Thru-Bore encoder.
- *   Pulse-Width encoders are less common. The REV Thru-Bore encoder can provide its absolute position via a variable pulse width,
+ *   The OctoQuad has 8 input channels that can used to read either Relative Quadrature Encoders
+ * or Pulse-Width Absolute Encoder inputs.
+ *   Relative Quadrature encoders are found on most FTC motors, and some stand-alone position
+ * sensors like the REV Thru-Bore encoder.
+ *   Pulse-Width encoders are less common. The REV Thru-Bore encoder can provide its absolute
+ * position via a variable pulse width,
  *   as can several sonar rangefinders such as the MaxBotix MB1000 series.
  *
- * This OpMode assumes that the OctoQuad is attached to an I2C interface named "octoquad" in the robot configuration.
+ * This OpMode assumes that the OctoQuad is attached to an I2C interface named "octoquad" in the
+ * robot configuration.
  *
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  * Select, Init and run the "OctoQuad Configuration Tool" OpMode
  * Read the blue User-Interface tips at the top of the telemetry screen.
- * Use the UI buttons to navigate the menu and make any desired changes to the OctoQuad configuration.
+ * Use the UI buttons to navigate the menu and make any desired changes to the OctoQuad
+ * configuration.
  * Use the Program Settings To FLASH option to make any changes permanent.
  *
- * See the sensor's product page: https://www.tindie.com/products/digitalchickenlabs/octoquad-8ch-quadrature-pulse-width-decoder/
+ * See the sensor's product page: https://www.tindie
+ * .com/products/digitalchickenlabs/octoquad-8ch-quadrature-pulse-width-decoder/
  */
-@TeleOp(name = "OctoQuad Configuration Tool", group="OctoQuad")
+@TeleOp(name = "OctoQuad Configuration Tool", group = "OctoQuad")
 @Disabled
 public class UtilityOctoQuadConfigMenu extends LinearOpMode
 {
-    TelemetryMenu.MenuElement rootMenu = new TelemetryMenu.MenuElement("OctoQuad Config Menu", true);
-    TelemetryMenu.MenuElement menuHwInfo = new TelemetryMenu.MenuElement("Hardware Information", false);
+    TelemetryMenu.MenuElement rootMenu = new TelemetryMenu.MenuElement("OctoQuad Config Menu",
+            true);
+    TelemetryMenu.MenuElement menuHwInfo = new TelemetryMenu.MenuElement("Hardware Information",
+            false);
     TelemetryMenu.EnumOption optionI2cResetMode;
     TelemetryMenu.EnumOption optionChannelBankConfig;
 
-    TelemetryMenu.MenuElement menuEncoderDirections = new TelemetryMenu.MenuElement("Set Encoder Directions", false);
-    TelemetryMenu.BooleanOption[] optionsEncoderDirections = new TelemetryMenu.BooleanOption[OctoQuad.NUM_ENCODERS];
+    TelemetryMenu.MenuElement menuEncoderDirections = new TelemetryMenu.MenuElement("Set Encoder " +
+                                                                                    "Directions",
+            false);
+    TelemetryMenu.BooleanOption[] optionsEncoderDirections =
+            new TelemetryMenu.BooleanOption[OctoQuad.NUM_ENCODERS];
 
-    TelemetryMenu.MenuElement menuVelocityIntervals = new TelemetryMenu.MenuElement("Velocity Measurement Intervals", false);
-    TelemetryMenu.IntegerOption[] optionsVelocityIntervals = new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
+    TelemetryMenu.MenuElement menuVelocityIntervals = new TelemetryMenu.MenuElement("Velocity " +
+                                                                                    "Measurement " +
+                                                                                    "Intervals",
+            false);
+    TelemetryMenu.IntegerOption[] optionsVelocityIntervals =
+            new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
 
-    TelemetryMenu.MenuElement menuAbsParams = new TelemetryMenu.MenuElement("Abs. Encoder Pulse Width Params", false);
-    TelemetryMenu.IntegerOption[] optionsAbsParamsMax = new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
-    TelemetryMenu.IntegerOption[] optionsAbsParamsMin = new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
+    TelemetryMenu.MenuElement menuAbsParams = new TelemetryMenu.MenuElement("Abs. Encoder Pulse " +
+                                                                            "Width Params", false);
+    TelemetryMenu.IntegerOption[] optionsAbsParamsMax =
+            new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
+    TelemetryMenu.IntegerOption[] optionsAbsParamsMin =
+            new TelemetryMenu.IntegerOption[OctoQuad.NUM_ENCODERS];
 
     TelemetryMenu.OptionElement optionProgramToFlash;
     TelemetryMenu.OptionElement optionSendToRAM;
@@ -84,25 +103,28 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
     {
         octoquad = hardwareMap.getAll(OctoQuad.class).get(0);
 
-        if(octoquad.getChipId() != OctoQuad.OCTOQUAD_CHIP_ID)
+        if (octoquad.getChipId() != OctoQuad.OCTOQUAD_CHIP_ID)
         {
-            telemetry.addLine("Error: cannot communicate with OctoQuad. Check your wiring and configuration and try again");
+            telemetry.addLine("Error: cannot communicate with OctoQuad. Check your wiring and " +
+                              "configuration and try again");
             telemetry.update();
 
             error = true;
         }
         else
         {
-            if(octoquad.getFirmwareVersion().maj != OctoQuad.SUPPORTED_FW_VERSION_MAJ)
+            if (octoquad.getFirmwareVersion().maj != OctoQuad.SUPPORTED_FW_VERSION_MAJ)
             {
-                telemetry.addLine("Error: The OctoQuad is running a different major firmware version than this driver was built for. Cannot run configuration tool");
+                telemetry.addLine("Error: The OctoQuad is running a different major firmware " +
+                                  "version than this driver was built for. Cannot run " +
+                                  "configuration tool");
                 telemetry.update();
 
                 error = true;
             }
         }
 
-        if(error)
+        if (error)
         {
             waitForStart();
             return;
@@ -120,46 +142,47 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             }
         };
 
-        optionI2cResetMode = new TelemetryMenu.EnumOption("I2C Reset Mode", OctoQuad.I2cRecoveryMode.values(), octoquad.getI2cRecoveryMode());
-        optionChannelBankConfig = new TelemetryMenu.EnumOption("Channel Bank Modes", OctoQuad.ChannelBankConfig.values(), octoquad.getChannelBankConfig());
+        optionI2cResetMode = new TelemetryMenu.EnumOption("I2C Reset Mode",
+                OctoQuad.I2cRecoveryMode.values(), octoquad.getI2cRecoveryMode());
+        optionChannelBankConfig = new TelemetryMenu.EnumOption("Channel Bank Modes",
+                OctoQuad.ChannelBankConfig.values(), octoquad.getChannelBankConfig());
 
-        menuHwInfo.addChild(new TelemetryMenu.StaticItem("Board Firmware: v" + octoquad.getFirmwareVersion()));
+        menuHwInfo.addChild(new TelemetryMenu.StaticItem(
+                "Board Firmware: v" + octoquad.getFirmwareVersion()));
         //menuHwInfo.addChild(new TelemetryMenu.StaticItem("Board unique ID: FIXME"));
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
-            optionsEncoderDirections[i] = new TelemetryMenu.BooleanOption(
-                    String.format("Encoder %d direction", i),
-                    octoquad.getSingleEncoderDirection(i) == OctoQuad.EncoderDirection.REVERSE,
-                    "-",
-                    "+");
+            optionsEncoderDirections[i] = new TelemetryMenu.BooleanOption(String.format("Encoder " +
+                                                                                        "%d direction", i),
+                    octoquad.getSingleEncoderDirection(i) ==
+                    OctoQuad.EncoderDirection.REVERSE, "-", "+");
         }
         menuEncoderDirections.addChildren(optionsEncoderDirections);
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
-            optionsVelocityIntervals[i] = new TelemetryMenu.IntegerOption(
-                    String.format("Chan %d velocity intvl", i),
-                    OctoQuad.MIN_VELOCITY_MEASUREMENT_INTERVAL_MS,
+            optionsVelocityIntervals[i] = new TelemetryMenu.IntegerOption(String.format("Chan %d " +
+                                                                                        "velocity" +
+                                                                                        " intvl",
+                    i), OctoQuad.MIN_VELOCITY_MEASUREMENT_INTERVAL_MS,
                     OctoQuad.MAX_VELOCITY_MEASUREMENT_INTERVAL_MS,
                     octoquad.getSingleVelocitySampleInterval(i));
         }
         menuVelocityIntervals.addChildren(optionsVelocityIntervals);
 
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
             OctoQuad.ChannelPulseWidthParams params = octoquad.getSingleChannelPulseWidthParams(i);
 
-            optionsAbsParamsMax[i] = new TelemetryMenu.IntegerOption(
-                    String.format("Chan %d max pulse length", i),
-                    OctoQuad.MIN_PULSE_WIDTH_US,
-                    OctoQuad.MAX_PULSE_WIDTH_US,
+            optionsAbsParamsMax[i] = new TelemetryMenu.IntegerOption(String.format("Chan %d max " +
+                                                                                   "pulse length"
+                    , i), OctoQuad.MIN_PULSE_WIDTH_US, OctoQuad.MAX_PULSE_WIDTH_US,
                     params.max_length_us);
 
-            optionsAbsParamsMin[i] = new TelemetryMenu.IntegerOption(
-                    String.format("Chan %d min pulse length", i),
-                    OctoQuad.MIN_PULSE_WIDTH_US,
-                    OctoQuad.MAX_PULSE_WIDTH_US,
+            optionsAbsParamsMin[i] = new TelemetryMenu.IntegerOption(String.format("Chan %d min " +
+                                                                                   "pulse length"
+                    , i), OctoQuad.MIN_PULSE_WIDTH_US, OctoQuad.MAX_PULSE_WIDTH_US,
                     params.min_length_us);
         }
         menuAbsParams.addChildren(optionsAbsParamsMin);
@@ -173,13 +196,13 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                if(lastClickTime == 0)
+                if (lastClickTime == 0)
                 {
                     return name;
                 }
                 else
                 {
-                    if(System.currentTimeMillis() - lastClickTime < 1000)
+                    if (System.currentTimeMillis() - lastClickTime < 1000)
                     {
                         return name + " **OK**";
                     }
@@ -208,13 +231,13 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                if(lastClickTime == 0)
+                if (lastClickTime == 0)
                 {
                     return name;
                 }
                 else
                 {
-                    if(System.currentTimeMillis() - lastClickTime < 1000)
+                    if (System.currentTimeMillis() - lastClickTime < 1000)
                     {
                         return name + " **OK**";
                     }
@@ -256,9 +279,11 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
     void sendSettingsToRam()
     {
-        for(int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
+        for (int i = 0; i < OctoQuad.NUM_ENCODERS; i++)
         {
-            octoquad.setSingleEncoderDirection(i, optionsEncoderDirections[i].getValue() ? OctoQuad.EncoderDirection.REVERSE : OctoQuad.EncoderDirection.FORWARD);
+            octoquad.setSingleEncoderDirection(i,
+                    optionsEncoderDirections[i].getValue() ? OctoQuad.EncoderDirection.REVERSE
+                                                           : OctoQuad.EncoderDirection.FORWARD);
             octoquad.setSingleVelocitySampleInterval(i, optionsVelocityIntervals[i].getValue());
 
             OctoQuad.ChannelPulseWidthParams params = new OctoQuad.ChannelPulseWidthParams();
@@ -296,24 +321,22 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
     public static class TelemetryMenu
     {
         private final MenuElement root;
+        private final Telemetry telemetry;
         private MenuElement currentLevel;
-
         private boolean dpadUpPrev;
         private boolean dpadDnPrev;
         private boolean dpadRightPrev;
         private boolean dpadLeftPrev;
         private boolean xPrev;
         private boolean lbPrev;
-
         private int selectedIdx = 0;
         private Stack<Integer> selectedIdxStack = new Stack<>();
 
-        private final Telemetry telemetry;
-
         /**
          * TelemetryMenu constructor
+         *
          * @param telemetry pass in 'telemetry' from your OpMode
-         * @param root the root menu element
+         * @param root      the root menu element
          */
         public TelemetryMenu(Telemetry telemetry, MenuElement root)
         {
@@ -328,6 +351,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
         /**
          * Call this from inside your loop to put the current menu state into
          * telemetry, and process gamepad inputs for navigating the menu
+         *
          * @param gamepad the gamepad you want to use to navigate the menu
          */
         public void loop(Gamepad gamepad)
@@ -373,7 +397,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             // Make selected index sane (don't let it go out of bounds) :eyes:
             if (selectedIdx >= children.size())
             {
-                selectedIdx = children.size()-1;
+                selectedIdx = children.size() - 1;
             }
             else if (selectedIdx < 0)
             {
@@ -445,14 +469,19 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             // First, we add the static directions for gamepad operation
             StringBuilder builder = new StringBuilder();
             builder.append("<font color='#119af5' face=monospace>");
-            builder.append("Navigate items.....dpad up/down\n")
-                    .append("Select.............X or Square\n")
-                    .append("Edit option........dpad left/right\n")
-                    .append("Up one level.......left bumper\n");
+            builder.append("Navigate items.....dpad up/down\n").append("Select.............X or " +
+                                                                       "Square\n").append("Edit " +
+                                                                                          "option" +
+                                                                                          "......" +
+                                                                                          "..dpad" +
+                                                                                          " left" +
+                                                                                          "/right" +
+                                                                                          "\n").append("Up one level.......left bumper\n");
             builder.append("</font>");
             builder.append("\n");
 
-            // Now actually add the menu options. We start by adding the name of the current menu level.
+            // Now actually add the menu options. We start by adding the name of the current menu
+            // level.
             builder.append("<font face=monospace>");
             builder.append("Current Menu: ").append(currentLevel.name).append("\n");
 
@@ -503,8 +532,10 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             private ArrayList<Element> children = new ArrayList<>();
 
             /**
-             * Create a new MenuElement; may either be the root menu, or a submenu (set isRoot accordingly)
-             * @param name the name for this menu
+             * Create a new MenuElement; may either be the root menu, or a submenu (set isRoot
+             * accordingly)
+             *
+             * @param name   the name for this menu
              * @param isRoot whether this is a root menu, or a submenu
              */
             public MenuElement(String name, boolean isRoot)
@@ -520,6 +551,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
             /**
              * Add a child element to this menu (may either be an Option or another menu)
+             *
              * @param child the child element to add
              */
             public void addChild(Element child)
@@ -530,6 +562,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
 
             /**
              * Add multiple child elements to this menu (may either be option, or another menu)
+             *
              * @param children the children to add
              */
             public void addChildren(Element[] children)
@@ -558,17 +591,17 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             /**
              * Override this to get notified when the element is clicked
              */
-            void onClick() {}
+            void onClick() { }
 
             /**
              * Override this to get notified when the element gets a "left edit" input
              */
-            protected void onLeftInput() {}
+            protected void onLeftInput() { }
 
             /**
              * Override this to get notified when the element gets a "right edit" input
              */
-            protected void onRightInput() {}
+            protected void onRightInput() { }
         }
 
         public static class EnumOption extends OptionElement
@@ -594,7 +627,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 idx++;
 
-                if(idx > e.length-1)
+                if (idx > e.length - 1)
                 {
                     idx = 0;
                 }
@@ -605,9 +638,9 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 idx--;
 
-                if(idx < 0)
+                if (idx < 0)
                 {
-                    idx = e.length-1;
+                    idx = e.length - 1;
                 }
             }
 
@@ -620,7 +653,8 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             @Override
             protected String getDisplayText()
             {
-                return String.format("%s: <font color='#e37c07' face=monospace>%s</font>", name, e[idx].name());
+                return String.format("%s: <font color='#e37c07' face=monospace>%s</font>", name,
+                        e[idx].name());
             }
 
             public Enum getValue()
@@ -649,7 +683,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 i--;
 
-                if(i < min)
+                if (i < min)
                 {
                     i = max;
                 }
@@ -660,7 +694,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 i++;
 
-                if(i > max)
+                if (i > max)
                 {
                     i = min;
                 }
@@ -728,7 +762,7 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
             {
                 String valStr;
 
-                if(customTrue != null && customFalse != null)
+                if (customTrue != null && customFalse != null)
                 {
                     valStr = val ? customTrue : customFalse;
                 }
@@ -737,7 +771,8 @@ public class UtilityOctoQuadConfigMenu extends LinearOpMode
                     valStr = val ? "true" : "false";
                 }
 
-                return String.format("%s: <font color='#e37c07' face=monospace>%s</font>", name, valStr);
+                return String.format("%s: <font color='#e37c07' face=monospace>%s</font>", name,
+                        valStr);
             }
 
             public boolean getValue()
