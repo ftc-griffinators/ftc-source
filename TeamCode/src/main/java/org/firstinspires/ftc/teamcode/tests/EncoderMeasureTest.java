@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer2;
+import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Drive;
 import org.firstinspires.ftc.teamcode.parts.Hanger;
 import org.firstinspires.ftc.teamcode.parts.Slider;
@@ -22,7 +23,7 @@ public class EncoderMeasureTest extends LinearOpMode {
         Drive drive = new Drive(hardwareMap);
         Slider slider=new Slider(hardwareMap);
         Hanger hanger=new Hanger(hardwareMap);
-
+        Claw claw=new Claw(hardwareMap);
 
         Hanger hangerEncoder=hanger.getHangerEncoder(hardwareMap);
         Slider sliderEncoder=slider.getSliderEncoder(hardwareMap);
@@ -30,14 +31,25 @@ public class EncoderMeasureTest extends LinearOpMode {
         TelemetryPacket packet= new TelemetryPacket();
         FtcDashboard dashboard=FtcDashboard.getInstance();
 
-
         telemetry.addData("Status", "Initialized");
-        telemetry.update();
+
+
         waitForStart();
         while (opModeIsActive()){
+
+
+            Claw positions=claw.servoEncoderPosition();
+
+
             telemetry.addData("xPose",drive.pose.position.x);
             telemetry.addData("yPose",drive.pose.position.y);
             telemetry.addData("heading",drive.pose.heading.toDouble());
+
+
+            telemetry.addData("leftArmPose",positions.leftArmPosition);
+            telemetry.addData("rightArmPose",positions.rightArmPosition);
+            telemetry.addData("extensionPose",positions.extensionPosition);
+
             packet.put("xPose",drive.pose.position.x);
             packet.put("yPose",drive.pose.position.y);
             packet.put("heading",drive.pose.heading.toDouble());
@@ -47,6 +59,9 @@ public class EncoderMeasureTest extends LinearOpMode {
             packet.put("rightHanger",hangerEncoder.rightHangerEncoder.getPositionAndVelocity().position);
             packet.put("leftHanger",hangerEncoder.leftHangerEncoder.getPositionAndVelocity().position);
 
+            packet.put("leftArmPose",claw.leftArmPosition);
+            packet.put("rightArmPose",claw.rightArmPosition);
+            packet.put("extensionPose",claw.extensionPosition);
 
 telemetry.addData("rightHanger",hangerEncoder.rightHangerEncoder.getPositionAndVelocity().position);
 telemetry.addData("leftHanger",hangerEncoder.leftHangerEncoder.getPositionAndVelocity().position);

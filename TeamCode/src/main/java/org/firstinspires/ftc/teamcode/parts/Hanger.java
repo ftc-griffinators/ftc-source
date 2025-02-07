@@ -51,7 +51,7 @@ public void initHanger(){
 
     leftHanger.setPower(0.1);
     rightHanger.setPower(0.1);
-//right,left- 2240
+
 }
 public void hang(){
     leftHanger.setTargetPosition(HANG);

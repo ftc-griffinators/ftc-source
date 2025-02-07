@@ -15,4 +15,8 @@ public class ActionCondition {
         this.conditions=new ArrayList<>(Arrays.asList(condition));
         this.numOfConditions=conditions.size();
     }
+
+    public static boolean noCondition(){
+        return true;
+    }
 }

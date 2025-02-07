@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.parts;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,18 +16,18 @@ import java.util.List;
 
 @Config
 public class Claw  {
-    public static double CLAW_EXTENDED=0.38;
-    public static double CLAW_RETRACTED=0;
+    public static double CLAW_EXTENDED=0.36;
+    public static double CLAW_RETRACTED=0.05;
     public static double CLAW_ROT_MID=0.15;
-    public static double CLAW_ROT_FRONT=0.07;
+    public static double CLAW_ROT_FRONT=0.1;
     public static double CLAW_ROT_BACK=0.44;
-    public static double CLAW_ROT_GROUND=0.03;
+    public static double CLAW_ROT_GROUND=0;
     public static double CLAW_ROT_TOUCH=0.28;
     public static double CLAW_GRAB=0;
     public static double CLAW_RELEASE=0.1;
     public static double CLAW_PITCH_TOP=0.5;
-    public static double CLAW_PITCH_MID=0.265;
-    public static double CLAW_PITCH_BOT=0.02;
+    public static double CLAW_PITCH_MID=0.37;
+    public static double CLAW_PITCH_BOT=0.1;
     public static double CLAW_PITCH_SCORE=0.48;
     public static double CLAW_ALIGNMENT_LEFTMOST=0.84;
     public static double CLAW_ALIGNMENT_RIGHTMOST=0.23;
@@ -35,6 +37,7 @@ public class Claw  {
     public static double CLAW_45=0.32;
 
 
+    public static double heightFromGround=0;
 
 
 
@@ -44,48 +47,48 @@ public class Claw  {
 
     public ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
     public TouchSensor sensor;
+    AnalogInput rightArmEncoder, leftArmEncoder, extensionEncoder;
 
-    public Claw(HardwareMap hardwareMap)  {
+    public double rightArmPosition, leftArmPosition, extensionPosition;
+    public Claw(HardwareMap hardwareMap) {
 
 
         //"clawExtend" is port 2 on control hub
-        clawExtend = hardwareMap.get(ServoImplEx.class,"clawExtend");
+        clawExtend = hardwareMap.get(ServoImplEx.class, "clawExtend");
 
         //"clawRightRot" is port 0 on control hub
-        clawRightRot = hardwareMap.get(ServoImplEx.class,"clawRightRot");
+        clawRightRot = hardwareMap.get(ServoImplEx.class, "clawRightRot");
 
         // "clawLeftRot" is port 1 on control hub
-        clawLeftRot = hardwareMap.get(ServoImplEx.class,"clawLeftRot");
+        clawLeftRot = hardwareMap.get(ServoImplEx.class, "clawLeftRot");
         //"clawGrab" is port 3
-        clawGrab=hardwareMap.get(ServoImplEx.class,"clawGrab");
+        clawGrab = hardwareMap.get(ServoImplEx.class, "clawGrab");
 
-        clawAlignment=hardwareMap.get(ServoImplEx.class,"clawAlignment");
+        clawAlignment = hardwareMap.get(ServoImplEx.class, "clawAlignment");
 
-        clawPitch=hardwareMap.get(ServoImplEx.class,"clawPitch");
+        clawPitch = hardwareMap.get(ServoImplEx.class, "clawPitch");
 
-
-        clawExtend.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawLeftRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawRightRot.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawGrab.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawAlignment.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawPitch.setPwmRange(new PwmControl.PwmRange(500,2500));
-
-        clawAlignment.scaleRange(CLAW_ALIGNMENT_RIGHTMOST,CLAW_ALIGNMENT_LEFTMOST);
+        rightArmEncoder = hardwareMap.get(AnalogInput.class, "rightArmEncoder");
+        leftArmEncoder = hardwareMap.get(AnalogInput.class, "leftArmEncoder");
+        extensionEncoder = hardwareMap.get(AnalogInput.class, "extensionEncoder");
 
 
 
-        clawLeftRot.setDirection(Servo.Direction.REVERSE);
+        clawGrab.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
-        clawExtend.setDirection(Servo.Direction.REVERSE);
+        clawAlignment.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
+        clawPitch.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
-      //  sensor=hardwareMap.get(TouchSensor.class,"touchSensor");
+        clawAlignment.scaleRange(CLAW_ALIGNMENT_RIGHTMOST, CLAW_ALIGNMENT_LEFTMOST);
+
+            }
+
+    public Claw servoEncoderPosition(){
+        rightArmPosition=rightArmEncoder.getVoltage()/3.3 *360;
+        leftArmPosition=leftArmEncoder.getVoltage()/3.3 *360;
+        extensionPosition= extensionEncoder.getVoltage()/3.3 * 360;
+        return this;
 
     }
 
@@ -105,11 +108,7 @@ public class Claw  {
         }
 
     }
-    /*
-    public boolean checkGrabbed(){
-       return sensor.isPressed();
-    }
-*/
+
 
     public double alignmentAngleToServoPose(double angle){
         return angle/Math.PI;
@@ -145,8 +144,7 @@ public class Claw  {
         clawPitch.setPosition(CLAW_PITCH_MID);
         clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
         clawGrab.setPosition(CLAW_RELEASE);
-
-     rotateArm(CLAW_ROT_FRONT);
+        rotateArm(CLAW_ROT_FRONT);
     }
     public  void  teleOpWithBarParkingInit(){
         rotateArm(CLAW_ROT_BACK);
@@ -178,6 +176,14 @@ public class Claw  {
     }
 
 
+    public void extenderSweep(){
+
+
+    }
+    public void extenderLockOn(){
+
+    }
+
     public void extend(){
         clawExtend.setPosition(CLAW_EXTENDED);
     }
@@ -200,6 +206,15 @@ public class Claw  {
         clawExtend.setPosition(CLAW_RETRACTED);
         rotateArm(CLAW_ROT_MID);
         clawPitch.setPosition(CLAW_PITCH_MID);
+    }
+    public void middleAlignment(){
+        clawAlignment.setPosition(0.5);
+    }
+    public void rightAlignment(){
+        clawAlignment.setPosition(0);
+    }
+    public void leftAlignment(){
+        clawAlignment.setPosition(1);
     }
 
 

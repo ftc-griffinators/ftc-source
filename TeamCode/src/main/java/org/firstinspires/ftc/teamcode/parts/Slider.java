@@ -14,13 +14,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public class Slider  {
-    public static int INIT_SLIDER =80;
-    public static int SLIDER_TOP =3100;
-    public static int SLIDER_MID =200;
+    public static int INIT_SLIDER =50;
+    public static int SLIDER_TOP =2900;
+    public static int SLIDER_MID =2000;
     public static int SLIDER_TOP_BAR;
     public static int SLIDER_HANGER;
     public static int RESET_CORRECTION=0;
     public static int MAX_EXTENSION=3290;
+    public static int SLIDER_CUSTOM=0;
 
 
     public Encoder leftSliderEncoder,rightSliderEncoder;
@@ -96,6 +97,12 @@ public class Slider  {
     public void sliderExtensionTopBar(){
         sliderRight.setTargetPosition(SLIDER_TOP_BAR);
         sliderRight.setTargetPosition(SLIDER_TOP_BAR);
+        sliderRight.setPower(1);
+        sliderLeft.setPower(1);
+    }
+    public void moveSlidersTo(int position){
+        sliderRight.setTargetPosition(position);
+        sliderLeft.setTargetPosition(position);
         sliderRight.setPower(1);
         sliderLeft.setPower(1);
     }

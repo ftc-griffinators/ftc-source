@@ -27,9 +27,19 @@ public class Sequencing {
       }
    }
 
+   public static boolean isActionAllowed(CustomAction a){
+      return Sequencing.allActionsStatus.get(a);
+   }
 
-   public void restrictedRunAction(CustomAction... actions){
+   public static void allowAction(CustomAction a){
+      allActionsStatus.put(a,Boolean.TRUE);
+   }
 
+
+   public void restrictedRunAction(CustomAction action, ActionCondition condition, CustomAction restriction){
+            if (!allActionsStatus.get(restriction)){
+               runInParallel(action,condition);
+            }
    }
    public void runInSerial(){
 

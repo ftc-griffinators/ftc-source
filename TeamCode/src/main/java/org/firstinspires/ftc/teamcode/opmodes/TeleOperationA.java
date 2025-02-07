@@ -2,20 +2,20 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import static org.firstinspires.ftc.teamcode.parts.Claw.*;
+
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 
-import com.acmerobotics.roadrunner.ftc.Encoder;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
 import org.firstinspires.ftc.teamcode.Utility.ActionCondition;
 import org.firstinspires.ftc.teamcode.Utility.CustomAction;
 import org.firstinspires.ftc.teamcode.Utility.Sequencing;
+import org.firstinspires.ftc.teamcode.Utility.TeleOpActions;
 import org.firstinspires.ftc.teamcode.Utility.Timing;
 import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Drive;
@@ -27,9 +27,6 @@ import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 @TeleOp(name ="TeleOperationA",group = "Robot")
 @Config
 public class TeleOperationA extends LinearOpMode {
-    DcMotorEx frontLeft, frontRight, backLeft, backRight; //sliderLeft,sliderRight;
-   // ServoImplEx clawGrab, clawRightRot, clawLeftRot, clawExtend,clawAlignment, clawPitch;
-
 
 
 
@@ -38,6 +35,9 @@ public class TeleOperationA extends LinearOpMode {
     int clawGrabState=0;
     int subClearing=0;
     int init=0;
+    int pipelineToggle=0;
+
+    boolean extension;
 
 
 
@@ -54,24 +54,15 @@ public class TeleOperationA extends LinearOpMode {
         Drive drive=new Drive(hardwareMap);
         Claw claw=new Claw(hardwareMap);
         Slider slider=new Slider(hardwareMap);
-        VisionSystem vision=new VisionSystem(hardwareMap,0);
         Hanger hanger=new Hanger(hardwareMap);
         Timing timer=new Timing();
-
-        Slider encoder=slider.getSliderEncoder(hardwareMap);
+        VisionSystem vision=new VisionSystem(hardwareMap,1);
 
 
         hanger.initHanger();
 
 
-        CustomAction align=new CustomAction(
-                claw::alignerReset,
-                ()->claw.orientationAligning(vision));
-
-        ActionCondition alignCondition=new ActionCondition(
-                ()->timer.delay(200),
-                ()->claw.startAligning);
-
+       // TeleOpActions actions=new TeleOpActions(drive,claw,slider,hanger,timer,vision);
 
 
         telemetry.addData("Status", "Initialized");
@@ -87,8 +78,6 @@ public class TeleOperationA extends LinearOpMode {
                 init=1;
             }
 
-            telemetry.addData("Left encoder",encoder.leftSliderEncoder.getPositionAndVelocity().position);
-            telemetry.addData("Right encoder",encoder.rightSliderEncoder.getPositionAndVelocity().position);
 
             telemetry.update();
 
@@ -101,21 +90,86 @@ public class TeleOperationA extends LinearOpMode {
             drive.mecanumDriving(x,y,turn,0.8);
 
 
-            if (gamepad1.left_stick_button){
-                Sequencing.allActionsStatus.put(align,true);
-            }
-            if (Sequencing.allActionsStatus.get(align)){
-                Sequencing.runInParallel(align,alignCondition);
-            }
 
-            if (gamepad1.a){
+
+            if (gamepad2.start){
+                drive.stopDrive();
                 hanger.hang();
             }
 
-            if (gamepad1.b){
-                hanger.resetHanger();
-                drive.stopDrive();
+/*
+            if (gamepad1.a){
+                switch (pipelineToggle){
+                    case 0:
+                        actions.vision.setPipeline(0);
+                        pipelineToggle++;
+                        break;
+                    case 1:
+                        actions.vision.setPipeline(1);
+                        pipelineToggle=0;
+                        break;
+                }
             }
+
+
+ */
+
+            //Grab success Basket scoring phase
+            if (gamepad2.y){
+                switch (boxScoringStateTop){
+
+                    case 0:
+                        if (!extension){
+                        claw.clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+                        slider.sliderExtensionTopBox();
+                        Thread.sleep(1000);
+                        claw.boxScoring();
+                        boxScoringStateTop++;
+                        }
+                        break;
+                    case 1:
+                        claw.release();
+                        Thread.sleep(300);
+                        claw.rotateArm(CLAW_ROT_MID);
+                        claw.retract();
+                        slider.sliderRetraction();
+                        claw.rotateArm(CLAW_ROT_FRONT);
+                        claw.grabPrep();
+
+                        boxScoringStateTop=0;;
+                        break;
+                }
+            }
+
+
+
+/*
+
+
+            if (gamepad2.y){
+                switch (boxScoringStateTop){
+                    case 0:
+                        Sequencing.allowAction(actions.boxScoreStart);
+                        boxScoringStateTop++;
+                        break;
+                    case 1:
+                        Sequencing.allowAction(actions.boxScoreEnd);
+                        boxScoringStateTop=0;
+                        break;
+                }
+            }
+            if (Sequencing.isActionAllowed(actions.boxScoreStart)){
+                Sequencing.runInParallel(actions.boxScoreStart,actions.boxScoreStartCondition);
+            }
+            if (Sequencing.isActionAllowed(actions.boxScoreEnd)){
+                Sequencing.runInParallel(actions.boxScoreEnd,actions.boxScoreEndCondition);
+            }
+
+
+
+ */
+
+
 
 
 
@@ -140,6 +194,19 @@ public class TeleOperationA extends LinearOpMode {
                 }
             }
 
+             /*
+
+            if (gamepad1.left_stick_button){
+                Sequencing.allowAction(actions.align);
+            }
+            if (Sequencing.isActionAllowed(actions.align)){
+                Sequencing.runInParallel(actions.align,actions.alignCondition);
+            }
+
+              */
+
+
+
 
             //Toggle sub
             if (gamepad1.left_bumper){
@@ -160,8 +227,6 @@ public class TeleOperationA extends LinearOpMode {
             if (gamepad1.start){
                 drive.pose=new Pose2d(0,0,0);
             }
-
-
 
 
 
@@ -192,29 +257,6 @@ public class TeleOperationA extends LinearOpMode {
 
 
 
-            //Grab success Basket scoring phase
-            if (gamepad2.y){
-                switch (boxScoringStateTop){
-                    case 0:
-                        claw.clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
-                        slider.sliderExtensionTopBox();
-                        Thread.sleep(1000);
-                       claw.boxScoring();
-                        boxScoringStateTop++;
-                        break;
-                    case 1:
-                        claw.release();
-                        Thread.sleep(300);
-                        claw.rotateArm(CLAW_ROT_MID);
-                        claw.retract();
-                        slider.sliderRetraction();
-                        claw.rotateArm(CLAW_ROT_FRONT);
-                        claw.grabPrep();
-
-                        boxScoringStateTop=0;;
-                        break;
-                }
-            }
 
 
             }

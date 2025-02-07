@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.tests;
 
 
 import static org.firstinspires.ftc.teamcode.parts.Claw.*;
+import static org.firstinspires.ftc.teamcode.parts.Slider.SLIDER_CUSTOM;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -76,6 +77,7 @@ public class ServoTest extends LinearOpMode {
             if (gamepad1.right_stick_button){
                 claw.clawExtend.setPosition(CLAW_RETRACTED);
             }
+
             if (gamepad1.dpad_left){
                 claw.clawAlignment.setPosition(CLAW_270);
             }
@@ -88,6 +90,14 @@ public class ServoTest extends LinearOpMode {
             if (gamepad1.dpad_down){
                 claw.clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
             }
+
+            if (gamepad1.start){
+                slider.moveSlidersTo(SLIDER_CUSTOM);
+            }
+            if (gamepad1.b){
+                slider.sliderRetraction();
+            }
+
 
             if (gamepad1.a){
                 claw.clawLeftRot.setPosition(CLAW_ROT_GROUND);
@@ -146,35 +156,17 @@ public class ServoTest extends LinearOpMode {
 
  */
 
+            Claw positions=claw.servoEncoderPosition();
 
-
-            telemetry.addData("clawGrab.CLAW_GRAB: a",CLAW_GRAB);
-            telemetry.addData("clawGrab.CLAW_RELEASE: b",CLAW_RELEASE);
-            telemetry.addData("clawExtend.CLAW_EXTENDED: x",CLAW_EXTENDED);
-            telemetry.addData("clawExtend.CLAW_RETRACTED: Y",CLAW_RETRACTED);
-            telemetry.addData("clawAlignment.LEFT: left_bumper",CLAW_ALIGNMENT_LEFTMOST);
-            telemetry.addData("clawAlignment.RIGHT: right_bumper",CLAW_ALIGNMENT_RIGHTMOST);
-            telemetry.addData("clawLeftRot.FRONT: dpad_up",CLAW_ROT_FRONT);
-            telemetry.addData("clawLeftRot.MID: dpad_down",CLAW_ROT_MID);
-            telemetry.addData("clawRightRot.FRONT: dpad_left",CLAW_ROT_FRONT);
-            telemetry.addData("clawRightRot.MIDDLE: dpad_right",CLAW_ROT_MID);
-
-
-            p.put("clawGrab.CLAW_GRAB: a",CLAW_GRAB);
-            p.put("clawGrab.CLAW_RELEASE: b",CLAW_RELEASE);
-            p.put("clawExtend.CLAW_EXTENDED: x",CLAW_EXTENDED);
-            p.put("clawExtend.CLAW_RETRACTED: Y",CLAW_RETRACTED);
-            p.put("clawAlignment.LEFT: left_bumper",CLAW_ALIGNMENT_LEFTMOST);
-            p.put("clawAlignment.RIGHT: right_bumper",CLAW_ALIGNMENT_RIGHTMOST);
-            p.put("clawLeftRot.FRONT: dpad_up",CLAW_ROT_FRONT);
-            p.put("clawLeftRot.MID: dpad_down",CLAW_ROT_MID);
-            p.put("clawRightRot.FRONT: dpad_left",CLAW_ROT_FRONT);
-            p.put("clawRightRot.MIDDLE: dpad_right",CLAW_ROT_MID);
 
 
 
             dashboard.sendTelemetryPacket(p);
 
+
+            telemetry.addData("leftArmPose",positions.leftArmPosition);
+            telemetry.addData("rightArmPose",positions.rightArmPosition);
+            telemetry.addData("extensionPose",positions.extensionPosition);
 
 
             telemetry.addData("lefSlider",encoder.leftSliderEncoder.getPositionAndVelocity().position);
