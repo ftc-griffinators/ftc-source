@@ -33,7 +33,6 @@ public class VisionSystem
 
     }
 
-
     public VisionSystem(HardwareMap hardwareMap)
     {
 
@@ -42,7 +41,6 @@ public class VisionSystem
         init();
 
     }
-
     public void init()
     {
         limelight.setPollRateHz(100);

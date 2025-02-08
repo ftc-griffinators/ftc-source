@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_FRONT;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_MID;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -32,32 +35,21 @@ public class BlueSampleAuto extends LinearOpMode
 
     private void score(Claw claw, Slider slider)
     {
+        claw.rotateArm(CLAW_ROT_MID);
+        claw.middleAlignment();
         slider.sliderExtensionTopBox();
-        sleep(1800);
-        claw.rotateArm(Claw.CLAW_ROT_BACK);
-        sleep(200);
-        claw.extend();
+        sleep(1200);
+        claw.boxScoring();
         sleep(1000);
-        claw.clawPitch.setPosition(Claw.CLAW_PITCH_SCORE);
-        sleep(200);
         claw.release();
-        sleep(500);
-        claw.rotateArm(Claw.CLAW_ROT_MID);
-        sleep(500);
+        sleep(300);
+        claw.grab();
+        claw.rotateArm(CLAW_ROT_MID);
         claw.retract();
-        sleep(200);
         slider.sliderRetraction();
-        sleep(1000);
-        claw.rotateArm(Claw.CLAW_ROT_BACK);
-        sleep(500);
-        /*
+        claw.rotateArm(CLAW_ROT_FRONT);
         claw.grabPrep();
-
-         */
-        claw.clawPitch.setPosition(Claw.CLAW_PITCH_MID);
-
-
-        sleep(2000);
+        sleep(1500);
     }
 
     @Override
@@ -101,11 +93,10 @@ public class BlueSampleAuto extends LinearOpMode
 
 
         Actions.runBlocking(startToBox);
-        sleep(500);
         score(claw, slider);
-        sleep(500);
-
-        Actions.runBlocking(boxToBarScore);
+//        sleep(500);
+//
+//        Actions.runBlocking(boxToBarScore);
 
 
 

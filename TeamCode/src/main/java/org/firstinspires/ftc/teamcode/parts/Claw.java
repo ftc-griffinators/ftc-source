@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.parts;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogInputController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -16,19 +14,22 @@ import java.util.List;
 
 @Config
 public class Claw  {
-    public static double CLAW_EXTENDED=0.36;
-    public static double CLAW_RETRACTED=0.05;
-    public static double CLAW_ROT_MID=0.15;
-    public static double CLAW_ROT_FRONT=0.1;
-    public static double CLAW_ROT_BACK=0.44;
-    public static double CLAW_ROT_GROUND=0;
+    public static double CLAW_EXTENDED=0.41;
+    public static double CLAW_RETRACTED=0.08;
+    public static double CLAW_ROT_MID=0.7;
+    public static double CLAW_ROT_FRONT=0.17;
+    public static double CLAW_ROT_BACK=0.9;
+    public static double CLAW_ROT_DIRECT_SCORE=0.6;
+    public static double CLAW_ROT_GROUND_RETRACTED=0.10;
+    public static double CLAW_ROT_GROUND_EXTENDED=0.135;
     public static double CLAW_ROT_TOUCH=0.28;
     public static double CLAW_GRAB=0;
     public static double CLAW_RELEASE=0.1;
     public static double CLAW_PITCH_TOP=0.5;
-    public static double CLAW_PITCH_MID=0.37;
-    public static double CLAW_PITCH_BOT=0.1;
-    public static double CLAW_PITCH_SCORE=0.48;
+    public static double CLAW_PITCH_MID=0.4;
+    public static double CLAW_PITCH_BOT=0.13;
+    public static double CLAW_PITCH_SCORE=0.53;
+    public static double CLAW_PITCH_DIRECT_SCORE =0.3;
     public static double CLAW_ALIGNMENT_LEFTMOST=0.84;
     public static double CLAW_ALIGNMENT_RIGHTMOST=0.23;
     public static double CLAW_ALIGNMENT_MIDDLE=0.53;
@@ -38,8 +39,6 @@ public class Claw  {
 
 
     public static double heightFromGround=0;
-
-
 
 
     public boolean startAligning=false;
@@ -67,6 +66,7 @@ public class Claw  {
         clawAlignment = hardwareMap.get(ServoImplEx.class, "clawAlignment");
 
         clawPitch = hardwareMap.get(ServoImplEx.class, "clawPitch");
+
 
         rightArmEncoder = hardwareMap.get(AnalogInput.class, "rightArmEncoder");
         leftArmEncoder = hardwareMap.get(AnalogInput.class, "leftArmEncoder");
@@ -132,13 +132,15 @@ public class Claw  {
 
     public void clawAutoSampleInit() throws InterruptedException {
         clawGrab.setPosition(CLAW_GRAB);
-
         Thread.sleep(200);
-        clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
-        Thread.sleep(300);
-        clawPitch.setPosition(CLAW_PITCH_MID);
+        clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+        clawPitch.setPosition(CLAW_PITCH_BOT);
         rotateArm(CLAW_ROT_BACK);
-        Thread.sleep(300);
+
+    }
+
+    public void clawAutoSampleInit2(){
+
     }
     public void teleOpInit(){
         clawPitch.setPosition(CLAW_PITCH_MID);
@@ -155,7 +157,14 @@ public class Claw  {
     public void boxScoring(){
        rotateArm(CLAW_ROT_BACK);
         clawExtend.setPosition(CLAW_EXTENDED);
+
         clawPitch.setPosition(CLAW_PITCH_SCORE);
+    }
+
+    public void boxScoringFront(){
+        rotateArm(CLAW_ROT_DIRECT_SCORE);
+        clawExtend.setPosition(CLAW_EXTENDED);
+        clawPitch.setPosition(CLAW_PITCH_DIRECT_SCORE);
     }
 
 
@@ -216,12 +225,17 @@ public class Claw  {
     public void leftAlignment(){
         clawAlignment.setPosition(1);
     }
+    public void stopPoweringClaw(){
+
+    }
 
 
     public void clearSub(){
         rotateArm(CLAW_ROT_FRONT);
-        clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
+        middleAlignment();
         clawPitch.setPosition(CLAW_PITCH_MID);
+        startAligning=false;
+
     }
 
 

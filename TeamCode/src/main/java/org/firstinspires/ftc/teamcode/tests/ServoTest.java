@@ -37,6 +37,7 @@ public class ServoTest extends LinearOpMode {
 
 
 
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -78,39 +79,31 @@ public class ServoTest extends LinearOpMode {
                 claw.clawExtend.setPosition(CLAW_RETRACTED);
             }
 
-            if (gamepad1.dpad_left){
-                claw.clawAlignment.setPosition(CLAW_270);
-            }
-            if (gamepad1.dpad_right){
-                claw.clawAlignment.setPosition(CLAW_45);
-            }
-            if (gamepad1.dpad_up){
-                claw.clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
-            }
-            if (gamepad1.dpad_down){
-                claw.clawAlignment.setPosition(CLAW_ALIGNMENT_RIGHTMOST);
-            }
 
-            if (gamepad1.start){
+            if (gamepad1.dpad_up){
                 slider.moveSlidersTo(SLIDER_CUSTOM);
             }
-            if (gamepad1.b){
+            if (gamepad1.dpad_down){
                 slider.sliderRetraction();
             }
 
 
             if (gamepad1.a){
-                claw.clawLeftRot.setPosition(CLAW_ROT_GROUND);
-                claw.clawRightRot.setPosition(CLAW_ROT_GROUND);
+              claw.rotateArm(CLAW_ROT_GROUND_EXTENDED);
             }
             if (gamepad1.x){
-                claw.clawRightRot.setPosition(CLAW_ROT_FRONT);
-                claw.clawLeftRot.setPosition(CLAW_ROT_FRONT);
-
+                claw.rotateArm(CLAW_ROT_FRONT);
             }
             if (gamepad1.y){
-                claw.clawRightRot.setPosition(CLAW_ROT_BACK);
-                claw.clawLeftRot.setPosition(CLAW_ROT_BACK);
+              claw.rotateArm(CLAW_ROT_MID);
+                          }
+
+            if (gamepad1.b){
+                claw.rotateArm(CLAW_ROT_BACK);
+            }
+
+            if (gamepad1.start){
+                claw.middleAlignment();
             }
             if (gamepad2.dpad_down){
                 claw.clawPitch.setPosition(CLAW_PITCH_BOT);
@@ -127,6 +120,12 @@ public class ServoTest extends LinearOpMode {
             }
             if (gamepad2.a){
                 slider.sliderRetraction();
+            }
+            if (gamepad2.left_bumper){
+                claw.leftAlignment();
+            }
+            if (gamepad2.right_bumper){
+                claw.rightAlignment();
             }
 /*
             Transform pose = vision.getTargetDiffPose(corners);
