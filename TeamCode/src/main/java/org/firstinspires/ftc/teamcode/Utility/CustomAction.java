@@ -7,8 +7,6 @@ import java.util.List;
 public class CustomAction
 {
     //Must be used in tandem with ActionCondition class
-
-
     public int numOfSteps;
     public int currentStepNum = 0;
     List<ActionStep> action = new ArrayList<>();
@@ -19,10 +17,7 @@ public class CustomAction
         Sequencing.allActionsStatus.put(this, Boolean.FALSE);
         this.numOfSteps = action.size();
     }
-
-    public void nullAction()
-    {
+    public void nullAction() {
 
     }
-
 }

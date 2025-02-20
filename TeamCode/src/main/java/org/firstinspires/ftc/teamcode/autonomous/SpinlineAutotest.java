@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_270;
 import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_PITCH_BOT;
-import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_PITCH_MID;
 import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_FRONT;
 import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_GROUND_EXTENDED;
 import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_MID;
-import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_TOUCH;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -24,9 +21,9 @@ import org.firstinspires.ftc.teamcode.parts.Slider;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
 
-@Autonomous(name = "BlueSampleAuto")
+@Autonomous(name = "spline")
 @Config
-public class BlueSampleAuto extends LinearOpMode
+public class SpinlineAutotest extends LinearOpMode
 {
     public static double rightSampleZone_X = 15.5;
     public static double rightSampleZone_y = 14.2;
@@ -43,18 +40,13 @@ public class BlueSampleAuto extends LinearOpMode
     public static double leftSampleZone_H = 0.05;
 
 
-    public static double parkZone_x = 55;
-    public static double parkZone_y = 2;
-    public static double parkZone_H = -Math.PI/2;
-
-
     public static double offset = 9;
-    public static double powerMultiplier = 0.45;
+    public static double powerMultiplier = 0.55;
 
 
 
 
-    public static Pose2d boxScoringPose = new Pose2d(5.4, 25.8, -0.85);
+    public static Pose2d boxScoringPose = new Pose2d(4.8, 25.8, -0.85);
     public static Pose2d rightSampleZone = new Pose2d(rightSampleZone_X, rightSampleZone_y, rightSampleZone_H);
     public static Pose2d midSampleZone = new Pose2d(midSampleZone_X, midSampleZone_y, midSampleZone_H);
     public static Pose2d leftSampleZone = new Pose2d(leftSampleZone_X, leftSampleZone_y, leftSampleZone_H);
@@ -97,10 +89,8 @@ public class BlueSampleAuto extends LinearOpMode
         claw.rotateArm(CLAW_ROT_MID);
         claw.retract();
         slider.sliderRetraction();
+        claw.clearSub();
         sleep(2000);
-        claw.rotateArm(CLAW_ROT_MID);
-        
-
     }
 
 
@@ -121,18 +111,21 @@ public class BlueSampleAuto extends LinearOpMode
 
 
         Action startToBox =
-                drive.actionBuilder(drive.pose).strafeTo(new Vector2d(boxScoringPose.position.x,
-                        boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
+                drive.actionBuilder(drive.pose).splineTo(new Vector2d(boxScoringPose.position.x,
+                        boxScoringPose.position.y),boxScoringPose.heading).build();
         Action BoxToRightSampleZone =
-                drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(rightSampleZone.position.x, rightSampleZone.position.y)).turnTo(rightSampleZone.heading).build();
+                drive.actionBuilder(boxScoringPose).splineTo(new Vector2d(rightSampleZone.position.x, rightSampleZone.position.y),rightSampleZone.heading).build();
         Action RightSampleZoneToBox =
                 drive.actionBuilder(rightSampleZone).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
         Action BoxToMidSampleZone =
-                drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(midSampleZone.position.x, midSampleZone.position.y)).turnTo(midSampleZone.heading).build();
+                drive.actionBuilder(boxScoringPose).splineTo(new Vector2d(midSampleZone.position.x, midSampleZone.position.y),midSampleZone.heading).build();
         Action MidSampleZoneToBox =
                 drive.actionBuilder(midSampleZone).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
+        Action BoxToLeftSampleZone =
+                drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(leftSampleZone.position.x, leftSampleZone.position.y)).turnTo(leftSampleZone.heading).build();
+        Action LeftSampleZoneToBox =
+                drive.actionBuilder(leftSampleZone).strafeTo(new Vector2d(boxScoringPose.position.x, boxScoringPose.position.y)).turnTo(boxScoringPose.heading).build();
 
-        Action BoxToPark = drive.actionBuilder(boxScoringPose).strafeTo(new Vector2d(parkZone_x, parkZone_y)).turnTo(parkZone_H).build();
         slider.initSlider();
         claw.clawAutoSampleInit();
         waitForStart();
@@ -159,7 +152,6 @@ public class BlueSampleAuto extends LinearOpMode
 
 
 
-
     }
 
 
@@ -175,7 +167,7 @@ public class BlueSampleAuto extends LinearOpMode
         double x;
         double y;
 
-        ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        ElapsedTime time=new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         time.startTime();
         while (!vision.isTargetCentered(0, offset) || time.time() > 5000) {
 
@@ -200,7 +192,7 @@ public class BlueSampleAuto extends LinearOpMode
         claw.rotateArm(CLAW_ROT_GROUND_EXTENDED);
         sleep(300);
         claw.grab();
-        sleep(600);
+        sleep(500);
         claw.rotateArm(CLAW_ROT_FRONT);
     }
 

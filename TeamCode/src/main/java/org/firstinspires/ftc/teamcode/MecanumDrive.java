@@ -130,7 +130,7 @@ public final class MecanumDrive
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
 
-    public void setDrivePowers(PoseVelocity2d powers)
+    public void setDrivePowers(PoseVelocity2d powers, double powerMultiplier)
     {
         MecanumKinematics.WheelVelocities<Time> wheelVels =
                 new MecanumKinematics(1).inverse(PoseVelocity2dDual.constant(powers, 1));
@@ -141,10 +141,10 @@ public final class MecanumDrive
             maxPowerMag = Math.max(maxPowerMag, power.value());
         }
 
-        leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag);
-        leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag);
-        rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag);
-        rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
+        leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag *powerMultiplier);
+        leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag *powerMultiplier) ;
+        rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag *powerMultiplier);
+        rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag *powerMultiplier);
     }
 
     public PoseVelocity2d updatePoseEstimate()
@@ -353,7 +353,7 @@ public final class MecanumDrive
 
             if ((t >= timeTrajectory.duration && error.position.norm() < 0.5 &&
                  robotVelRobot.linearVel.norm() < 0.3 && robotVelRobot.angVel < 0.08 &&
-                 Math.abs(error.heading.toDouble()) < 2) || t >= timeTrajectory.duration + 1)
+                 Math.abs(error.heading.toDouble()) < 2) || t >= timeTrajectory.duration +0.1)
             {
                 leftFront.setPower(0);
                 leftBack.setPower(0);

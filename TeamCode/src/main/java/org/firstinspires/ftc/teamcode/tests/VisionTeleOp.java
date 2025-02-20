@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
 import java.util.List;
 
-@TeleOp(name = "Vision Test", group = "Robot")
+
 public class VisionTeleOp extends LinearOpMode
 {
 
@@ -124,7 +124,7 @@ public class VisionTeleOp extends LinearOpMode
             telemetry.addData("TY", String.format("%.2f°", pose.position.y));
             telemetry.addData("theta", pose.orientation.yaw * (180 / Math.PI));
             telemetry.addData("Is aligned:", vision.isTargetAligned(corners));
-            telemetry.addData("Is centered:", vision.isTargetCentered(corners));
+            telemetry.addData("Is centered:", vision.isTargetCentered());
             telemetry.addData("Turn direction:", vision.turnLeftOrRight(corners));
             telemetry.addData("Is running", vision.limelight.isRunning());
             telemetry.addData("Is connected", vision.limelight.isConnected());

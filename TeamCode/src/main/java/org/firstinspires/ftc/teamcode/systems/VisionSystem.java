@@ -19,7 +19,7 @@ public class VisionSystem
     public static final double DEGREE_TO_INCHES = 0.5;
     private static final Transform TARGET_FRAME = new Transform(0, 0, 0);
     public static int visonError = 0;
-    public static double CENTER_THRESHOLD = 7.0; // delta degree from the crosshair
+    public static double CENTER_THRESHOLD = 1.8; // delta degree from the crosshair
     public static double ANGLE_THRESHOLD =
             (10 / 180) * Math.PI; //5 degree within the correct alignment
     public Limelight3A limelight;
@@ -217,16 +217,28 @@ public class VisionSystem
         return Math.PI - angle;
     }
 
-    public boolean isTargetCentered(List<List<Double>> corners)
+    public boolean isTargetCentered()
     {
 
-        Transform crosshairAndAngle = getTargetDiffPose(corners);
-        if (crosshairAndAngle == Transform.INVALID)
+        Transform.Position crosshairAndAngle = getTargetPosition();
+        if (Double.isNaN(crosshairAndAngle.x))
         {
             return false;
         }
-        return (Math.abs(crosshairAndAngle.position.x) < CENTER_THRESHOLD) &&
-               (Math.abs(crosshairAndAngle.position.y) < CENTER_THRESHOLD);
+        return (Math.abs(crosshairAndAngle.x) < CENTER_THRESHOLD) &&
+               (Math.abs(crosshairAndAngle.y) < CENTER_THRESHOLD);
+    }
+
+    public boolean isTargetCentered(double offsetX, double offsetY)
+    {
+
+        Transform.Position crosshairAndAngle = getTargetPosition();
+        if (Double.isNaN(crosshairAndAngle.x))
+        {
+            return false;
+        }
+        return (Math.abs(crosshairAndAngle.x + offsetX) < CENTER_THRESHOLD) &&
+                (Math.abs(crosshairAndAngle.y + offsetY) < CENTER_THRESHOLD);
     }
 
     public boolean isTargetAligned(List<List<Double>> corners)
@@ -251,4 +263,7 @@ public class VisionSystem
         LLResult result = limelight.getLatestResult();
         return result != null ? result.getStaleness() : -1;
     }
+
+
+
 }

@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 
-import static org.firstinspires.ftc.teamcode.parts.Claw.*;
-
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_EXTENDED;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_OPEN_TELEOP;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_PITCH_MID;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_RETRACTED;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_FRONT;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_GROUND_EXTENDED;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_GROUND_RETRACTED;
+import static org.firstinspires.ftc.teamcode.parts.Claw.CLAW_ROT_MID;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 
 import org.firstinspires.ftc.teamcode.Utility.ActionCondition;
 import org.firstinspires.ftc.teamcode.Utility.CustomAction;
@@ -21,9 +24,10 @@ import org.firstinspires.ftc.teamcode.parts.Drive;
 import org.firstinspires.ftc.teamcode.parts.Hanger;
 import org.firstinspires.ftc.teamcode.parts.Slider;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
-@TeleOp(name ="TeleOperationA",group = "Robot")
+
+@TeleOp(name ="Parallel",group = "Robot")
 @Config
-public class TeleOperationA extends LinearOpMode {
+public class ParallelTest extends LinearOpMode {
 
 
 
@@ -62,34 +66,16 @@ public class TeleOperationA extends LinearOpMode {
 
 
            CustomAction boxScoreStart =new CustomAction(
+                   ()-> claw.rotateArm(CLAW_ROT_MID),
                 claw::middleAlignment,
                 slider::sliderExtensionTopBox,
                 claw::boxScoring);
 
            ActionCondition boxScoreStartCondition =new ActionCondition(
+                   ActionCondition::noCondition,
                 ActionCondition::noCondition,
-                ()->timer.delay(1000),
+                ()->timer.delay(1200),
                 ActionCondition::noCondition);
-
-
-
-           CustomAction boxScoreEnd=new CustomAction(
-                claw::release,
-                claw::grab,
-                ()->claw.rotateArm(CLAW_ROT_MID),
-                claw::retract,
-                slider::sliderRetraction,
-                ()->claw.rotateArm(CLAW_ROT_FRONT),
-                claw::clearSub);
-
-            ActionCondition boxScoreEndCondition=new ActionCondition(
-                ()->timer.delay(300),
-                ActionCondition::noCondition,
-                ActionCondition::noCondition,
-                ActionCondition::noCondition,
-                ActionCondition::noCondition,
-                ActionCondition::noCondition,
-                    ActionCondition::noCondition);
 
 
 
@@ -114,6 +100,41 @@ public class TeleOperationA extends LinearOpMode {
             drive.mecanumDriving(x,y,turn,1);
 
             //Grab success Basket scoring phase
+
+
+
+            if (gamepad2.y){
+                switch (boxScoringStateTop){
+                    case 0:
+                        if (!extension) {
+                            Sequencing.allowAction(boxScoreStart);
+                            boxScoringStateTop++;
+                        }
+                        break;
+                    case 1:
+                        claw.release();
+                        Thread.sleep(300);
+                        claw.grab();
+                        claw.rotateArm(CLAW_ROT_MID);
+                        claw.retract();
+                        slider.sliderRetraction();
+                        claw.rotateArm(CLAW_ROT_FRONT);
+                        claw.clearSub();
+
+                        boxScoringStateTop=0;;
+                        break;
+                }
+            }
+
+            if (Sequencing.isActionAllowed(boxScoreStart)){
+                Sequencing.runInParallel(boxScoreStart,boxScoreStartCondition);
+            }
+
+
+
+
+/*
+
             if (gamepad2.y){
                 switch (boxScoringStateTop){
                     case 0:
@@ -149,6 +170,9 @@ public class TeleOperationA extends LinearOpMode {
                 }
             }
 
+
+ */
+/*
             if (gamepad2.x){
                 switch (boxScoringStateTop){
                     case 0:
@@ -188,33 +212,12 @@ public class TeleOperationA extends LinearOpMode {
                 }
             }
 
+ */
+
             if (gamepad2.start){
                 drive.stopDrive();
                 hanger.hang();
             }
-
-/*
-            if (gamepad2.y){
-                switch (boxScoringStateTop){
-                    case 0:
-                        Sequencing.allowAction(boxScoreStart);
-                        boxScoringStateTop++;
-                        break;
-                    case 1:
-                        Sequencing.allowAction(boxScoreEnd);
-                        boxScoringStateTop=0;
-                        break;
-                }
-            }
-            if (Sequencing.isActionAllowed(actions.boxScoreStart)){
-                Sequencing.runInParallel(boxScoreStart,boxScoreStartCondition);
-            }
-            if (Sequencing.isActionAllowed(boxScoreEnd)){
-                Sequencing.runInParallel(boxScoreEnd,boxScoreEndCondition);
-            }
-
-
- */
 
 /*
             if (gamepad1.a){

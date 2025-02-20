@@ -14,17 +14,25 @@ import java.util.List;
 
 @Config
 public class Claw  {
-    public static double CLAW_EXTENDED=0.41;
-    public static double CLAW_RETRACTED=0.08;
-    public static double CLAW_ROT_MID=0.7;
-    public static double CLAW_ROT_FRONT=0.17;
-    public static double CLAW_ROT_BACK=0.9;
-    public static double CLAW_ROT_DIRECT_SCORE=0.6;
-    public static double CLAW_ROT_GROUND_RETRACTED=0.10;
-    public static double CLAW_ROT_GROUND_EXTENDED=0.135;
-    public static double CLAW_ROT_TOUCH=0.28;
-    public static double CLAW_GRAB=0;
-    public static double CLAW_RELEASE=0.1;
+    public static double CLAW_EXTENDED=0.45;
+    public static double CLAW_RETRACTED=0.1;
+    public static double CLAW_EXTENSION_ZERO=0;
+
+    public static double CLAW_ROT_MID=0.61;
+    public static double CLAW_ROT_FRONT=0.08;
+    public static double CLAW_ROT_BACK=0.82;
+    public static double CLAW_ROT_DIRECT_SCORE=0.51;
+    public static double CLAW_ROT_GROUND_RETRACTED=0.01;
+    public static double CLAW_ROT_GROUND_EXTENDED=0.03;
+    public static double CLAW_ROT_AUTO_INIT=1;
+
+    public static double CLAW_ROT_TOUCH=0.3;
+
+
+
+
+    public static double CLAW_GRAB=0.25;
+    public static double CLAW_RELEASE=0.35;
     public static double CLAW_PITCH_TOP=0.5;
     public static double CLAW_PITCH_MID=0.4;
     public static double CLAW_PITCH_BOT=0.13;
@@ -33,6 +41,10 @@ public class Claw  {
     public static double CLAW_ALIGNMENT_LEFTMOST=0.84;
     public static double CLAW_ALIGNMENT_RIGHTMOST=0.23;
     public static double CLAW_ALIGNMENT_MIDDLE=0.53;
+
+    public static double CLAW_OPEN_TELEOP=0.35;
+
+
 
     public static double CLAW_270=0.65;
     public static double CLAW_45=0.32;
@@ -132,10 +144,10 @@ public class Claw  {
 
     public void clawAutoSampleInit() throws InterruptedException {
         clawGrab.setPosition(CLAW_GRAB);
+        clawExtend.setPosition(CLAW_EXTENSION_ZERO);
         Thread.sleep(200);
         clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
-        clawPitch.setPosition(CLAW_PITCH_BOT);
-        rotateArm(CLAW_ROT_BACK);
+        rotateArm(CLAW_ROT_AUTO_INIT);
 
     }
 
@@ -145,6 +157,7 @@ public class Claw  {
     public void teleOpInit(){
         clawPitch.setPosition(CLAW_PITCH_MID);
         clawAlignment.setPosition(CLAW_ALIGNMENT_MIDDLE);
+        retract();
         clawGrab.setPosition(CLAW_RELEASE);
         rotateArm(CLAW_ROT_FRONT);
     }
@@ -155,9 +168,8 @@ public class Claw  {
     }
 
     public void boxScoring(){
-       rotateArm(CLAW_ROT_BACK);
+        rotateArm(CLAW_ROT_BACK);
         clawExtend.setPosition(CLAW_EXTENDED);
-
         clawPitch.setPosition(CLAW_PITCH_SCORE);
     }
 

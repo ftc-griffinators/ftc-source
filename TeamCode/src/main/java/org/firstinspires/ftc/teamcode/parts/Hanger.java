@@ -14,7 +14,7 @@ public class Hanger  {
     public DcMotorEx rightHanger, leftHanger;
     public Encoder leftHangerEncoder,rightHangerEncoder;
     public static int INIT_HANGER=0;
-    public static int HANG=2200;
+    public static int HANG=2400;
 
 
 

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.parts.Hanger;
 import org.firstinspires.ftc.teamcode.parts.Slider;
 
-@TeleOp(name = "Test2", group = "Robot")
+
 public class Test2 extends LinearOpMode
 {
 

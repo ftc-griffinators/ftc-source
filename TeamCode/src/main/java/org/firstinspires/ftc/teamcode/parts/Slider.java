@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Slider  {
     public static int INIT_SLIDER =10;
-    public static int SLIDER_TOP =2500;
+    public static int SLIDER_TOP =2550;
     public static int SLIDER_MID =2300;
     public static int SLIDER_TOP_BAR;
     public static int SLIDER_HANGER;

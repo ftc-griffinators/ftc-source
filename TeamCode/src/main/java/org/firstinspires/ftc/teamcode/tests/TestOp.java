@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.parts.Hanger;
 import org.firstinspires.ftc.teamcode.parts.Slider;
 import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 
-@TeleOp(name = "Testing",group = "Robot")
+
 public class TestOp extends LinearOpMode {
 
     DcMotorEx frontLeft, frontRight, backLeft, backRight,sliderLeft,sliderRight;

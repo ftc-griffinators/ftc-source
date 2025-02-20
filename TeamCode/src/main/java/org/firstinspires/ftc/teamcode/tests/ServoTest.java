@@ -7,19 +7,9 @@ import static org.firstinspires.ftc.teamcode.parts.Slider.SLIDER_CUSTOM;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.parts.Claw;
 import org.firstinspires.ftc.teamcode.parts.Slider;
@@ -28,13 +18,6 @@ import org.firstinspires.ftc.teamcode.systems.VisionSystem;
 @TeleOp(name ="ServoTest",group = "Tests")
 @Config
 public class ServoTest extends LinearOpMode {
-
-
-    public int wrong;
-    public int excess;
-
-
-
 
 
 
